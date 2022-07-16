@@ -1,3 +1,111 @@
 <resources>
     <string name="app_name">test_EkiBlock</string>
+    <string name="app_label">駅合わせ</string>
+
+    <!--アクションバーメニュー-->
+    <string name="menu_search">検索</string>
+    <string name="menu_player">プレイヤー</string>
+    <string name="menu_complied">コンプ済み検索</string>
+    <string name="menu_not_comp">未コンプ検索</string>
+    <string name="menu_search_end">検索終了</string>
+    <string name="menu_folder_close">全てのフォルダを閉じる</string>
+    <string name="menu_record">プレイ記録</string>
+    <string name="menu_setting">設定</string>
+    <string name="menu_title_eki2">路線</string>
+    <string name="menu_title_question">問題</string>
+    <string name="menu_shuffle">シャッフル</string>
+
+    <!--設定 プレイヤー名-->
+    <string name="setting_playerName_title">プレイヤー名</string>
+    <string name="setting_playerName1_key">setting_player1</string>
+    <string name="setting_playerName1_title">プレイヤー1</string>
+    <string name="setting_playerName1_defaultValue">ぷれいや1</string>
+    <string name="setting_playerName2_key">setting_player2</string>
+    <string name="setting_playerName2_title">プレイヤー2</string>
+    <string name="setting_playerName2_defaultValue">ぷれいや2</string>
+    <string name="setting_playerName3_key">setting_player3</string>
+    <string name="setting_playerName3_title">プレイヤー3</string>
+    <string name="setting_playerName3_defaultValue">ぷれいや3</string>
+    <string name="setting_playerName4_key">setting_player4</string>
+    <string name="setting_playerName4_title">プレイヤー4</string>
+    <string name="setting_playerName4_defaultValue">ぷれいや4</string>
+    <string name="setting_playerName5_key">setting_player5</string>
+    <string name="setting_playerName5_title">プレイヤー5</string>
+    <string name="setting_playerName5_defaultValue">ぷれいや5</string>
+
+    <!--設定 効果音-->
+    <string name="setting_soundNo_key">setting_sound</string>
+    <string name="setting_soundNo_defaultValue">0</string>
+    <string name="setting_sound_title">効果音</string>
+    <string name="setting_sound_entries_comp_drag">並べ替えとコンプ</string>
+    <string name="setting_sound_entries_comp">コンプのみ</string>
+    <string name="setting_sound_entries_none">無し</string>
+    <array name="setting_sound_entries">
+        <item>@string/setting_sound_entries_comp_drag</item>
+        <item>@string/setting_sound_entries_comp</item>
+        <item>@string/setting_sound_entries_none</item>
+    </array>
+    <array name="setting_soundNo_entryValues">
+        <item>"0"</item>
+        <item>"1"</item>
+        <item>"2"</item>
+    </array>
+
+    <!--設定 バイブレーション-->
+    <string name="setting_vibrationNo_key">setting_vibration</string>
+    <string name="setting_vibrationNo_defaultValue">1</string>
+    <string name="setting_vibration_title">バイブレーション</string>
+    <string name="setting_vibration_entries_comp_drag">並べ替えとコンプ</string>
+    <string name="setting_vibration_entries_comp">コンプのみ</string>
+    <string name="setting_vibration_entries_none">無し</string>
+    <array name="setting_vibration_entries">
+        <item>@string/setting_vibration_entries_comp_drag</item>
+        <item>@string/setting_vibration_entries_comp</item>
+        <item>@string/setting_vibration_entries_none</item>
+    </array>
+    <array name="setting_vibrationNo_entryValues">
+        <item>"0"</item>
+        <item>"1"</item>
+        <item>"2"</item>
+    </array>
+
+    <!--設定 プライバシーポリシー-->
+    <string name="setting_privacy_policy_key">setting_privacy_policy</string>
+    <string name="setting_privacy_policy_title">プライバシーポリシー</string>
+    <string name="setting_privacy_policy_url">https://jae02546.github.io/narabe/manual/privacy-policy.html</string>
+
+    <!--設定 このアプリについて-->
+    <string name="setting_about_key">setting_about</string>
+    <string name="setting_about_title">このアプリについて</string>
+    <string name="setting_about_url">https://jae02546.github.io/narabe/</string>
+
+    <!--pref-->
+    <!--保守モード-->
+    <string name="pref_maintenance_key">pref_maintenance</string>
+    <string name="pref_maintenance_defaultValue">false</string>
+    <!--最終更新日-->
+    <string name="pref_lastUpdate_key">pref_lastUpdate</string>
+    <!--<string name="pref_lastUpdate_defaultValue">LocalDateTime.MIN.toString()</string>-->
+    <!--プレーヤーNo-->
+    <string name="pref_playerNo_key">pref_playerNo</string>
+    <string name="pref_playerNo_defaultValue">1</string>
+    <!--fRecyclerViewのoffset-->
+    <string name="pref_frvOffset_key">pref_frvOffset</string>
+    <string name="pref_frvOffset_defaultValue">0</string>
+
+    <!--    <string name="top_kana_us">こうしんでーたをかくにんしています</string>-->
+    <!--    <string name="top_name_us">更新データを確認しています</string>-->
+    <!--    <string name="top_english_us">Checking for updated data</string>-->
+    <string name="top_kana_us">でーたをろーどしています</string>
+    <string name="top_name_us">データをロードしています</string>
+    <string name="top_english_us">Loading data</string>
+    <string name="top_eki2_kana">ろせんをせんたくしてください</string>
+    <string name="top_eki2_name">路線を選択してください</string>
+    <string name="top_eki2_english">Please select a railway line</string>
+
+    <string name="top_q_kana">もんだいをせんたくしてください</string>
+    <string name="top_q_name">問題を選択してください</string>
+    <string name="top_q_english">Please select a question</string>
+
+
 </resources>

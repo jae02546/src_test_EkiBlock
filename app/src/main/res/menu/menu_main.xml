@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--    <item-->
+    <!--        android:id="@+id/menuSearch"-->
+    <!--        android:title="@string/menu_search"-->
+    <!--        app:actionViewClass="android.widget.SearchView"-->
+    <!--        app:showAsAction="ifRoom" />-->
+
+    <item
+        android:id="@+id/menuPlayer"
+        android:icon="@drawable/ic_person_fill0_wght400_grad0_opsz48_1"
+        android:title="@string/menu_player"
+        app:showAsAction="ifRoom">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/menuPlayer1"
+                    android:title="@string/setting_playerName1_defaultValue"
+                    app:showAsAction="never" />
+                <item
+                    android:id="@+id/menuPlayer2"
+                    android:title="@string/setting_playerName2_defaultValue"
+                    app:showAsAction="never" />
+                <item
+                    android:id="@+id/menuPlayer3"
+                    android:title="@string/setting_playerName3_defaultValue"
+                    app:showAsAction="never" />
+                <item
+                    android:id="@+id/menuPlayer4"
+                    android:title="@string/setting_playerName4_defaultValue"
+                    app:showAsAction="never" />
+                <item
+                    android:id="@+id/menuPlayer5"
+                    android:title="@string/setting_playerName5_defaultValue"
+                    app:showAsAction="never" />
+            </group>
+        </menu>
+    </item>
+
+    <!--    <item-->
+    <!--        android:id="@+id/menuComplied"-->
+    <!--        android:title="@string/menu_complied"-->
+    <!--        app:showAsAction="never" />-->
+
+    <!--    <item-->
+    <!--        android:id="@+id/menuNotComp"-->
+    <!--        android:title="@string/menu_not_comp"-->
+    <!--        app:showAsAction="never" />-->
+
+    <!--    <item-->
+    <!--        android:id="@+id/menuSearchEnd"-->
+    <!--        android:title="@string/menu_search_end"-->
+    <!--        app:showAsAction="never" />-->
+
+    <!--    <item-->
+    <!--        android:id="@+id/menuFolderClose"-->
+    <!--        android:title="@string/menu_folder_close"-->
+    <!--        app:showAsAction="never" />-->
+
+    <item
+        android:id="@+id/menuRecord"
+        android:title="@string/menu_record"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/menuSetting"
+        android:title="@string/menu_setting"
+        app:showAsAction="never" />
+
+</menu>
