@@ -107,11 +107,11 @@ class MainActivity : AppCompatActivity() {
     private fun showMainLayout(view: View) {
 
         val numDigits = 8
-        val c1Layout = findViewById<ConstraintLayout>(MainLayout.cPara[1][0].id)
-        val c2Layout = findViewById<ConstraintLayout>(MainLayout.cPara[2][0].id)
+//        val c1Layout = findViewById<ConstraintLayout>(MainLayout.cPara[1][0].id)
+//        val c2Layout = findViewById<ConstraintLayout>(MainLayout.cPara[2][0].id)
 
 //        MainLayout.showLayout(c1Layout, MainLayout.c1Para, Question.question, numDigits, selLine)
-        MainLayout.showLayout(view as ConstraintLayout, Question.question, numDigits, selLine)
+//        MainLayout.showLayout(view as ConstraintLayout, Question.question, numDigits, selLine)
 
 
     }
