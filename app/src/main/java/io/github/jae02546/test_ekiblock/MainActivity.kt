@@ -37,52 +37,52 @@ class MainActivity : AppCompatActivity() {
         Question.makeQuestion(numDigits)
         showMainLayout(layout)
 
-        // <<
-        val tapLeftShift = findViewById<TextView>(MainLayout.b0Para[0][0].id)
-        tapLeftShift.setOnClickListener {
-            //Toast.makeText(this, "<<", Toast.LENGTH_SHORT).show()
-            Question.shl(selLine, 8)
-            //レイアウト表示
-            showMainLayout(layout)
-        }
-        // !
-        val tapNot = findViewById<TextView>(MainLayout.b0Para[0][1].id)
-        tapNot.setOnClickListener {
-            //Toast.makeText(this, "!", Toast.LENGTH_SHORT).show()
-            Question.inv(selLine, 8)
-            //レイアウト表示
-            showMainLayout(layout)
-        }
-        // >>
-        val tapRightShift = findViewById<TextView>(MainLayout.b0Para[0][2].id)
-        tapRightShift.setOnClickListener {
-            //Toast.makeText(this, ">>", Toast.LENGTH_SHORT).show()
-            Question.shr(selLine, 8)
-            //レイアウト表示
-            showMainLayout(layout)
-        }
-        // ↑
-        val tapUp = findViewById<TextView>(MainLayout.b1Para[0][0].id)
-        tapUp.setOnClickListener {
-            //Toast.makeText(this, "↑", Toast.LENGTH_SHORT).show()
-            if (selLine > 0)
-                selLine--
-            else
-                selLine = 7
-            //レイアウト表示
-            showMainLayout(layout)
-        }
-        // ↓
-        val tapDown = findViewById<TextView>(MainLayout.b1Para[0][1].id)
-        tapDown.setOnClickListener {
-            //Toast.makeText(this, "↓", Toast.LENGTH_SHORT).show()
-            if (selLine < 7)
-                selLine++
-            else
-                selLine = 0
-            //レイアウト表示
-            showMainLayout(layout)
-        }
+//        // <<
+//        val tapLeftShift = findViewById<TextView>(MainLayout.b0Para[0][0].id)
+//        tapLeftShift.setOnClickListener {
+//            //Toast.makeText(this, "<<", Toast.LENGTH_SHORT).show()
+//            Question.shl(selLine, 8)
+//            //レイアウト表示
+//            showMainLayout(layout)
+//        }
+//        // !
+//        val tapNot = findViewById<TextView>(MainLayout.b0Para[0][1].id)
+//        tapNot.setOnClickListener {
+//            //Toast.makeText(this, "!", Toast.LENGTH_SHORT).show()
+//            Question.inv(selLine, 8)
+//            //レイアウト表示
+//            showMainLayout(layout)
+//        }
+//        // >>
+//        val tapRightShift = findViewById<TextView>(MainLayout.b0Para[0][2].id)
+//        tapRightShift.setOnClickListener {
+//            //Toast.makeText(this, ">>", Toast.LENGTH_SHORT).show()
+//            Question.shr(selLine, 8)
+//            //レイアウト表示
+//            showMainLayout(layout)
+//        }
+//        // ↑
+//        val tapUp = findViewById<TextView>(MainLayout.b1Para[0][0].id)
+//        tapUp.setOnClickListener {
+//            //Toast.makeText(this, "↑", Toast.LENGTH_SHORT).show()
+//            if (selLine > 0)
+//                selLine--
+//            else
+//                selLine = 7
+//            //レイアウト表示
+//            showMainLayout(layout)
+//        }
+//        // ↓
+//        val tapDown = findViewById<TextView>(MainLayout.b1Para[0][1].id)
+//        tapDown.setOnClickListener {
+//            //Toast.makeText(this, "↓", Toast.LENGTH_SHORT).show()
+//            if (selLine < 7)
+//                selLine++
+//            else
+//                selLine = 0
+//            //レイアウト表示
+//            showMainLayout(layout)
+//        }
 
         //ここから広告
         MobileAds.initialize(this) { }

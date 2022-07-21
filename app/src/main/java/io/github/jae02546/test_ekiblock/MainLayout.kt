@@ -23,23 +23,31 @@ object MainLayout {
     var sPara: MutableList<MutableList<ItemPara>> = mutableListOf() //score
     var qPara: MutableList<MutableList<ItemPara>> = mutableListOf() //question
     var aPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answer
-    var cItemPara: MutableList<MutableList<MutableList<MutableList<ItemPara>>>> = mutableListOf()
-
+    var aiPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answerItem
     var pPara: MutableList<MutableList<ItemPara>> = mutableListOf() //piece
-
+    var piPara: MutableList<MutableList<ItemPara>> = mutableListOf() //pieceItem
     var nPara: MutableList<MutableList<ItemPara>> = mutableListOf() //new game
-    var b0Para: MutableList<MutableList<ItemPara>> = mutableListOf()
-    var b1Para: MutableList<MutableList<ItemPara>> = mutableListOf()
     var adViewPara: MutableList<MutableList<ItemPara>> = mutableListOf() //adView
+
+    //横item数
+    private const val numItems = 8 //item幅計算時の分割数となる
+
+    //問題縦item数
+    private const val numQuestion = 2
+
+    //回答縦item数
+    private const val numAnswers = 5
+
+    //持ち札縦item数
+    private const val numPieces = 3
 
     //Viewマージン それぞれのViewがこのマージンを取るので実際の間隔は倍となる
     private const val viewMargin = 3 //5
 
+
     //adView高さ
     private const val adViewHeight = 50
 
-    //textView fontSize（問い部分以外）
-    private const val tvFontSize = 12f
 
     enum class EnumViewType {
         ConstraintLayout,
@@ -76,99 +84,6 @@ object MainLayout {
         }
     }
 
-//    fun showLayout(
-//        layout: ConstraintLayout,
-//        question: MutableList<Int>,
-//        numDigits: Int,
-//        selLine: Int,
-//    ) {
-//        val c1Layout = layout.findViewById<ConstraintLayout>(cPara[1][0].id)
-//        val c2Layout = layout.findViewById<ConstraintLayout>(cPara[2][0].id)
-//
-//        //問いデータ表示
-//        for (v in 0 until numDigits) {
-//            for (v2 in 0 until numDigits) {
-//                var offsetV = 0
-//                var offsetV2 = 0
-//                when (numDigits) {
-//                    2 -> {
-//                        offsetV = 3
-//                        offsetV2 = 5
-//                    }
-//                    4 -> {
-//                        offsetV = 2
-//                        offsetV2 = 6
-//                    }
-//                    6 -> {
-//                        offsetV = 1
-//                        offsetV2 = 7
-//                    }
-//                    8 -> {
-//                        offsetV = 0
-//                        offsetV2 = 8
-//                    }
-//                    else -> {
-//                        //何もしない
-//                    }
-//                }
-//                val tv = c1Layout.getViewById(c1Para[offsetV + v][offsetV2 - v2].id) as TextView
-//                tv.text = if (question[v] and 2.0.pow(v2).toInt() == 0) "0" else "1"
-//                //dec,hex
-//                val foo = question[v].toString().padStart(3, ' ') + "\n " + question[v].toString(16)
-//                    .padStart(2, '0')
-//                val dh = c1Layout.getViewById(c1Para[offsetV + v][9].id) as TextView
-////                dh.gravity = Gravity.CENTER
-////                dh.typeface = Typeface.MONOSPACE;
-////                dh.textSize = 12F
-//                dh.text = foo
-//
-//            }
-//        }
-//        //選択ライン表示
-//        for (v in 0..7) {
-//            for (v2 in 1..8) {
-//                val tv = c1Layout.getViewById(c1Para[v][v2].id) as TextView
-//                if (v == selLine)
-//                    tv.background = c1Layout.context.getDrawable(R.drawable.border_red)
-//                else
-//                    tv.background = c1Layout.context.getDrawable(R.drawable.border)
-//            }
-//        }
-//
-//        //total表示
-//        var total = 0
-//        for (v in question) {
-//            total += v
-//            total = total and (2.0.pow(numDigits).toInt() - 1)
-//        }
-//
-//        for (v in 0 until numDigits) {
-//            var offset = 0
-//            when (numDigits) {
-//                2 -> {
-//                    offset = 5
-//                }
-//                4 -> {
-//                    offset = 6
-//                }
-//                6 -> {
-//                    offset = 7
-//                }
-//                8 -> {
-//                    offset = 8
-//                }
-//                else -> {
-//                    //何もしない
-//                }
-//            }
-//            val tv = c2Layout.getViewById(c2Para[0][offset - v].id) as TextView
-//            tv.text = if (total and 2.0.pow(v).toInt() == 0) "0" else "1"
-//        }
-//        val foo = total.toString().padStart(3, ' ') + "\n " + total.toString(16).padStart(2, '0')
-//        val dh = c2Layout.getViewById(c2Para[0][9].id) as TextView
-//        dh.text = foo
-//
-//    }
 
     fun makeLayout(context: Context, screenSize: MutableList<Int>): ConstraintLayout {
         //パラメータ初期化
@@ -176,65 +91,65 @@ object MainLayout {
         sPara = mutableListOf()
         qPara = mutableListOf()
         aPara = mutableListOf()
+        aiPara = mutableListOf()
         pPara = mutableListOf()
+        piPara = mutableListOf()
         nPara = mutableListOf()
         adViewPara = mutableListOf()
 
-        cItemPara = mutableListOf()
-        b0Para = mutableListOf()
-        b1Para = mutableListOf()
-
-        //ノーマルレイヤ
-        val borderDrawableNormal = GradientDrawable()
-        borderDrawableNormal.setStroke(
+        //薄い枠線 ダークテーマ可 colorButtonNormal
+        val bdNormal = GradientDrawable()
+        bdNormal.setStroke(
             Tools.convertDp2Px(1f, context).toInt(),
             context.getThemeColor(R.attr.colorButtonNormal)
         )
-        val layerDrawableNormal = LayerDrawable(arrayOf<Drawable>(borderDrawableNormal))
-        layerDrawableNormal.setLayerInset(0, 0, 0, 0, 0)
-        //赤レイヤ
-        val borderDrawableRed = GradientDrawable()
-        borderDrawableRed.setStroke(
+        //塗りつぶしはコメントを外す
+        //bdNormal.setColor(context.getThemeColor(R.attr.colorButtonNormal))
+        val ldNormal = LayerDrawable(arrayOf<Drawable>(bdNormal))
+        ldNormal.setLayerInset(0, 0, 0, 0, 0)
+
+        //白背景
+        val bdItem = GradientDrawable()
+        bdItem.setStroke(
+            Tools.convertDp2Px(1f, context).toInt(),
+            context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        //塗りつぶしはコメントを外す
+        bdItem.setColor(context.getThemeColor(R.attr.colorOnPrimary)) //これだ
+        val ldItem = LayerDrawable(arrayOf<Drawable>(bdItem))
+        ldItem.setLayerInset(0, 0, 0, 0, 0)
+
+        //赤枠線
+        val bdRed = GradientDrawable()
+        bdRed.setStroke(
             Tools.convertDp2Px(1f, context).toInt(),
             Color.RED
         )
-        borderDrawableRed.setColor(Color.argb(127, 255, 0, 0))
-        val layerDrawableRed = LayerDrawable(arrayOf<Drawable>(borderDrawableRed))
-        layerDrawableRed.setLayerInset(0, 0, 0, 0, 0)
-        //黒レイヤ
-        val borderDrawableItem = GradientDrawable()
-        borderDrawableItem.setStroke(
-            Tools.convertDp2Px(1f, context).toInt(),
-            Color.BLACK
-        )
-        borderDrawableItem.setColor(Color.argb(127, 0, 255, 0))
-        val layerDrawableItem = LayerDrawable(arrayOf<Drawable>(borderDrawableItem))
-        layerDrawableItem.setLayerInset(0, 0, 0, 0, 0)
+        //塗りつぶしはコメントを外す
+        bdRed.setColor(Color.argb(0xff, 255, 0, 0))
+        val ldRed = LayerDrawable(arrayOf<Drawable>(bdRed))
+        ldRed.setLayerInset(0, 0, 0, 0, 0)
+
 
         //item基本幅
-        val iWidth = screenSize[0] / 8
+        val iWidth = screenSize[0] / numItems
 
         //main[score][question][answer][piece][newGame][adView]
         for (v in 0..5) {
             val height = when (v) {
-                1 -> {
-                    //問題3行
-                    iWidth * 2
+                1 -> { //問題
+                    iWidth * numQuestion
                 }
-                2 -> {
-                    //回答5行
-                    iWidth * 5
+                2 -> { //回答
+                    iWidth * numAnswers
                 }
-                3 -> {
-                    //持ち札3行
-                    iWidth * 3
+                3 -> { //持ち札
+                    iWidth * numPieces
                 }
-                5 -> {
-                    //adView
+                5 -> { //adView
                     Tools.convertDp2Px(adViewHeight.toFloat(), context).toInt()
                 }
-                else -> {
-                    //score newGame
+                else -> { //score newGame
                     0
                 }
             }
@@ -266,7 +181,7 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     viewMargin, viewMargin, viewMargin, viewMargin,
-                    layerDrawableNormal,
+                    ldNormal,
                     EnumViewType.TextView, 0f, 0,
                     v.toString() + v2.toString()
                 )
@@ -284,7 +199,7 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     viewMargin, viewMargin, viewMargin, viewMargin,
-                    layerDrawableNormal,
+                    ldNormal,
                     EnumViewType.TextView, 0f, 0,
                     v.toString() + v2.toString()
                 )
@@ -294,81 +209,56 @@ object MainLayout {
         var qLayout = mLayout.getViewById(mPara[1][0].id) as ConstraintLayout
         qLayout = getConstraintLayout(qLayout, qPara)
 
-
-
-
-        //center
-        //[0]路線1 [1]路線2 [2]路線3 [3]路線4
-        val bc: MutableList<MutableList<Int>> = mutableListOf(
-            mutableListOf(Color.RED, Color.BLUE),
-            mutableListOf(Color.CYAN, Color.GREEN)
-        )
-        for (v in 0..1) {
+        //answer
+        for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
-            for (v2 in 0..1) {
-                val lMargin = if (v2 != 0) viewMargin else viewMargin * 2
-                val rMargin = if (v2 != 1) viewMargin else viewMargin * 2
+            for (v2 in 0..0) {
                 foo += ItemPara(
                     View.generateViewId(),
                     0, 0,
-                    lMargin, rMargin, viewMargin, viewMargin,
-                    layerDrawableRed,
-//                    false, bc[v][v2],
-//                    true,
+                    0, 0, 0, 0,
+                    ldRed,
                     EnumViewType.ConstraintLayout, 0f, 0,
                     ""
                 )
             }
             aPara += foo
         }
-        var cLayout = mLayout.getViewById(mPara[2][0].id) as ConstraintLayout
-        cLayout = getConstraintLayout(cLayout, aPara)
+        var aLayout = mLayout.getViewById(mPara[2][0].id) as ConstraintLayout
+        aLayout = getConstraintLayout(aLayout, aPara)
 
         //center item
-        val fc = context.getThemeColor(R.attr.editTextColor)
-        for (v in aPara) {
-            val v2Para: MutableList<MutableList<MutableList<ItemPara>>> = mutableListOf()
-            for (v2 in v) {
-                val viPara: MutableList<MutableList<ItemPara>> = mutableListOf()
-                for (vi in 0..3) {
-                    val vi2Para: MutableList<ItemPara> = mutableListOf()
-                    for (vi2 in 0..3) {
-                        val lMargin = if (vi2 != 0) viewMargin else viewMargin * 2
-                        val rMargin = if (vi2 != 3) viewMargin else viewMargin * 2
-                        val tMargin = if (vi != 0) viewMargin else viewMargin * 2
-                        val bMargin = if (vi != 3) viewMargin else viewMargin * 2
-                        vi2Para += ItemPara(
-                            View.generateViewId(),
-                            0, 0,
-                            lMargin, rMargin, tMargin, bMargin,
-                            layerDrawableItem,
-//                            false, 0,
-//                            true,
-                            EnumViewType.TextView, 0f, fc,
-//                            v.toString() + v2.toString() + vi.toString() + vi2.toString() //""
-                            vi.toString() + vi2.toString() //""
-                        )
-                    }
-                    viPara += vi2Para
-                }
-                var ciLayout = cLayout.getViewById(v2.id) as ConstraintLayout
-                ciLayout = getConstraintLayout(ciLayout, viPara)
-                v2Para += viPara
+        val aic = context.getThemeColor(R.attr.editTextColor)
+        for (v in 0 until numAnswers) {
+            val vPara: MutableList<ItemPara> = mutableListOf()
+            for (v2 in 0 until numItems) {
+                val lMargin = if (v2 != 0) viewMargin else viewMargin * 2
+                val rMargin = if (v2 != numItems - 1) viewMargin else viewMargin * 2
+                val tMargin = if (v != 0) viewMargin else viewMargin * 2
+                val bMargin = if (v != numPieces - 1) viewMargin else viewMargin * 2
+                vPara += ItemPara(
+                    View.generateViewId(),
+                    0, 0,
+                    lMargin, rMargin, tMargin, bMargin,
+                    ldItem,
+                    EnumViewType.TextView, 0f, aic,
+                    v.toString() + v2.toString() //""
+                )
             }
-            cItemPara += v2Para
+            aiPara += vPara
         }
+        var aiLayout = aLayout.getViewById(aPara[0][0].id) as ConstraintLayout
+        aiLayout = getConstraintLayout(aiLayout, aiPara)
 
         //piece
         for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0..0) {
-                val lMargin = if (v2 != 0) viewMargin else viewMargin * 2
-                val rMargin = if (v2 != 1) viewMargin else viewMargin * 2
                 foo += ItemPara(
                     View.generateViewId(),
                     0, 0,
-                    lMargin, rMargin, viewMargin, viewMargin,
-                    layerDrawableRed,
+                    0, 0, 0, 0,
+                    LayerDrawable(arrayOf<Drawable>()),
                     EnumViewType.ConstraintLayout, 0f, 0,
                     ""
                 )
@@ -377,41 +267,29 @@ object MainLayout {
         }
         var pLayout = mLayout.getViewById(mPara[3][0].id) as ConstraintLayout
         pLayout = getConstraintLayout(pLayout, pPara)
+
         //piece item
         val pic = context.getThemeColor(R.attr.editTextColor)
-        for (v in pPara) {
-            val v2Para: MutableList<MutableList<MutableList<ItemPara>>> = mutableListOf()
-            for (v2 in v) {
-                val viPara: MutableList<MutableList<ItemPara>> = mutableListOf()
-                for (vi in 0..3) {
-                    val vi2Para: MutableList<ItemPara> = mutableListOf()
-                    for (vi2 in 0..3) {
-                        val lMargin = if (vi2 != 0) viewMargin else viewMargin * 2
-                        val rMargin = if (vi2 != 3) viewMargin else viewMargin * 2
-                        val tMargin = if (vi != 0) viewMargin else viewMargin * 2
-                        val bMargin = if (vi != 3) viewMargin else viewMargin * 2
-                        vi2Para += ItemPara(
-                            View.generateViewId(),
-                            0, 0,
-                            lMargin, rMargin, tMargin, bMargin,
-                            layerDrawableItem,
-//                            false, 0,
-//                            true,
-                            EnumViewType.TextView, 0f, fc,
-//                            v.toString() + v2.toString() + vi.toString() + vi2.toString() //""
-                            vi.toString() + vi2.toString() //""
-                        )
-                    }
-                    viPara += vi2Para
-                }
-                var ciLayout = cLayout.getViewById(v2.id) as ConstraintLayout
-                ciLayout = getConstraintLayout(ciLayout, viPara)
-                v2Para += viPara
+        for (v in 0 until numPieces) {
+            val vPara: MutableList<ItemPara> = mutableListOf()
+            for (v2 in 0 until numItems) {
+                val lMargin = if (v2 != 0) viewMargin else viewMargin * 2
+                val rMargin = if (v2 != numItems - 1) viewMargin else viewMargin * 2
+                val tMargin = if (v != 0) viewMargin else viewMargin * 2
+                val bMargin = if (v != numPieces - 1) viewMargin else viewMargin * 2
+                vPara += ItemPara(
+                    View.generateViewId(),
+                    0, 0,
+                    lMargin, rMargin, tMargin, bMargin,
+                    ldItem,
+                    EnumViewType.TextView, 0f, pic,
+                    v.toString() + v2.toString() //""
+                )
             }
-            cItemPara += v2Para
+            piPara += vPara
         }
-
-
+        var piLayout = pLayout.getViewById(pPara[0][0].id) as ConstraintLayout
+        piLayout = getConstraintLayout(piLayout, piPara)
 
         //newGame
         for (v in 0..0) {
@@ -421,7 +299,7 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     viewMargin, viewMargin, viewMargin, viewMargin,
-                    layerDrawableNormal,
+                    ldNormal,
                     EnumViewType.TextView, 0f, 0,
                     "new game"
                 )
@@ -885,5 +763,99 @@ object MainLayout {
         return cs
     }
 
+
+//    fun showLayout(
+//        layout: ConstraintLayout,
+//        question: MutableList<Int>,
+//        numDigits: Int,
+//        selLine: Int,
+//    ) {
+//        val c1Layout = layout.findViewById<ConstraintLayout>(cPara[1][0].id)
+//        val c2Layout = layout.findViewById<ConstraintLayout>(cPara[2][0].id)
+//
+//        //問いデータ表示
+//        for (v in 0 until numDigits) {
+//            for (v2 in 0 until numDigits) {
+//                var offsetV = 0
+//                var offsetV2 = 0
+//                when (numDigits) {
+//                    2 -> {
+//                        offsetV = 3
+//                        offsetV2 = 5
+//                    }
+//                    4 -> {
+//                        offsetV = 2
+//                        offsetV2 = 6
+//                    }
+//                    6 -> {
+//                        offsetV = 1
+//                        offsetV2 = 7
+//                    }
+//                    8 -> {
+//                        offsetV = 0
+//                        offsetV2 = 8
+//                    }
+//                    else -> {
+//                        //何もしない
+//                    }
+//                }
+//                val tv = c1Layout.getViewById(c1Para[offsetV + v][offsetV2 - v2].id) as TextView
+//                tv.text = if (question[v] and 2.0.pow(v2).toInt() == 0) "0" else "1"
+//                //dec,hex
+//                val foo = question[v].toString().padStart(3, ' ') + "\n " + question[v].toString(16)
+//                    .padStart(2, '0')
+//                val dh = c1Layout.getViewById(c1Para[offsetV + v][9].id) as TextView
+////                dh.gravity = Gravity.CENTER
+////                dh.typeface = Typeface.MONOSPACE;
+////                dh.textSize = 12F
+//                dh.text = foo
+//
+//            }
+//        }
+//        //選択ライン表示
+//        for (v in 0..7) {
+//            for (v2 in 1..8) {
+//                val tv = c1Layout.getViewById(c1Para[v][v2].id) as TextView
+//                if (v == selLine)
+//                    tv.background = c1Layout.context.getDrawable(R.drawable.border_red)
+//                else
+//                    tv.background = c1Layout.context.getDrawable(R.drawable.border)
+//            }
+//        }
+//
+//        //total表示
+//        var total = 0
+//        for (v in question) {
+//            total += v
+//            total = total and (2.0.pow(numDigits).toInt() - 1)
+//        }
+//
+//        for (v in 0 until numDigits) {
+//            var offset = 0
+//            when (numDigits) {
+//                2 -> {
+//                    offset = 5
+//                }
+//                4 -> {
+//                    offset = 6
+//                }
+//                6 -> {
+//                    offset = 7
+//                }
+//                8 -> {
+//                    offset = 8
+//                }
+//                else -> {
+//                    //何もしない
+//                }
+//            }
+//            val tv = c2Layout.getViewById(c2Para[0][offset - v].id) as TextView
+//            tv.text = if (total and 2.0.pow(v).toInt() == 0) "0" else "1"
+//        }
+//        val foo = total.toString().padStart(3, ' ') + "\n " + total.toString(16).padStart(2, '0')
+//        val dh = c2Layout.getViewById(c2Para[0][9].id) as TextView
+//        dh.text = foo
+//
+//    }
 
 }
