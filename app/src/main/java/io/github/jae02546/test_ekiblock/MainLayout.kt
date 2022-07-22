@@ -42,11 +42,11 @@ object MainLayout {
     private const val numPieces = 3
 
     //Viewマージン それぞれのViewがこのマージンを取るので実際の間隔は倍となる
-    private const val viewMargin = 3 //5
+    private const val viewMargin = 10 //dp
 
 
     //adView高さ
-    private const val adViewHeight = 50
+    private const val adViewHeight = 50 //dp
 
 
     enum class EnumViewType {
@@ -64,9 +64,6 @@ object MainLayout {
         var marginTop: Int = 0,
         var marginBottom: Int = 0,
         var layerDrawable: LayerDrawable = LayerDrawable(arrayOf<Drawable>()),
-//        var backgroundColor: Boolean = false,
-//        var color: Int = 0,
-//        var border: Boolean = false,
         var viewType: EnumViewType,
         var fontSize: Float = 0f, //0はデフォルト
         var fontColor: Int = 0, //0はデフォルト
@@ -108,7 +105,7 @@ object MainLayout {
         val ldNormal = LayerDrawable(arrayOf<Drawable>(bdNormal))
         ldNormal.setLayerInset(0, 0, 0, 0, 0)
 
-        //白背景
+        //item
         val bdItem = GradientDrawable()
         bdItem.setStroke(
             Tools.convertDp2Px(1f, context).toInt(),
@@ -119,14 +116,36 @@ object MainLayout {
         val ldItem = LayerDrawable(arrayOf<Drawable>(bdItem))
         ldItem.setLayerInset(0, 0, 0, 0, 0)
 
-        //赤枠線
+        //回答背景
+        val bdAnswer = GradientDrawable()
+        bdAnswer.setStroke(
+            Tools.convertDp2Px(1f, context).toInt(),
+            context.getThemeColor(R.attr.colorSecondaryVariant)
+        )
+        //塗りつぶしはコメントを外す
+        bdAnswer.setColor(context.getThemeColor(R.attr.colorSecondaryVariant))
+        val ldAnswer = LayerDrawable(arrayOf<Drawable>(bdAnswer))
+        ldAnswer.setLayerInset(0, 0, 0, 0, 0)
+
+        //持ち手背景
+        val bdPiece = GradientDrawable()
+        bdPiece.setStroke(
+            Tools.convertDp2Px(1f, context).toInt(),
+            context.getThemeColor(R.attr.colorPrimaryVariant)
+        )
+        //塗りつぶしはコメントを外す
+        bdPiece.setColor(context.getThemeColor(R.attr.colorPrimaryVariant))
+        val ldPiece = LayerDrawable(arrayOf<Drawable>(bdPiece))
+        ldPiece.setLayerInset(0, 0, 0, 0, 0)
+
+        //赤枠
         val bdRed = GradientDrawable()
         bdRed.setStroke(
-            Tools.convertDp2Px(1f, context).toInt(),
+            Tools.convertDp2Px(0f, context).toInt(),
             Color.RED
         )
         //塗りつぶしはコメントを外す
-        bdRed.setColor(Color.argb(0xff, 255, 0, 0))
+        //bdRed.setColor(Color.argb(0xff, 255, 0, 0))
         val ldRed = LayerDrawable(arrayOf<Drawable>(bdRed))
         ldRed.setLayerInset(0, 0, 0, 0, 0)
 
@@ -217,7 +236,7 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     0, 0, 0, 0,
-                    ldRed,
+                    ldAnswer,
                     EnumViewType.ConstraintLayout, 0f, 0,
                     ""
                 )
@@ -227,7 +246,7 @@ object MainLayout {
         var aLayout = mLayout.getViewById(mPara[2][0].id) as ConstraintLayout
         aLayout = getConstraintLayout(aLayout, aPara)
 
-        //center item
+        //answer item
         val aic = context.getThemeColor(R.attr.editTextColor)
         for (v in 0 until numAnswers) {
             val vPara: MutableList<ItemPara> = mutableListOf()
@@ -235,7 +254,7 @@ object MainLayout {
                 val lMargin = if (v2 != 0) viewMargin else viewMargin * 2
                 val rMargin = if (v2 != numItems - 1) viewMargin else viewMargin * 2
                 val tMargin = if (v != 0) viewMargin else viewMargin * 2
-                val bMargin = if (v != numPieces - 1) viewMargin else viewMargin * 2
+                val bMargin = if (v != numAnswers - 1) viewMargin else viewMargin * 2
                 vPara += ItemPara(
                     View.generateViewId(),
                     0, 0,
@@ -258,7 +277,7 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     0, 0, 0, 0,
-                    LayerDrawable(arrayOf<Drawable>()),
+                    ldPiece,
                     EnumViewType.ConstraintLayout, 0f, 0,
                     ""
                 )
