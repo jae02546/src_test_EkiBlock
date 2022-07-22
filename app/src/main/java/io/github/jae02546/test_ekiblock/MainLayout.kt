@@ -22,6 +22,7 @@ object MainLayout {
     var mPara: MutableList<MutableList<ItemPara>> = mutableListOf() //main
     var sPara: MutableList<MutableList<ItemPara>> = mutableListOf() //score
     var qPara: MutableList<MutableList<ItemPara>> = mutableListOf() //question
+    var qiPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionItem
     var aPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answer
     var aiPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answerItem
     var pPara: MutableList<MutableList<ItemPara>> = mutableListOf() //piece
@@ -65,6 +66,7 @@ object MainLayout {
         var marginBottom: Int = 0,
         var layerDrawable: LayerDrawable = LayerDrawable(arrayOf<Drawable>()),
         var viewType: EnumViewType,
+        var verticalWeight: Float = 0f, //0はWeight無し
         var fontSize: Float = 0f, //0はデフォルト
         var fontColor: Int = 0, //0はデフォルト
         var text: String = "",
@@ -87,6 +89,7 @@ object MainLayout {
         mPara = mutableListOf()
         sPara = mutableListOf()
         qPara = mutableListOf()
+        qiPara = mutableListOf()
         aPara = mutableListOf()
         aiPara = mutableListOf()
         pPara = mutableListOf()
@@ -94,7 +97,7 @@ object MainLayout {
         nPara = mutableListOf()
         adViewPara = mutableListOf()
 
-        //薄い枠線 ダークテーマ可 colorButtonNormal
+        //colorButtonNormal
         val bdNormal = GradientDrawable()
         bdNormal.setStroke(
             Tools.convertDp2Px(1f, context).toInt(),
@@ -154,7 +157,41 @@ object MainLayout {
         val iWidth = screenSize[0] / numItems
 
         //main[score][question][answer][piece][newGame][adView]
-        for (v in 0..5) {
+        val numMains = 6
+        val mMargin = 2
+        val mlMargin: MutableList<Int> = mutableListOf(
+            mMargin * 2,
+            mMargin * 2,
+            mMargin * 2,
+            mMargin * 2,
+            mMargin * 2,
+            0
+        )
+        val mrMargin: MutableList<Int> = mutableListOf(
+            mMargin * 2,
+            mMargin * 2,
+            mMargin * 2,
+            mMargin * 2,
+            mMargin * 2,
+            0
+        )
+        val mtMargin: MutableList<Int> = mutableListOf(
+            mMargin * 2,
+            mMargin,
+            mMargin,
+            mMargin,
+            mMargin,
+            0
+        )
+        val mbMargin: MutableList<Int> = mutableListOf(
+            mMargin,
+            mMargin,
+            mMargin,
+            mMargin,
+            mMargin * 2,
+            0
+        )
+        for (v in 0 until numMains) {
             val height = when (v) {
                 1 -> { //問題
                     iWidth * numQuestion
@@ -177,9 +214,10 @@ object MainLayout {
                 foo += ItemPara(
                     View.generateViewId(),
                     0, height,
-                    0, 0, 0, 0,
+                    mlMargin[v], mrMargin[v], mtMargin[v], mbMargin[v],
                     LayerDrawable(arrayOf<Drawable>()),
-                    EnumViewType.ConstraintLayout, 0f, 0,
+//                    ldNormal,
+                    EnumViewType.ConstraintLayout, 0f, 0f, 0,
                     ""
                 )
             }
@@ -199,9 +237,9 @@ object MainLayout {
                 foo += ItemPara(
                     View.generateViewId(),
                     0, 0,
-                    viewMargin, viewMargin, viewMargin, viewMargin,
+                    0, 0, 0, 0,
                     ldNormal,
-                    EnumViewType.TextView, 0f, 0,
+                    EnumViewType.TextView, 0f, 0f, 0,
                     v.toString() + v2.toString()
                 )
             }
@@ -211,22 +249,45 @@ object MainLayout {
         sLayout = getConstraintLayout(sLayout, sPara)
 
         //question
-        for (v in 0..3) {
+        for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0..0) {
                 foo += ItemPara(
                     View.generateViewId(),
                     0, 0,
-                    viewMargin, viewMargin, viewMargin, viewMargin,
+                    0, 0, 0, 0,
                     ldNormal,
-                    EnumViewType.TextView, 0f, 0,
-                    v.toString() + v2.toString()
+//                    LayerDrawable(arrayOf<Drawable>()),
+                    EnumViewType.ConstraintLayout, 0f, 0f, 0,
+                    ""
                 )
             }
             qPara += foo
         }
         var qLayout = mLayout.getViewById(mPara[1][0].id) as ConstraintLayout
         qLayout = getConstraintLayout(qLayout, qPara)
+
+        //question item
+        val qic = context.getThemeColor(R.attr.editTextColor)
+        val vWeight: MutableList<Float> = mutableListOf(0.5f, 1.0f, 0.5f, 0.5f)
+        val numQuestionItems = 4
+        for (v in 0 until numQuestionItems) {
+            val vPara: MutableList<ItemPara> = mutableListOf()
+            for (v2 in 0..0) {
+                vPara += ItemPara(
+                    View.generateViewId(),
+                    0, 0,
+                    0, 0, 0, 0,
+//                    ldItem,
+                    LayerDrawable(arrayOf<Drawable>()),
+                    EnumViewType.TextView, vWeight[v], 0f, qic,
+                    v.toString() + v2.toString() //""
+                )
+            }
+            qiPara += vPara
+        }
+        var qiLayout = qLayout.getViewById(qPara[0][0].id) as ConstraintLayout
+        qiLayout = getConstraintLayout(qiLayout, qiPara)
 
         //answer
         for (v in 0..0) {
@@ -236,8 +297,9 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     0, 0, 0, 0,
-                    ldAnswer,
-                    EnumViewType.ConstraintLayout, 0f, 0,
+                    ldNormal,
+//                    ldAnswer,
+                    EnumViewType.ConstraintLayout, 0f, 0f, 0,
                     ""
                 )
             }
@@ -260,7 +322,7 @@ object MainLayout {
                     0, 0,
                     lMargin, rMargin, tMargin, bMargin,
                     ldItem,
-                    EnumViewType.TextView, 0f, aic,
+                    EnumViewType.TextView, 0f, 0f, aic,
                     v.toString() + v2.toString() //""
                 )
             }
@@ -277,8 +339,9 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     0, 0, 0, 0,
-                    ldPiece,
-                    EnumViewType.ConstraintLayout, 0f, 0,
+                    ldNormal,
+//                    ldPiece,
+                    EnumViewType.ConstraintLayout, 0f, 0f, 0,
                     ""
                 )
             }
@@ -301,7 +364,7 @@ object MainLayout {
                     0, 0,
                     lMargin, rMargin, tMargin, bMargin,
                     ldItem,
-                    EnumViewType.TextView, 0f, pic,
+                    EnumViewType.TextView, 0f, 0f, pic,
                     v.toString() + v2.toString() //""
                 )
             }
@@ -317,9 +380,10 @@ object MainLayout {
                 foo += ItemPara(
                     View.generateViewId(),
                     0, 0,
-                    viewMargin, viewMargin, viewMargin, viewMargin,
+                    0, 0, 0, 0,
                     ldNormal,
-                    EnumViewType.TextView, 0f, 0,
+//                    LayerDrawable(arrayOf<Drawable>()),
+                    EnumViewType.TextView, 0f, 0f, 0,
                     "new game"
                 )
             }
@@ -337,7 +401,7 @@ object MainLayout {
                     0, 0,
                     0, 0, 0, 0,
                     LayerDrawable(arrayOf<Drawable>()),
-                    EnumViewType.AdView, 0f, 0,
+                    EnumViewType.AdView, 0f, 0f, 0,
                     ""
                 )
             }
@@ -358,52 +422,21 @@ object MainLayout {
             for (v2 in v) {
                 when (v2.viewType) {
                     EnumViewType.ConstraintLayout -> {
-
                         val child = ConstraintLayout(layout.context)
                         child.id = v2.id
                         child.background = v2.layerDrawable
-
-
-//                        if (v2.border)
-//                            child.background = layout.context.getDrawable(R.drawable.border)
-
-
-//                        if (v2.border) {
-//                            val borderDrawable = GradientDrawable()
-//                            borderDrawable.setStroke(
-//                                Tools.convertDp2Px(5f, layout.context).toInt(),
-//                                Color.RED
-//                            )
-//                            borderDrawable.setColor(Color.GREEN)
-//                            val layerDrawable = LayerDrawable(arrayOf<Drawable>(borderDrawable))
-//                            layerDrawable.setLayerInset(0, 0, 0, 0, 0)
-//                            child.background = layerDrawable
-//                        }
-//
-//
-//                        if (v2.backgroundColor)
-//                            child.setBackgroundColor(v2.color)
                         layout.addView(child)
-
-
                     }
                     EnumViewType.TextView -> {
                         val child = TextView(layout.context)
+                        child.id = v2.id
                         child.background = v2.layerDrawable
-
                         child.gravity = Gravity.CENTER
                         child.typeface = Typeface.MONOSPACE;
                         if (v2.fontSize != 0f)
                             child.textSize = v2.fontSize
                         if (v2.fontColor != 0)
                             child.setTextColor(v2.fontColor)
-                        child.id = v2.id
-
-//                        if (v2.border)
-//                            child.background = layout.context.getDrawable(R.drawable.border)
-//                        if (v2.backgroundColor)
-//                            child.setBackgroundColor(v2.color)
-
                         child.text = v2.text
                         layout.addView(child)
                     }
@@ -459,6 +492,10 @@ object MainLayout {
                     cs.constrainHeight(para[v][v2].id, ConstraintSet.MATCH_CONSTRAINT)
                 else
                     cs.constrainHeight(para[v][v2].id, para[v][v2].height)
+                if (para[v][v2].verticalWeight != 0f) {
+                    cs.setVerticalChainStyle(para[v][v2].id, ConstraintSet.CHAIN_SPREAD)
+                    cs.setVerticalWeight(para[v][v2].id, para[v][v2].verticalWeight)
+                }
 
                 when (v) {
                     0 -> {
