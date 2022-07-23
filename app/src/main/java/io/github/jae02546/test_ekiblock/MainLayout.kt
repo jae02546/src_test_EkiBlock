@@ -97,62 +97,6 @@ object MainLayout {
         nPara = mutableListOf()
         adViewPara = mutableListOf()
 
-        //colorButtonNormal
-        val bdNormal = GradientDrawable()
-        bdNormal.setStroke(
-            Tools.convertDp2Px(1f, context).toInt(),
-            context.getThemeColor(R.attr.colorButtonNormal)
-        )
-        //塗りつぶしはコメントを外す
-        //bdNormal.setColor(context.getThemeColor(R.attr.colorButtonNormal))
-        val ldNormal = LayerDrawable(arrayOf<Drawable>(bdNormal))
-        ldNormal.setLayerInset(0, 0, 0, 0, 0)
-
-        //item
-        val bdItem = GradientDrawable()
-        bdItem.setStroke(
-            Tools.convertDp2Px(1f, context).toInt(),
-            context.getThemeColor(R.attr.colorButtonNormal)
-        )
-        //塗りつぶしはコメントを外す
-        bdItem.setColor(context.getThemeColor(R.attr.colorOnPrimary)) //これだ
-        val ldItem = LayerDrawable(arrayOf<Drawable>(bdItem))
-        ldItem.setLayerInset(0, 0, 0, 0, 0)
-
-        //回答背景
-        val bdAnswer = GradientDrawable()
-        bdAnswer.setStroke(
-            Tools.convertDp2Px(1f, context).toInt(),
-            context.getThemeColor(R.attr.colorSecondaryVariant)
-        )
-        //塗りつぶしはコメントを外す
-        bdAnswer.setColor(context.getThemeColor(R.attr.colorSecondaryVariant))
-        val ldAnswer = LayerDrawable(arrayOf<Drawable>(bdAnswer))
-        ldAnswer.setLayerInset(0, 0, 0, 0, 0)
-
-        //持ち手背景
-        val bdPiece = GradientDrawable()
-        bdPiece.setStroke(
-            Tools.convertDp2Px(1f, context).toInt(),
-            context.getThemeColor(R.attr.colorPrimaryVariant)
-        )
-        //塗りつぶしはコメントを外す
-        bdPiece.setColor(context.getThemeColor(R.attr.colorPrimaryVariant))
-        val ldPiece = LayerDrawable(arrayOf<Drawable>(bdPiece))
-        ldPiece.setLayerInset(0, 0, 0, 0, 0)
-
-        //赤枠
-        val bdRed = GradientDrawable()
-        bdRed.setStroke(
-            Tools.convertDp2Px(0f, context).toInt(),
-            Color.RED
-        )
-        //塗りつぶしはコメントを外す
-        //bdRed.setColor(Color.argb(0xff, 255, 0, 0))
-        val ldRed = LayerDrawable(arrayOf<Drawable>(bdRed))
-        ldRed.setLayerInset(0, 0, 0, 0, 0)
-
-
         //item基本幅
         val iWidth = screenSize[0] / numItems
 
@@ -216,7 +160,6 @@ object MainLayout {
                     0, height,
                     mlMargin[v], mrMargin[v], mtMargin[v], mbMargin[v],
                     LayerDrawable(arrayOf<Drawable>()),
-//                    ldNormal,
                     EnumViewType.ConstraintLayout, 0f, 0f, 0,
                     ""
                 )
@@ -231,6 +174,15 @@ object MainLayout {
         )
 
         //score
+        val bdScore = GradientDrawable()
+        bdScore.setStroke(
+            Tools.convertDp2Px(1f, context).toInt(),
+            context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        //塗りつぶしはコメントを外す
+        //bdScore.setColor(context.getThemeColor(R.attr.colorButtonNormal))
+        val ldScore = LayerDrawable(arrayOf<Drawable>(bdScore))
+        ldScore.setLayerInset(0, 0, 0, 0, 0)
         for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0..0) {
@@ -238,7 +190,7 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     0, 0, 0, 0,
-                    ldNormal,
+                    ldScore,
                     EnumViewType.TextView, 0f, 0f, 0,
                     v.toString() + v2.toString()
                 )
@@ -249,6 +201,15 @@ object MainLayout {
         sLayout = getConstraintLayout(sLayout, sPara)
 
         //question
+        val bdQuestion = GradientDrawable()
+        bdQuestion.setStroke(
+            Tools.convertDp2Px(1f, context).toInt(),
+            context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        //塗りつぶしはコメントを外す
+        //bdQuestion.setColor(context.getThemeColor(R.attr.colorButtonNormal))
+        val ldQuestion = LayerDrawable(arrayOf<Drawable>(bdQuestion))
+        ldQuestion.setLayerInset(0, 0, 0, 0, 0)
         for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0..0) {
@@ -256,8 +217,7 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     0, 0, 0, 0,
-                    ldNormal,
-//                    LayerDrawable(arrayOf<Drawable>()),
+                    ldQuestion,
                     EnumViewType.ConstraintLayout, 0f, 0f, 0,
                     ""
                 )
@@ -278,9 +238,8 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     0, 0, 0, 0,
-//                    ldItem,
                     LayerDrawable(arrayOf<Drawable>()),
-                    EnumViewType.TextView, vWeight[v], 0f, qic,
+                    EnumViewType.TextView, vWeight[v], 0f, if (v != 1) 0 else qic,
                     v.toString() + v2.toString() //""
                 )
             }
@@ -290,6 +249,15 @@ object MainLayout {
         qiLayout = getConstraintLayout(qiLayout, qiPara)
 
         //answer
+        val bdAnswer = GradientDrawable()
+        bdAnswer.setStroke(
+            Tools.convertDp2Px(1f, context).toInt(),
+            context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        //塗りつぶしはコメントを外す
+        //bdAnswer.setColor(context.getThemeColor(R.attr.colorSecondaryVariant))
+        val ldAnswer = LayerDrawable(arrayOf<Drawable>(bdAnswer))
+        ldAnswer.setLayerInset(0, 0, 0, 0, 0)
         for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0..0) {
@@ -297,8 +265,7 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     0, 0, 0, 0,
-                    ldNormal,
-//                    ldAnswer,
+                    ldAnswer,
                     EnumViewType.ConstraintLayout, 0f, 0f, 0,
                     ""
                 )
@@ -309,6 +276,15 @@ object MainLayout {
         aLayout = getConstraintLayout(aLayout, aPara)
 
         //answer item
+        val bdAnswerItem = GradientDrawable()
+        bdAnswerItem.setStroke(
+            Tools.convertDp2Px(1f, context).toInt(),
+            context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        //塗りつぶしはコメントを外す
+        bdAnswerItem.setColor(context.getThemeColor(R.attr.colorOnPrimary)) //これだ
+        val ldAnswerItem = LayerDrawable(arrayOf<Drawable>(bdAnswerItem))
+        ldAnswerItem.setLayerInset(0, 0, 0, 0, 0)
         val aic = context.getThemeColor(R.attr.editTextColor)
         for (v in 0 until numAnswers) {
             val vPara: MutableList<ItemPara> = mutableListOf()
@@ -321,7 +297,7 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     lMargin, rMargin, tMargin, bMargin,
-                    ldItem,
+                    ldAnswerItem,
                     EnumViewType.TextView, 0f, 0f, aic,
                     v.toString() + v2.toString() //""
                 )
@@ -332,6 +308,15 @@ object MainLayout {
         aiLayout = getConstraintLayout(aiLayout, aiPara)
 
         //piece
+        val bdPiece = GradientDrawable()
+        bdPiece.setStroke(
+            Tools.convertDp2Px(1f, context).toInt(),
+            context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        //塗りつぶしはコメントを外す
+        //bdPiece.setColor(context.getThemeColor(R.attr.colorPrimaryVariant))
+        val ldPiece = LayerDrawable(arrayOf<Drawable>(bdPiece))
+        ldPiece.setLayerInset(0, 0, 0, 0, 0)
         for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0..0) {
@@ -339,8 +324,7 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     0, 0, 0, 0,
-                    ldNormal,
-//                    ldPiece,
+                    ldPiece,
                     EnumViewType.ConstraintLayout, 0f, 0f, 0,
                     ""
                 )
@@ -351,6 +335,15 @@ object MainLayout {
         pLayout = getConstraintLayout(pLayout, pPara)
 
         //piece item
+        val bdPieceItem = GradientDrawable()
+        bdPieceItem.setStroke(
+            Tools.convertDp2Px(1f, context).toInt(),
+            context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        //塗りつぶしはコメントを外す
+        bdPieceItem.setColor(context.getThemeColor(R.attr.colorOnPrimary)) //これだ
+        val ldPieceItem = LayerDrawable(arrayOf<Drawable>(bdPieceItem))
+        ldPieceItem.setLayerInset(0, 0, 0, 0, 0)
         val pic = context.getThemeColor(R.attr.editTextColor)
         for (v in 0 until numPieces) {
             val vPara: MutableList<ItemPara> = mutableListOf()
@@ -363,7 +356,7 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     lMargin, rMargin, tMargin, bMargin,
-                    ldItem,
+                    ldPieceItem,
                     EnumViewType.TextView, 0f, 0f, pic,
                     v.toString() + v2.toString() //""
                 )
@@ -374,6 +367,15 @@ object MainLayout {
         piLayout = getConstraintLayout(piLayout, piPara)
 
         //newGame
+        val bdNewGame = GradientDrawable()
+        bdNewGame.setStroke(
+            Tools.convertDp2Px(1f, context).toInt(),
+            context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        //塗りつぶしはコメントを外す
+        //bdNewGame.setColor(context.getThemeColor(R.attr.colorButtonNormal))
+        val ldNewGame = LayerDrawable(arrayOf<Drawable>(bdNewGame))
+        ldNewGame.setLayerInset(0, 0, 0, 0, 0)
         for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0..0) {
@@ -381,8 +383,7 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     0, 0, 0, 0,
-                    ldNormal,
-//                    LayerDrawable(arrayOf<Drawable>()),
+                    ldNewGame,
                     EnumViewType.TextView, 0f, 0f, 0,
                     "new game"
                 )

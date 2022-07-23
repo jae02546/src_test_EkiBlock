@@ -33,9 +33,11 @@ class MainActivity : AppCompatActivity() {
         //縦専用モードにするには?
 
         //レイアウト表示
-        val numDigits = 8
-        Question.makeQuestion(numDigits)
-        showMainLayout(layout)
+//        val numDigits = 8
+//        Question.makeQuestion(numDigits)
+//        showMainLayout(layout)
+
+
 
 //        // <<
 //        val tapLeftShift = findViewById<TextView>(MainLayout.b0Para[0][0].id)
