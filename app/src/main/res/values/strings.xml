@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">test_EkiBlock</string>
-    <string name="app_label">駅Worｄ</string>
+    <string name="app_label">駅worｄ</string>
+<!--    <string name="app_label">鉄worｄ</string>-->
 
     <!--アクションバーメニュー-->
     <string name="menu_search">検索</string>

@@ -1,15 +1,16 @@
 package io.github.jae02546.test_ekiblock
 
 import android.annotation.SuppressLint
+import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
@@ -19,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     private var selLine = 0
 
     @RequiresApi(Build.VERSION_CODES.R)
-    @SuppressLint("CutPasteId", "ResourceType")
+    @SuppressLint("CutPasteId", "ResourceType", "SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_main)
@@ -29,24 +30,80 @@ class MainActivity : AppCompatActivity() {
         setContentView(layout)
         supportActionBar?.setTitle(R.string.app_label)
 
+        //縦固定
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
-        //縦専用モードにするには?
+        //score イベント
+        val sCountY = MainLayout.sPara.count()
+        val sCountX = MainLayout.sPara[0].count()
+        for (v in 0 until sCountY) {
+            for (v2 in 0 until sCountX) {
+                val tapS = findViewById<TextView>(MainLayout.sPara[v][v2].id)
+                tapS.setOnClickListener {
+                    Toast.makeText(this, "s$v$v2", Toast.LENGTH_SHORT).show()
 
-        //レイアウト表示
-//        val numDigits = 8
-//        Question.makeQuestion(numDigits)
-//        showMainLayout(layout)
+
+                }
+            }
+        }
+
+        //question item イベント
+        val qiCountY = MainLayout.qiPara.count()
+        val qiCountX = MainLayout.qiPara[0].count()
+        for (v in 0 until qiCountY) {
+            for (v2 in 0 until qiCountX) {
+                val tapQi = findViewById<TextView>(MainLayout.qiPara[v][v2].id)
+                tapQi.setOnClickListener {
+                    Toast.makeText(this, "qi$v$v2", Toast.LENGTH_SHORT).show()
 
 
+                }
+            }
+        }
 
-//        // <<
-//        val tapLeftShift = findViewById<TextView>(MainLayout.b0Para[0][0].id)
-//        tapLeftShift.setOnClickListener {
-//            //Toast.makeText(this, "<<", Toast.LENGTH_SHORT).show()
-//            Question.shl(selLine, 8)
-//            //レイアウト表示
-//            showMainLayout(layout)
-//        }
+        //answer item イベント
+        val aiCountY = MainLayout.aiPara.count()
+        val aiCountX = MainLayout.aiPara[0].count()
+        for (v in 0 until aiCountY) {
+            for (v2 in 0 until aiCountX) {
+                val tapAi = findViewById<TextView>(MainLayout.aiPara[v][v2].id)
+                tapAi.setOnClickListener {
+                    Toast.makeText(this, "ai$v$v2", Toast.LENGTH_SHORT).show()
+
+
+                }
+            }
+        }
+
+        //piece item イベント
+        val piCountY = MainLayout.piPara.count()
+        val piCountX = MainLayout.piPara[0].count()
+        for (v in 0 until piCountY) {
+            for (v2 in 0 until piCountX) {
+                val tapPi = findViewById<TextView>(MainLayout.piPara[v][v2].id)
+                tapPi.setOnClickListener {
+                    Toast.makeText(this, "pi$v$v2", Toast.LENGTH_SHORT).show()
+
+
+                }
+            }
+        }
+
+        //newGame イベント
+        val nCountY = MainLayout.nPara.count()
+        val nCountX = MainLayout.nPara[0].count()
+        for (v in 0 until nCountY) {
+            for (v2 in 0 until nCountX) {
+                val tapN = findViewById<TextView>(MainLayout.nPara[v][v2].id)
+                tapN.setOnClickListener {
+                    Toast.makeText(this, "n$v$v2", Toast.LENGTH_SHORT).show()
+
+
+                }
+            }
+        }
+
+
 //        // !
 //        val tapNot = findViewById<TextView>(MainLayout.b0Para[0][1].id)
 //        tapNot.setOnClickListener {
@@ -55,36 +112,8 @@ class MainActivity : AppCompatActivity() {
 //            //レイアウト表示
 //            showMainLayout(layout)
 //        }
-//        // >>
-//        val tapRightShift = findViewById<TextView>(MainLayout.b0Para[0][2].id)
-//        tapRightShift.setOnClickListener {
-//            //Toast.makeText(this, ">>", Toast.LENGTH_SHORT).show()
-//            Question.shr(selLine, 8)
-//            //レイアウト表示
-//            showMainLayout(layout)
-//        }
-//        // ↑
-//        val tapUp = findViewById<TextView>(MainLayout.b1Para[0][0].id)
-//        tapUp.setOnClickListener {
-//            //Toast.makeText(this, "↑", Toast.LENGTH_SHORT).show()
-//            if (selLine > 0)
-//                selLine--
-//            else
-//                selLine = 7
-//            //レイアウト表示
-//            showMainLayout(layout)
-//        }
-//        // ↓
-//        val tapDown = findViewById<TextView>(MainLayout.b1Para[0][1].id)
-//        tapDown.setOnClickListener {
-//            //Toast.makeText(this, "↓", Toast.LENGTH_SHORT).show()
-//            if (selLine < 7)
-//                selLine++
-//            else
-//                selLine = 0
-//            //レイアウト表示
-//            showMainLayout(layout)
-//        }
+
+
 
         //ここから広告
         MobileAds.initialize(this) { }
