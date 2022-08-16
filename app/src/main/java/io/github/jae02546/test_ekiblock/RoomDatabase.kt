@@ -10,34 +10,30 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-//dbを2つに分けようかと思ったがうまくいかない?のでやめ
 
 @Database(
-    entities = [FolderTbl::class, FolderInfoTbl::class, QuestionTbl::class, AnswerTbl::class, FastestTbl::class, FolderExpandTbl::class],
+    entities = [QuestionTbl::class, AnswerTbl::class, ScoreTbl::class],
     version = 1, exportSchema = false
 )
 @TypeConverters(Converters::class)
-abstract class NarabeDatabase : RoomDatabase() {
+abstract class EkiWordDatabase : RoomDatabase() {
 
-    abstract fun folderDao(): FolderDao
-    abstract fun folderInfoDao(): FolderInfoDao
     abstract fun questionDao(): QuestionDao
     abstract fun answerDao(): AnswerDao
-    abstract fun fastestDao(): FastestDao
-    abstract fun folderExpandDao(): FolderExpandDao
+    abstract fun scoreDao(): ScoreDao
 
     companion object {
 
-        private var INSTANCE: NarabeDatabase? = null
+        private var INSTANCE: EkiWordDatabase? = null
 
         private val lock = Any()
 
-        fun getInstance(context: Context): NarabeDatabase {
+        fun getInstance(context: Context): EkiWordDatabase {
             synchronized(lock) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(
                         context.applicationContext,
-                        NarabeDatabase::class.java, "narabe.db"
+                        EkiWordDatabase::class.java, "ekiWord.db"
                     )
                         .allowMainThreadQueries()
                         .build()
@@ -47,72 +43,6 @@ abstract class NarabeDatabase : RoomDatabase() {
         }
     }
 }
-
-//@Database(
-//    entities = [FolderTbl::class, FolderInfoTbl::class, QuestionTbl::class],
-//    version = 1, exportSchema = false
-//)
-//@TypeConverters(Converters::class)
-//abstract class QuestionDatabase : RoomDatabase() {
-//
-//    abstract fun folderDao(): FolderDao
-//    abstract fun folderInfoDao(): FolderInfoDao
-//    abstract fun questionDao(): QuestionDao
-//
-//    companion object {
-//
-//        private var INSTANCE: QuestionDatabase? = null
-//
-//        private val lock = Any()
-//
-//        fun getInstance(context: Context): QuestionDatabase {
-//            synchronized(lock) {
-//                if (INSTANCE == null) {
-//                    INSTANCE = Room.databaseBuilder(
-//                        context.applicationContext,
-//                        QuestionDatabase::class.java, "Question.db"
-//                    )
-//                        .allowMainThreadQueries()
-//                        .build()
-//                }
-//                return INSTANCE!!
-//            }
-//        }
-//    }
-//}
-//
-//@Database(
-//    entities = [PlayerRecordTbl::class, RecordTbl::class, FolderExpandTbl::class],
-//    version = 1, exportSchema = false
-//)
-//@TypeConverters(Converters::class)
-//abstract class AnswerDatabase : RoomDatabase() {
-//
-//    abstract fun playerRecordDao(): PlayerRecordDao
-//    abstract fun recordDao(): RecordDao
-//    abstract fun folderExpandDao(): FolderExpandDao
-//
-//    companion object {
-//
-//        private var INSTANCE: AnswerDatabase? = null
-//
-//        private val lock = Any()
-//
-//        fun getInstance(context: Context): AnswerDatabase {
-//            synchronized(lock) {
-//                if (INSTANCE == null) {
-//                    INSTANCE = Room.databaseBuilder(
-//                        context.applicationContext,
-//                        AnswerDatabase::class.java, "Answer.db"
-//                    )
-//                        .allowMainThreadQueries()
-//                        .build()
-//                }
-//                return INSTANCE!!
-//            }
-//        }
-//    }
-//}
 
 private class Converters {
     private val intListType: Type = object : TypeToken<MutableList<Int>>() {}.type
@@ -124,14 +54,16 @@ private class Converters {
     @TypeConverter
     fun intListToJson(intList: List<Int>): String = Gson().toJson(intList)
 
-    private val questionItemListType: Type = object : TypeToken<MutableList<QuestionItemTbl>>() {}.type
+    private val questionItemListType: Type =
+        object : TypeToken<MutableList<QuestionItemTbl>>() {}.type
 
     @TypeConverter
     fun fromQuestionItemListJson(questionItemListJson: String): List<QuestionItemTbl> =
         Gson().fromJson(questionItemListJson, questionItemListType)
 
     @TypeConverter
-    fun questionItemListToJson(questionItemList: List<QuestionItemTbl>): String = Gson().toJson(questionItemList)
+    fun questionItemListToJson(questionItemList: List<QuestionItemTbl>): String =
+        Gson().toJson(questionItemList)
 
     @TypeConverter
     fun fromDuration(charSequence: String): Duration =
@@ -155,6 +87,7 @@ private class Converters {
     fun fromLocalDateTime(dateTime: LocalDateTime): String {
         return dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     }
+
     @TypeConverter
     fun toLocalDateTime(dateTimeText: String): LocalDateTime {
         return LocalDateTime.parse(dateTimeText) // Default format is ISO_LOCAL_DATE_TIME

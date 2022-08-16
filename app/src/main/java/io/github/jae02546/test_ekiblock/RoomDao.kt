@@ -2,53 +2,6 @@ package io.github.jae02546.test_ekiblock
 
 import androidx.room.*
 
-@Dao
-interface FolderDao {
-    //戻り値 RowId、-1なら失敗
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(folderTbl: FolderTbl): Long
-
-    //戻り値 update件数、0なら失敗
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun update(folderTbl: FolderTbl): Int
-
-    //戻り値 delete件数、0なら失敗
-    @Delete
-    fun delete(folderTbl: FolderTbl): Int
-
-    @Query("DELETE FROM FolderTbl")
-    fun deleteAll(): Int //これで件数返る? 返るようです
-
-    @Query("SELECT * FROM FolderTbl WHERE fNo = :fNo")
-    fun getRecord(fNo: Int): FolderTbl?
-
-    @Query("SELECT * FROM FolderTbl ORDER BY fNo")
-    fun getRecordAll(): MutableList<FolderTbl>?
-}
-
-@Dao
-interface FolderInfoDao {
-    //戻り値 RowId、-1なら失敗
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(folderInfoTbl: FolderInfoTbl): Long
-
-    //戻り値 update件数、0なら失敗
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun update(folderInfoTbl: FolderInfoTbl): Int
-
-    //戻り値 delete件数、0なら失敗
-    @Delete
-    fun delete(folderInfoTbl: FolderInfoTbl): Int
-
-    @Query("DELETE FROM FolderInfoTbl")
-    fun deleteAll(): Int //これで件数返る? 返るようです
-
-    @Query("SELECT * FROM FolderInfoTbl WHERE fNo = :fNo")
-    fun getRecord(fNo: Int): MutableList<FolderInfoTbl>?
-
-    @Query("SELECT * FROM FolderInfoTbl")
-    fun getRecordAll(): MutableList<FolderInfoTbl>?
-}
 
 @Dao
 interface QuestionDao {
@@ -96,46 +49,24 @@ interface AnswerDao {
 }
 
 @Dao
-interface FastestDao {
+interface ScoreDao {
     //戻り値 RowId、-1なら失敗
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(fastestTbl: FastestTbl): Long
+    fun insert(fastestTbl: ScoreTbl): Long
 
     //戻り値 update件数、0なら失敗
     @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun update(fastestTbl: FastestTbl): Int
+    fun update(fastestTbl: ScoreTbl): Int
 
     //戻り値 delete件数、0なら失敗
     @Delete
-    fun delete(fastestTbl: FastestTbl): Int
+    fun delete(fastestTbl: ScoreTbl): Int
 
-    @Query("SELECT * FROM FastestTbl WHERE qNo = :qNo")
-    fun getRecord(qNo: Int): MutableList<FastestTbl>?
+    @Query("SELECT * FROM ScoreTbl WHERE pNo = :pNo")
+    fun getRecord(pNo: Int): MutableList<ScoreTbl>?
 
-    @Query("SELECT * FROM FastestTbl")
-    fun getRecordAll(): MutableList<FastestTbl>?
+    @Query("SELECT * FROM ScoreTbl")
+    fun getRecordAll(): MutableList<ScoreTbl>?
 }
 
-@Dao
-interface FolderExpandDao {
-    //戻り値 RowId、-1なら失敗
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(folderExpandTbl: FolderExpandTbl): Long
 
-    //戻り値 update件数、0なら失敗
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun update(folderExpandTbl: FolderExpandTbl): Int
-
-    //戻り値 delete件数、0なら失敗
-    @Delete
-    fun delete(folderExpandTbl: FolderExpandTbl): Int
-
-    @Query("DELETE FROM FolderExpandTbl")
-    fun deleteAll(): Int //これで件数返る?
-
-    @Query("SELECT * FROM FolderExpandTbl WHERE fNo = :fNo")
-    fun getRecord(fNo: Int): MutableList<FolderExpandTbl>?
-
-    @Query("SELECT * FROM FolderExpandTbl")
-    fun getRecordAll(): MutableList<FolderExpandTbl>?
-}
