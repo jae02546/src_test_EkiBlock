@@ -12,15 +12,15 @@ import java.util.*
 
 
 @Database(
-    entities = [QuestionTbl::class, AnswerTbl::class, ScoreTbl::class],
+    entities = [QuestionTbl::class, ScoreTbl::class, LastStateTbl::class],
     version = 1, exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class EkiWordDatabase : RoomDatabase() {
 
     abstract fun questionDao(): QuestionDao
-    abstract fun answerDao(): AnswerDao
     abstract fun scoreDao(): ScoreDao
+    abstract fun lastStateDao(): LastStateDao
 
     companion object {
 
@@ -45,6 +45,7 @@ abstract class EkiWordDatabase : RoomDatabase() {
 }
 
 private class Converters {
+
     private val intListType: Type = object : TypeToken<MutableList<Int>>() {}.type
 
     @TypeConverter
@@ -53,6 +54,17 @@ private class Converters {
 
     @TypeConverter
     fun intListToJson(intList: List<Int>): String = Gson().toJson(intList)
+
+
+    private val stringListType: Type = object : TypeToken<MutableList<String>>() {}.type
+
+    @TypeConverter
+    fun fromStringListJson(stringListJson: String): List<String> =
+        Gson().fromJson(stringListJson, stringListType)
+
+    @TypeConverter
+    fun stringListToJson(stringList: List<String>): String = Gson().toJson(stringList)
+
 
     private val questionItemListType: Type =
         object : TypeToken<MutableList<QuestionItemTbl>>() {}.type
@@ -65,6 +77,7 @@ private class Converters {
     fun questionItemListToJson(questionItemList: List<QuestionItemTbl>): String =
         Gson().toJson(questionItemList)
 
+
     @TypeConverter
     fun fromDuration(charSequence: String): Duration =
         Duration.parse(charSequence)
@@ -72,6 +85,7 @@ private class Converters {
     @TypeConverter
     fun durationToCharSequence(duration: Duration): String =
         duration.toString()
+
 
     @TypeConverter
     fun fromTimestamp(value: Long?): Date? {
@@ -82,6 +96,7 @@ private class Converters {
     fun dateToTimestamp(date: Date?): Long? {
         return date?.time?.toLong()
     }
+
 
     @TypeConverter
     fun fromLocalDateTime(dateTime: LocalDateTime): String {

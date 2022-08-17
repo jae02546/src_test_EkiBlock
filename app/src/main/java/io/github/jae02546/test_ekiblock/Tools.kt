@@ -82,11 +82,8 @@ object Tools {
         val url: String = "",
         val qiList: MutableList<QuestionItemTbl> = mutableListOf(),
     )
+
     var qMap: MutableMap<Int, QuestionDc> = mutableMapOf()
-
-
-
-
 
 
     @RequiresApi(Build.VERSION_CODES.R)
@@ -127,6 +124,86 @@ object Tools {
     fun convertPx2Dp(px: Int, context: Context): Float {
         val metrics: DisplayMetrics = context.getResources().getDisplayMetrics()
         return px / metrics.density
+    }
+
+    //プレイ記録取得
+    fun getPlayStatus(
+        context: Context,
+        playerName: MutableMap<Int, String>,
+    ): MutableList<String> {
+        //プレイヤー状態データクラス
+        data class PlayStatus(
+            //val playerNo: Int, //keyと被るので省略
+            var name: String,
+            var pCount: Int,
+            var cCount: Int
+        )
+
+        //スコア取得
+        val sList = RoomMain.getScoreList(context)
+
+        //総プレイ数、総コンプ数
+        var tpCount = 0
+        var tcCount = 0
+        for (v in sList) {
+            tpCount += v.pCount
+            tcCount += v.cCount
+        }
+
+        //<プレーヤNo,PlayStatus(プレーヤ名,プレイ数,comp数)>
+        val ps: MutableMap<Int, PlayStatus> = mutableMapOf()
+        //プレイヤー名
+        for (i in 1..5)
+            ps += if (playerName.containsKey(i))
+                i to PlayStatus(playerName[i] ?: "", 0, 0)
+            else
+                i to PlayStatus("", 0, 0)
+
+
+        //aTblからcomp数をカウント
+        for (v in sList)
+            if (ps.containsKey(v.pNo) && qMap.containsKey(v.qNo))
+                if (v.aCompList == qMap[v.qNo]?.qiCompNoList)
+                    ps[v.pNo]?.pCount = ps[v.pNo]?.pCount?.plus(1) ?: 0
+        //fTblから最速comp数をカウント
+        for (v in fsList)
+            if (ps.containsKey(v.pNo))
+                ps[v.pNo]?.cCount = ps[v.pNo]?.cCount?.plus(1) ?: 0
+
+
+        //総プレイ数:nnn
+        //総コンプ数:nnn
+        //プレイヤー1
+        //  プレイ数:nnn
+        //  コンプ数:nnn
+        //プレイヤー2
+        //  プレイ数:nnn
+        //  コンプ数:nnn
+        //プレイヤー3
+        //  プレイ数:nnn
+        //  コンプ数:nnn
+        //プレイヤー4
+        //  プレイ数:nnn
+        //  コンプ数:nnn
+        //プレイヤー5
+        //  プレイ数:nnn
+        //  コンプ数:nnn
+        val ret: MutableList<String> = mutableListOf()
+        ret += "総プレイ数 $tpCount"
+        ret += "総コンプ数 $tcCount"
+        for (i in 1..5) {
+            if (ps.containsKey(i)) {
+                ret += "プレイヤー$i（" + (ps[i]?.name ?: "") + "）"
+                ret += "プレイ数 " + (if (ps[i]?.pCount != null) ps[i]?.pCount.toString() else "0")
+                ret += "コンプ数 " + (if (ps[i]?.cCount != null) ps[i]?.cCount.toString() else "0")
+            } else {
+                ret += "プレイヤー$i"
+                ret += "プレイ数 0"
+                ret += "コンプ数 0"
+            }
+        }
+
+        return ret
     }
 
 

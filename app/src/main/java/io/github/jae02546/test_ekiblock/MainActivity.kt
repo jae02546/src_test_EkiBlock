@@ -168,8 +168,12 @@ class MainActivity : AppCompatActivity() {
                     Tools.putPrefInt(this, getString(R.string.pref_playerNo_key), playerNo)
                     //プレーヤが変更されたのでメニュー更新onPrepareOptionsMenu
                     invalidateOptionsMenu()
+
+
                     //プレーヤが変更されたのでrvData再表示
-                    rvDataSetChanged(false)
+                    //rvDataSetChanged(false)
+
+
                 }
                 true
             }
@@ -184,7 +188,7 @@ class MainActivity : AppCompatActivity() {
                     R.layout.dialog_player,
                     findViewById<ConstraintLayout>(R.id.playLayout)
                 )
-                val record = Tools.getPlayStatus(this, pnMap, eki2)
+                val record = Tools.getPlayStatus(this, pnMap)
                 layout.findViewById<TextView>(R.id.playRecord1).text = record[0]
                 layout.findViewById<TextView>(R.id.playRecord2).text = record[1]
                 layout.findViewById<TextView>(R.id.player1a).text = record[2]

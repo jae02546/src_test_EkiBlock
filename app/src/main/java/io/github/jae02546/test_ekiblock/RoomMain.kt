@@ -39,38 +39,6 @@ object RoomMain {
         return map
     }
 
-    //回答List取得
-    fun getAnswerList(context: Context): MutableList<AnswerTbl> {
-        val db = EkiWordDatabase.getInstance(context)
-        val dao = db.answerDao()
-        return dao.getRecordAll() ?: mutableListOf()
-    }
-
-    //回答レコード取得
-    fun getAnswerRecord(context: Context, pNo: Int, qNo: Int): AnswerTbl? {
-        val db = EkiWordDatabase.getInstance(context)
-        val dao = db.answerDao()
-        val rec = dao.getRecord(pNo, qNo) ?: mutableListOf()
-        return if (rec.size > 0)
-            rec[0]
-        else
-            null
-    }
-
-    //回答レコード書込
-    fun putAnswerRecord(context: Context, answerTbl: AnswerTbl): Long {
-        val db = EkiWordDatabase.getInstance(context)
-        val dao = db.answerDao()
-        val rec = dao.getRecord(answerTbl.pNo, answerTbl.qNo)
-        return if (rec == null || rec.size <= 0) {
-            //追加
-            dao.insert(answerTbl)
-        } else {
-            //更新
-            dao.update(answerTbl).toLong()
-        }
-    }
-
     //スコアList取得
     fun getScoreList(context: Context): MutableList<ScoreTbl> {
         val db = EkiWordDatabase.getInstance(context)
@@ -102,6 +70,39 @@ object RoomMain {
             dao.update(scoreTbl).toLong()
         }
     }
+
+    //終了時状態List取得
+    fun getLastStateList(context: Context): MutableList<LastStateTbl> {
+        val db = EkiWordDatabase.getInstance(context)
+        val dao = db.lastStateDao()
+        return dao.getRecordAll() ?: mutableListOf()
+    }
+
+    //終了時状態レコード取得
+    fun getLastStateRecord(context: Context, pNo: Int): LastStateTbl? {
+        val db = EkiWordDatabase.getInstance(context)
+        val dao = db.lastStateDao()
+        val rec = dao.getRecord(pNo) ?: mutableListOf()
+        return if (rec.size > 0)
+            rec[0]
+        else
+            null
+    }
+
+    //終了時状態レコード書込
+    fun putLastStateRecord(context: Context, lastStateTbl: LastStateTbl): Long {
+        val db = EkiWordDatabase.getInstance(context)
+        val dao = db.lastStateDao()
+        val rec = dao.getRecord(lastStateTbl.pNo)
+        return if (rec == null || rec.size <= 0) {
+            //追加
+            dao.insert(lastStateTbl)
+        } else {
+            //更新
+            dao.update(lastStateTbl).toLong()
+        }
+    }
+
 
 
 }

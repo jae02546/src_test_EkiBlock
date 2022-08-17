@@ -54,11 +54,20 @@ data class QuestionItemTbl(
     val url: String = "",
 )
 
-//回答テーブル
-//起動時及びプレイヤー変更時に以前の状態に戻すため回答状態を記録する
+//スコアテーブル
+//プレイヤーNo,プレイ数,コンプ数
+@Entity(primaryKeys = ["pNo"])
+data class ScoreTbl(
+    val pNo: Int = 0,
+    val pCount: Int = 0,
+    val cCount: Int = 0,
+)
+
+//終了時状態テーブル
+//起動時及びプレイヤー変更時に以前の状態に戻すためのデータ
 //プレイヤーNo,問いNo,正解リスト,回答リスト,ピースリスト
 @Entity(primaryKeys = ["pNo"])
-data class AnswerTbl(
+data class LastStateTbl(
     val pNo: Int = 0,
     val qNo: Int = 0,
     val cList: MutableList<String> = mutableListOf(),
@@ -66,26 +75,5 @@ data class AnswerTbl(
     val pList: MutableList<String> = mutableListOf(),
 )
 
-
-//スコアテーブル
-//プレイヤーNo,プレイ回数,勝ち,負け,途中で止めた
-@Entity(primaryKeys = ["pNo"])
-data class ScoreTbl(
-    val pNo: Int = 0,
-    val playCount: Int = 0,
-    val win: Int = 0,
-    val lose: Int = 0,
-    val stop: Int = 0,
-)
-
-//終了時状態テーブル
-//起動時に画面復元に必要な項目を保存するテーブル
-//回答は別にテーブルが有るので必要なし
-//後はプレイヤーNoぐらいなのでprefでok?
-//@Entity(primaryKeys = ["pNo"])
-//data class PlayStateTbl(
-//    val pNo: Int = 0,
-//
-//
-//)
+//上記以外では終了時のプレイヤーNoぐらいなのでprefでok
 

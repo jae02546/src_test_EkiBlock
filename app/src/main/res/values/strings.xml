@@ -38,7 +38,7 @@
     <string name="setting_soundNo_key">setting_sound</string>
     <string name="setting_soundNo_defaultValue">0</string>
     <string name="setting_sound_title">効果音</string>
-    <string name="setting_sound_entries_comp_drag">並べ替えとコンプ</string>
+    <string name="setting_sound_entries_comp_drag">タップとコンプ</string>
     <string name="setting_sound_entries_comp">コンプのみ</string>
     <string name="setting_sound_entries_none">無し</string>
     <array name="setting_sound_entries">
@@ -56,7 +56,7 @@
     <string name="setting_vibrationNo_key">setting_vibration</string>
     <string name="setting_vibrationNo_defaultValue">1</string>
     <string name="setting_vibration_title">バイブレーション</string>
-    <string name="setting_vibration_entries_comp_drag">並べ替えとコンプ</string>
+    <string name="setting_vibration_entries_comp_drag">タップとコンプ</string>
     <string name="setting_vibration_entries_comp">コンプのみ</string>
     <string name="setting_vibration_entries_none">無し</string>
     <array name="setting_vibration_entries">

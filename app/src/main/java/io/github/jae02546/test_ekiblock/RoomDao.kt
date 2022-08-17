@@ -28,27 +28,6 @@ interface QuestionDao {
 }
 
 @Dao
-interface AnswerDao {
-    //戻り値 RowId、-1なら失敗
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(answerTbl: AnswerTbl): Long
-
-    //戻り値 update件数、0なら失敗
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun update(answerTbl: AnswerTbl): Int
-
-    //戻り値 delete件数、0なら失敗
-    @Delete
-    fun delete(answerTbl: AnswerTbl): Int
-
-    @Query("SELECT * FROM AnswerTbl WHERE pNo = :pNo AND qNo = :qNo")
-    fun getRecord(pNo: Int, qNo: Int): MutableList<AnswerTbl>?
-
-    @Query("SELECT * FROM AnswerTbl")
-    fun getRecordAll(): MutableList<AnswerTbl>?
-}
-
-@Dao
 interface ScoreDao {
     //戻り値 RowId、-1なら失敗
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -69,4 +48,24 @@ interface ScoreDao {
     fun getRecordAll(): MutableList<ScoreTbl>?
 }
 
+@Dao
+interface LastStateDao {
+    //戻り値 RowId、-1なら失敗
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insert(answerTbl: LastStateTbl): Long
+
+    //戻り値 update件数、0なら失敗
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun update(answerTbl: LastStateTbl): Int
+
+    //戻り値 delete件数、0なら失敗
+    @Delete
+    fun delete(answerTbl: LastStateTbl): Int
+
+    @Query("SELECT * FROM LastStateTbl WHERE pNo = :pNo")
+    fun getRecord(pNo: Int): MutableList<LastStateTbl>?
+
+    @Query("SELECT * FROM LastStateTbl")
+    fun getRecordAll(): MutableList<LastStateTbl>?
+}
 
