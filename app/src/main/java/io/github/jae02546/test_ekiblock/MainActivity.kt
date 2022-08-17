@@ -37,6 +37,10 @@ class MainActivity : AppCompatActivity() {
         //縦固定
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
 
+        //起動時ダウンロード表示
+        val top = findViewById<TextView>(MainLayout.sPara[0][0].id)
+        top.text = getString(R.string.top_name_us)
+
         //score イベント
         val sCountY = MainLayout.sPara.count()
         val sCountX = MainLayout.sPara[0].count()

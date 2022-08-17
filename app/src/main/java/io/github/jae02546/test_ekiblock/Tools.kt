@@ -152,24 +152,20 @@ object Tools {
 
         //<プレーヤNo,PlayStatus(プレーヤ名,プレイ数,comp数)>
         val ps: MutableMap<Int, PlayStatus> = mutableMapOf()
-        //プレイヤー名
-        for (i in 1..5)
-            ps += if (playerName.containsKey(i))
-                i to PlayStatus(playerName[i] ?: "", 0, 0)
-            else
-                i to PlayStatus("", 0, 0)
-
-
-        //aTblからcomp数をカウント
-        for (v in sList)
-            if (ps.containsKey(v.pNo) && qMap.containsKey(v.qNo))
-                if (v.aCompList == qMap[v.qNo]?.qiCompNoList)
-                    ps[v.pNo]?.pCount = ps[v.pNo]?.pCount?.plus(1) ?: 0
-        //fTblから最速comp数をカウント
-        for (v in fsList)
-            if (ps.containsKey(v.pNo))
-                ps[v.pNo]?.cCount = ps[v.pNo]?.cCount?.plus(1) ?: 0
-
+        for (v in 1..5) {
+            var pn = ""
+            var pc = 0
+            var cc = 0
+            pn = if (playerName.containsKey(v)) playerName[v] ?: "" else ""
+            for (v2 in sList) {
+                if (v2.pNo == v) {
+                    pc = v2.pCount
+                    cc = v2.cCount
+                    break
+                }
+            }
+            ps += v to PlayStatus(pn ?: "", pc, cc)
+        }
 
         //総プレイ数:nnn
         //総コンプ数:nnn

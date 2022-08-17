@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">test_EkiBlock</string>
     <string name="app_label">駅worｄ</string>
-<!--    <string name="app_label">鉄worｄ</string>-->
+    <!--    <string name="app_label">鉄worｄ</string>-->
 
     <!--アクションバーメニュー-->
     <string name="menu_search">検索</string>
@@ -94,19 +94,9 @@
     <string name="pref_frvOffset_key">pref_frvOffset</string>
     <string name="pref_frvOffset_defaultValue">0</string>
 
-    <!--    <string name="top_kana_us">こうしんでーたをかくにんしています</string>-->
-    <!--    <string name="top_name_us">更新データを確認しています</string>-->
-    <!--    <string name="top_english_us">Checking for updated data</string>-->
     <string name="top_kana_us">でーたをろーどしています</string>
     <string name="top_name_us">データをロードしています</string>
     <string name="top_english_us">Loading data</string>
-    <string name="top_eki2_kana">ろせんをせんたくしてください</string>
-    <string name="top_eki2_name">路線を選択してください</string>
-    <string name="top_eki2_english">Please select a railway line</string>
-
-    <string name="top_q_kana">もんだいをせんたくしてください</string>
-    <string name="top_q_name">問題を選択してください</string>
-    <string name="top_q_english">Please select a question</string>
 
 
 </resources>
