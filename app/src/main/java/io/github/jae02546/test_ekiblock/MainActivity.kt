@@ -2,11 +2,16 @@ package io.github.jae02546.test_ekiblock
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.*
+import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -18,10 +23,16 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.time.LocalDateTime
+import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity() {
-    private var selLine = 0
+
+    private var mMode = false //保守モード
+    private var mCnt = 0 //保守モードカウント
 
     @RequiresApi(Build.VERSION_CODES.R)
     @SuppressLint("CutPasteId", "ResourceType", "SourceLockedOrientationActivity")
@@ -36,10 +47,130 @@ class MainActivity : AppCompatActivity() {
 
         //縦固定
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-
+        //prefから保守モード取得
+        mMode = Tools.getPrefBool(
+            this,
+            getString(R.string.pref_maintenance_key),
+            getString(R.string.pref_maintenance_defaultValue).toBoolean()
+        )
+        //ActionBar設定
+        if (!mMode)
+            supportActionBar?.setTitle(R.string.app_label)
+        else
+            supportActionBar?.setTitle(R.string.app_label_maintenance)
         //起動時ダウンロード表示
         val top = findViewById<TextView>(MainLayout.sPara[0][0].id)
         top.text = getString(R.string.top_name_us)
+
+        //ダウンロード
+        val handler = Handler(Looper.getMainLooper())
+        thread {
+            try {
+                //更新スケジュール取得
+                val usList: List<DownloadMain.UpdateScheduleDc2>
+                if (mMode) {
+                    //保守モード
+                    val usRetrofit: Retrofit = Retrofit.Builder()
+                        .baseUrl(getString(R.string.app_base_url))
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+                    val usService: DownloadMain.UpdateScheduleTestService =
+                        usRetrofit.create(DownloadMain.UpdateScheduleTestService::class.java)
+                    usList = usService.getList().execute().body()
+                        ?: throw IllegalStateException("us body null")
+                } else {
+                    //通常
+                    //val gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
+                    val usRetrofit: Retrofit = Retrofit.Builder()
+                        .baseUrl(getString(R.string.app_base_url))
+                        //.addConverterFactory(GsonConverterFactory.create(gson))
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+                    val usService: DownloadMain.UpdateScheduleService =
+                        usRetrofit.create(DownloadMain.UpdateScheduleService::class.java)
+
+                    usList = usService.getList().execute().body()
+                        ?: throw IllegalStateException("us body null")
+                }
+                //prefから最終更新日取得
+                val lu = Tools.getPrefLocalDateTime(
+                    this@MainActivity,
+                    getString(R.string.pref_lastUpdate_key),
+                    LocalDateTime.MIN
+                )
+                //データの更新が必要か確認
+                val uf = DownloadMain.checkOfUpdate(lu, usList)
+                if (uf != "") {
+                    //更新有り
+                    Log.d("usService", "更新 $lu $uf")
+                    Log.d("データ取得開始", System.currentTimeMillis().toString())
+                    //問いリスト取得
+                    val qBase64Retrofit: Retrofit = Retrofit.Builder()
+                        .baseUrl("${getString(R.string.app_base_url)}$uf/")
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+                    val qBase64Service: DownloadMain.QuestionBase64Service =
+                        qBase64Retrofit.create(DownloadMain.QuestionBase64Service::class.java)
+                    val base64List = qBase64Service.getBase64List().execute().body()
+                        ?: throw IllegalStateException("question body null")
+                    Log.d("問いデータ作成開始", System.currentTimeMillis().toString())
+
+
+                    //取り敢えずEkiNarabe2のデータを使う
+//                    val qList =
+//                        DownloadMain.createQuestionList(base64List, getString(R.string.app_name))
+                    val qList =
+                        DownloadMain.createQuestionList(base64List, "EkiNarabe2")
+
+
+                    Log.d("qService", "更新qList ${qList.size}")
+                    //テーブル更新
+                    Log.d("テーブル更新開始", System.currentTimeMillis().toString())
+                    RoomMain.createQuestionTbl(this, qList)
+                    Log.d("テーブル更新終了", System.currentTimeMillis().toString())
+
+                    //prefへ最終更新日書込
+                    Tools.putPrefLocalDateTime(
+                        this@MainActivity,
+                        getString(R.string.pref_lastUpdate_key),
+                        LocalDateTime.now()
+                    )
+                } else {
+                    //更新無し
+                    Log.d("usService", "更新無し $lu")
+                }
+
+                handler.post(Runnable {
+                    handler.post(Runnable {
+                        Log.d("Roomよりデータ読込", System.currentTimeMillis().toString())
+                        //Roomよりデータ読込
+                        Tools.qMap = RoomMain.getQuestionMap(this)
+                        Log.d("Roomよりデータ読込終了", System.currentTimeMillis().toString())
+
+
+                        //フォルダ表示
+                        //showFolder()
+
+
+                        Log.d("フォルダ表示終了", System.currentTimeMillis().toString())
+                    })
+                })
+            } catch (e: Exception) {
+                //gitからのデータ取得できなかった場合はここにくるようだ
+                Log.d("データ更新エラー", "$e")
+
+                handler.post(Runnable {
+                    //Roomよりデータ読込
+                    Tools.qMap = RoomMain.getQuestionMap(this)
+
+
+                    //既存データでフォルダ表示
+                    //showFolder()
+
+
+                })
+            }
+        }
 
         //score イベント
         val sCountY = MainLayout.sPara.count()
@@ -48,8 +179,37 @@ class MainActivity : AppCompatActivity() {
             for (v2 in 0 until sCountX) {
                 val tapS = findViewById<TextView>(MainLayout.sPara[v][v2].id)
                 tapS.setOnClickListener {
-                    Toast.makeText(this, "s$v$v2", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this, "s$v$v2", Toast.LENGTH_SHORT).show()
 
+                    //10回タップされたら次回起動時保守モード
+                    if (mCnt >= 10) {
+                        val et = EditText(this)
+                        val dialog = AlertDialog.Builder(this)
+                        dialog.setTitle("保守モード")
+                        dialog.setView(et)
+                        dialog.setPositiveButton("OK", DialogInterface.OnClickListener { _, _ ->
+                            if ("eki000" == et.text.toString()) {
+
+                                //保守モードは解除するまでそのままの方が使いやすいのでon/offのトグルとする
+                                Tools.putPrefBool(this, getString(R.string.pref_maintenance_key), !mMode)
+                                Toast.makeText(this, "保守モード" + (!mMode).toString(), Toast.LENGTH_SHORT)
+                                    .show()
+
+                                //次回起動時にモード毎のダウンロードがされるよう最終更新日を書込
+                                Tools.putPrefLocalDateTime(
+                                    this@MainActivity,
+                                    getString(R.string.pref_lastUpdate_key),
+                                    LocalDateTime.MIN
+                                )
+
+                            } else {
+                                Toast.makeText(this, "保守モードng", Toast.LENGTH_SHORT).show()
+                            }
+                        })
+                        dialog.setNegativeButton("キャンセル", null)
+                        dialog.show()
+                    } else
+                        mCnt++
 
                 }
             }
@@ -122,6 +282,9 @@ class MainActivity : AppCompatActivity() {
 //        }
 
 
+
+        //効果音ロード
+        SoundAndVibrator.loadSound(this)
 
         //ここから広告
         MobileAds.initialize(this) { }

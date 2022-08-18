@@ -5,42 +5,24 @@ import java.time.LocalDateTime
 
 
 //問いテーブル
-//駅並べ2のまま、使用する項目は名称、かな、英語ぐらい?
-//info3を駅word用の補足にするか?
+//info3は駅2で未使用なので駅word用の補足にするか?
 //公開後に変更されても支障は無い
-//以下、駅並べ2のコメント
-//------------------------------------------------------------------
-//qNoはユニーク
-//公開後のqNo,qiNoListの変更不可（端末側プレイ記録との整合性のため）
-//qiNoListはqiList内のiNoと同じものだがNoだけのリストが必要になる場合が多いため別に持つ
-//鉄道データでは補足1がgssでの補足1（廃線、休止）+補足2（通称等）、補足2が補足3（より詳細な補足）
-//問いNo,問い名,かな,ローマ字,補足1,補足2,補足3,url,アイテムリスト<QuestionItemTbl>,アイテムNoリスト<Int>,,アイテムCompNoリスト<Int>
+//問いNo,問い名,かな,ローマ字,補足1,補足2,補足3,url,アイテムリスト<QuestionItemTbl>
 @Entity(primaryKeys = ["qNo"])
 data class QuestionTbl(
     val qNo: Int = 0,
-    val createdDate: LocalDateTime = LocalDateTime.MIN,
-    val updateDate: LocalDateTime = LocalDateTime.MIN,
     val name: String = "",
     val kana: String = "",
     val english: String = "",
     val info1: String = "",
     val info2: String = "",
-    val info3: String = "", //未使用
+    val info3: String = "", //駅2未使用
     val url: String = "",
     val qiList: MutableList<QuestionItemTbl> = mutableListOf(),
 )
 
 //問いアイテムテーブル
-//駅並べ2のまま、使用する項目は名称、かな、英語ぐらい?
 //公開後に変更されても支障は無い
-//以下、駅並べ2のコメント
-//------------------------------------------------------------------
-//iNoはユニークなこと
-//公開後のiNoの変更不可（端末側プレイ記録との整合性のため）
-//元データとなるgss上の順序はゲームでの正解としたいアイテム順（iNo順ではない）
-//iNoはQuestionTblのqiNoListと同じものだが区別するためにqiNoではなくiNoとする
-//基本はqiNoListを使用しiNoは使わない（ダウンロード時の変換では使用）
-//鉄道データでは補足1は補足、補足2は（廃駅、休止」）、補足3は都道府県名
 //アイテムNo,名称,かな,ローマ字,補足1,補足2,補足3,url
 @Entity(primaryKeys = ["iNo"])
 data class QuestionItemTbl(
@@ -75,5 +57,6 @@ data class LastStateTbl(
     val pList: MutableList<String> = mutableListOf(),
 )
 
-//上記以外では終了時のプレイヤーNoぐらいなのでprefでok
+
+//上記以外で保存が必要なのはプレイヤーNoぐらいなのでprefでok
 
