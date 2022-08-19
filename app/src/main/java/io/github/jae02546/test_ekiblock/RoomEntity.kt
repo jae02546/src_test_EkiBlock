@@ -52,7 +52,7 @@ data class ScoreTbl(
 data class LastStateTbl(
     val pNo: Int = 0,
     val qNo: Int = 0,
-    val cList: MutableList<String> = mutableListOf(),
+    val cList: MutableList<Int> = mutableListOf(),
     val aList: MutableList<String> = mutableListOf(),
     val pList: MutableList<String> = mutableListOf(),
 )

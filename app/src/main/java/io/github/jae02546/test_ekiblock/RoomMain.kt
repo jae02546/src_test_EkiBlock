@@ -17,27 +17,50 @@ object RoomMain {
             qDao.insert(v)
     }
 
-    //問いmap取得
-    fun getQuestionMap(context: Context): MutableMap<Int, Tools.QuestionDc> {
+    //問いNoリスト取得
+    fun getQuestionNoList(context: Context): MutableList<Int> {
         val db = EkiWordDatabase.getInstance(context)
         val dao = db.questionDao()
         val rec = dao.getRecordAll() ?: mutableListOf()
-        val map: MutableMap<Int, Tools.QuestionDc> = mutableMapOf()
+        val qNoList: MutableList<Int> = mutableListOf()
         for (v in rec) {
-            val foo = Tools.QuestionDc(
-                v.name,
-                v.kana,
-                v.english,
-                v.info1,
-                v.info2,
-                v.info3,
-                v.url,
-                v.qiList,
-            )
-            map += v.qNo to foo
+            qNoList += v.qNo
         }
-        return map
+        return qNoList
     }
+
+    //問いレコード取得
+    fun getQuestionRecord(context: Context, qNo: Int): QuestionTbl? {
+        val db = EkiWordDatabase.getInstance(context)
+        val dao = db.questionDao()
+        val rec = dao.getRecord(qNo) ?: mutableListOf()
+        return if (rec.size > 0)
+            rec[0]
+        else
+            null
+    }
+
+//    //問いmap取得
+//    fun getQuestionMap(context: Context): MutableMap<Int, Tools.QuestionDc> {
+//        val db = EkiWordDatabase.getInstance(context)
+//        val dao = db.questionDao()
+//        val rec = dao.getRecordAll() ?: mutableListOf()
+//        val map: MutableMap<Int, Tools.QuestionDc> = mutableMapOf()
+//        for (v in rec) {
+//            val foo = Tools.QuestionDc(
+//                v.name,
+//                v.kana,
+//                v.english,
+//                v.info1,
+//                v.info2,
+//                v.info3,
+//                v.url,
+//                v.qiList,
+//            )
+//            map += v.qNo to foo
+//        }
+//        return map
+//    }
 
     //スコアList取得
     fun getScoreList(context: Context): MutableList<ScoreTbl> {
@@ -71,14 +94,14 @@ object RoomMain {
         }
     }
 
-    //終了時状態List取得
+    //ラスト状態List取得
     fun getLastStateList(context: Context): MutableList<LastStateTbl> {
         val db = EkiWordDatabase.getInstance(context)
         val dao = db.lastStateDao()
         return dao.getRecordAll() ?: mutableListOf()
     }
 
-    //終了時状態レコード取得
+    //ラスト状態レコード取得
     fun getLastStateRecord(context: Context, pNo: Int): LastStateTbl? {
         val db = EkiWordDatabase.getInstance(context)
         val dao = db.lastStateDao()
@@ -89,7 +112,7 @@ object RoomMain {
             null
     }
 
-    //終了時状態レコード書込
+    //ラスト状態レコード書込
     fun putLastStateRecord(context: Context, lastStateTbl: LastStateTbl): Long {
         val db = EkiWordDatabase.getInstance(context)
         val dao = db.lastStateDao()
@@ -102,7 +125,6 @@ object RoomMain {
             dao.update(lastStateTbl).toLong()
         }
     }
-
 
 
 }

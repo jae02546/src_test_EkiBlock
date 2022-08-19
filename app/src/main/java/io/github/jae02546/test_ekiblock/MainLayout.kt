@@ -33,7 +33,7 @@ object MainLayout {
     //横item数
     private const val numItems = 8 //item幅計算時の分割数となる
 
-    //問題縦item数
+    //問題縦item数（高さに使用）
     private const val numQuestion = 2
 
     //回答縦item数
@@ -83,7 +83,7 @@ object MainLayout {
         }
     }
 
-
+    //レイアウト作成
     fun makeLayout(context: Context, screenSize: MutableList<Int>): ConstraintLayout {
         //パラメータ初期化
         mPara = mutableListOf()
@@ -820,13 +820,85 @@ object MainLayout {
         return cs
     }
 
+    //レイアウト表示（各項目の表示）
+    fun showLayout(
+        layout: ConstraintLayout,
+        pNo: Int,
+    ) {
+        //スコア表示
+        val sRec = RoomMain.getScoreRecord(layout.context, pNo)
+        val sTv = layout.findViewById<TextView>(sPara[0][0].id)
+        if (sRec != null) {
+            val foo = "プレイ数:" + sRec.pCount.toString() + "\nコンプ数:" + sRec.cCount.toString()
+            sTv.text = foo
+        } else {
+            val foo = "プレイ数:0\nコンプ数:0"
+            sTv.text = foo
+        }
+        //問い表示
+        val lRec = RoomMain.getLastStateRecord(layout.context, pNo)
+        //ラスト状態が無い場合は問いを作成
+        if (lRec == null) {
+            val qNoList = RoomMain.getQuestionNoList(layout.context)
+            if (qNoList.count() > 0) {
+                //qListをシャッフルして先頭の問いから新しい問題を作成
+                qNoList.shuffle()
+                val qRec = RoomMain.getQuestionRecord(layout.context, qNoList[0])
+                if (qRec != null) {
+                    val qiList: MutableList<QuestionItemTbl> = mutableListOf()
+                    for (v in qRec.qiList)
+                        qiList += v
+                    qiList.shuffle()
+                    //先頭から5駅分を問題とする、ただし8文字以下の駅を対象とする
+                    val foo: MutableList<Int> = mutableListOf()
+                    for (v in qiList) {
+                        if (v.name.length <= numItems)
+                            foo += v.iNo
+                        if (foo.count() >= numAnswers)
+                            break
+                    }
 
-//    fun showLayout(
-//        layout: ConstraintLayout,
-//        question: MutableList<Int>,
-//        numDigits: Int,
-//        selLine: Int,
-//    ) {
+
+
+
+
+
+
+                }
+            }
+        }
+        if (lRec != null) {
+            val qRec = RoomMain.getQuestionRecord(layout.context, lRec.qNo)
+            if (qRec != null) {
+                val kana = layout.findViewById<TextView>(qiPara[0][0].id)
+                kana.text = qRec.kana
+                val name = layout.findViewById<TextView>(qiPara[1][0].id)
+                name.text = qRec.name
+                val english = layout.findViewById<TextView>(qiPara[2][0].id)
+                english.text = qRec.english
+                val info = layout.findViewById<TextView>(qiPara[3][0].id)
+                info.text = qRec.info3
+            } else {
+                //ここにはこないはず
+                for (v in qiPara) {
+                    for (v2 in v) {
+                        val foo = layout.findViewById<TextView>(v2.id)
+                        foo.text = ""
+                    }
+                }
+            }
+        } else {
+            //ここにはこないはず
+            for (v in qiPara) {
+                for (v2 in v) {
+                    val foo = layout.findViewById<TextView>(v2.id)
+                    foo.text = ""
+                }
+            }
+        }
+
+
+//
 //        val c1Layout = layout.findViewById<ConstraintLayout>(cPara[1][0].id)
 //        val c2Layout = layout.findViewById<ConstraintLayout>(cPara[2][0].id)
 //
@@ -912,7 +984,7 @@ object MainLayout {
 //        val foo = total.toString().padStart(3, ' ') + "\n " + total.toString(16).padStart(2, '0')
 //        val dh = c2Layout.getViewById(c2Para[0][9].id) as TextView
 //        dh.text = foo
-//
-//    }
+
+    }
 
 }

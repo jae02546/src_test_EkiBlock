@@ -53,6 +53,12 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.pref_maintenance_key),
             getString(R.string.pref_maintenance_defaultValue).toBoolean()
         )
+        //prefからpNo取得
+        val pNo = Tools.getPrefInt(
+            this,
+            getString(R.string.pref_playerNo_key),
+            getString(R.string.pref_playerNo_defaultValue).toInt()
+        )
         //ActionBar設定
         if (!mMode)
             supportActionBar?.setTitle(R.string.app_label)
@@ -131,7 +137,7 @@ class MainActivity : AppCompatActivity() {
 
                     //prefへ最終更新日書込
                     Tools.putPrefLocalDateTime(
-                        this@MainActivity,
+                        this,
                         getString(R.string.pref_lastUpdate_key),
                         LocalDateTime.now()
                     )
@@ -140,34 +146,23 @@ class MainActivity : AppCompatActivity() {
                     Log.d("usService", "更新無し $lu")
                 }
 
+                //メインレイアウト表示
                 handler.post(Runnable {
-                    handler.post(Runnable {
-                        Log.d("Roomよりデータ読込", System.currentTimeMillis().toString())
-                        //Roomよりデータ読込
-                        Tools.qMap = RoomMain.getQuestionMap(this)
-                        Log.d("Roomよりデータ読込終了", System.currentTimeMillis().toString())
-
-
-                        //フォルダ表示
-                        //showFolder()
-
-
-                        Log.d("フォルダ表示終了", System.currentTimeMillis().toString())
-                    })
+//                    //Roomよりデータ読込
+//                    Tools.qMap = RoomMain.getQuestionMap(this)
+                    //レイアウト表示
+                    MainLayout.showLayout(layout, pNo)
                 })
             } catch (e: Exception) {
                 //gitからのデータ取得できなかった場合はここにくるようだ
                 Log.d("データ更新エラー", "$e")
 
+                //既存データでメインレイアウト表示
                 handler.post(Runnable {
-                    //Roomよりデータ読込
-                    Tools.qMap = RoomMain.getQuestionMap(this)
-
-
-                    //既存データでフォルダ表示
-                    //showFolder()
-
-
+//                    //Roomよりデータ読込
+//                    Tools.qMap = RoomMain.getQuestionMap(this)
+                    //レイアウト表示
+                    MainLayout.showLayout(layout, pNo)
                 })
             }
         }
@@ -191,8 +186,16 @@ class MainActivity : AppCompatActivity() {
                             if ("eki000" == et.text.toString()) {
 
                                 //保守モードは解除するまでそのままの方が使いやすいのでon/offのトグルとする
-                                Tools.putPrefBool(this, getString(R.string.pref_maintenance_key), !mMode)
-                                Toast.makeText(this, "保守モード" + (!mMode).toString(), Toast.LENGTH_SHORT)
+                                Tools.putPrefBool(
+                                    this,
+                                    getString(R.string.pref_maintenance_key),
+                                    !mMode
+                                )
+                                Toast.makeText(
+                                    this,
+                                    "保守モード" + (!mMode).toString(),
+                                    Toast.LENGTH_SHORT
+                                )
                                     .show()
 
                                 //次回起動時にモード毎のダウンロードがされるよう最終更新日を書込
@@ -280,7 +283,6 @@ class MainActivity : AppCompatActivity() {
 //            //レイアウト表示
 //            showMainLayout(layout)
 //        }
-
 
 
         //効果音ロード
@@ -501,8 +503,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-
 
 
     private fun showMainLayout(view: View) {

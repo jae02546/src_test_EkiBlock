@@ -70,20 +70,20 @@ object Tools {
         editor.apply()
     }
 
-    //問いマップ
-    data class QuestionDc(
-        //val qNo: Int = 0, //keyと被るので省略
-        val name: String = "",
-        val kana: String = "",
-        val english: String = "",
-        val info1: String = "",
-        val info2: String = "",
-        val info3: String = "", //未使用
-        val url: String = "",
-        val qiList: MutableList<QuestionItemTbl> = mutableListOf(),
-    )
-
-    var qMap: MutableMap<Int, QuestionDc> = mutableMapOf()
+//    //問いマップ
+//    data class QuestionDc(
+//        //val qNo: Int = 0, //keyと被るので省略
+//        val name: String = "",
+//        val kana: String = "",
+//        val english: String = "",
+//        val info1: String = "",
+//        val info2: String = "",
+//        val info3: String = "", //未使用
+//        val url: String = "",
+//        val qiList: MutableList<QuestionItemTbl> = mutableListOf(),
+//    )
+//
+//    var qMap: MutableMap<Int, QuestionDc> = mutableMapOf()
 
 
     @RequiresApi(Build.VERSION_CODES.R)
