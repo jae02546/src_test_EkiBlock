@@ -228,6 +228,9 @@ object MainLayout {
         qLayout = getConstraintLayout(qLayout, qPara)
 
         //question item
+
+        //かな、英語の文字サイズを小さく
+
         val qic = context.getThemeColor(R.attr.editTextColor)
         val vWeight: MutableList<Float> = mutableListOf(0.5f, 1.0f, 0.5f, 0.5f)
         val numQuestionItems = 4
@@ -836,36 +839,12 @@ object MainLayout {
             sTv.text = foo
         }
         //問い表示
-        val lRec = RoomMain.getLastStateRecord(layout.context, pNo)
+        var lRec = RoomMain.getLastStateRecord(layout.context, pNo)
         //ラスト状態が無い場合は問いを作成
         if (lRec == null) {
-            val qNoList = RoomMain.getQuestionNoList(layout.context)
-            if (qNoList.count() > 0) {
-                //qListをシャッフルして先頭の問いから新しい問題を作成
-                qNoList.shuffle()
-                val qRec = RoomMain.getQuestionRecord(layout.context, qNoList[0])
-                if (qRec != null) {
-                    val qiList: MutableList<QuestionItemTbl> = mutableListOf()
-                    for (v in qRec.qiList)
-                        qiList += v
-                    qiList.shuffle()
-                    //先頭から5駅分を問題とする、ただし8文字以下の駅を対象とする
-                    val foo: MutableList<Int> = mutableListOf()
-                    for (v in qiList) {
-                        if (v.name.length <= numItems)
-                            foo += v.iNo
-                        if (foo.count() >= numAnswers)
-                            break
-                    }
-
-
-
-
-
-
-
-                }
-            }
+            newGame(layout.context, pNo)
+            //再読み込み
+            lRec = RoomMain.getLastStateRecord(layout.context, pNo)
         }
         if (lRec != null) {
             val qRec = RoomMain.getQuestionRecord(layout.context, lRec.qNo)
@@ -986,5 +965,72 @@ object MainLayout {
 //        dh.text = foo
 
     }
+
+
+    private fun newGame(
+        context: Context,
+        pNo: Int,
+    ) {
+        val qNoList = RoomMain.getQuestionNoList(context)
+        if (qNoList.count() > 0) {
+            //qListをシャッフルして先頭の問いから新しい問題を作成
+            qNoList.shuffle()
+            val qRec = RoomMain.getQuestionRecord(context, qNoList[0])
+            if (qRec != null) {
+                val qiList: MutableList<QuestionItemTbl> = mutableListOf()
+                for (v in qRec.qiList)
+                    qiList += v
+                qiList.shuffle()
+                //先頭から5駅分を問題とする、ただし8文字以下の駅を対象とする
+                val cList: MutableList<Int> = mutableListOf()
+                for (v in qiList) {
+                    if (v.name.length <= numItems)
+                        cList += v.iNo
+                    if (cList.count() >= numAnswers)
+                        break
+                }
+                //回答リストは空文字列で作成
+                val aList: MutableList<MutableList<String>> = mutableListOf()
+                for (v in 0 until numAnswers) {
+                    val foo: MutableList<String> = mutableListOf()
+                    for (v2 in 0 until numItems)
+                        foo += ""
+                    aList += foo
+                }
+                //持ち札リストはランダムに配置
+                val pList: MutableList<MutableList<String>> = mutableListOf()
+                val piece: MutableList<String> = mutableListOf()
+                for (v in cList) {
+                    for (v2 in qRec.qiList) {
+                        if (v == v2.iNo) {
+                            for (v3 in v2.name.indices) {
+                                piece += v2.name[v3].toString()
+                            }
+                            break
+                        }
+                    }
+                }
+                piece.shuffle()
+                for (v in 0 until numPieces) {
+                    val foo: MutableList<String> = mutableListOf()
+                    for (v2 in 0 until numItems) {
+                        val i = numItems * v + v2
+                        foo += if (piece.count() > i) {
+                            piece[i]
+                        } else {
+                            ""
+                        }
+                    }
+                    pList += foo
+                }
+                //問い書込み
+                RoomMain.putLastStateRecord(
+                    context,
+                    LastStateTbl(pNo, qRec.qNo, cList, aList, pList)
+                )
+            }
+        }
+    }
+
 
 }

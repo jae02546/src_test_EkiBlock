@@ -47,16 +47,17 @@ data class ScoreTbl(
 
 //終了時状態テーブル
 //起動時及びプレイヤー変更時に以前の状態に戻すためのデータ
-//プレイヤーNo,問いNo,正解リスト,回答リスト,ピースリスト
+//プレイヤーNo,問いNo,正解リスト,回答リスト[行][列],ピースリスト[行][列]
 @Entity(primaryKeys = ["pNo"])
 data class LastStateTbl(
     val pNo: Int = 0,
     val qNo: Int = 0,
     val cList: MutableList<Int> = mutableListOf(),
-    val aList: MutableList<String> = mutableListOf(),
-    val pList: MutableList<String> = mutableListOf(),
+    val aList: MutableList<MutableList<String>> = mutableListOf(),
+    val pList: MutableList<MutableList<String>> = mutableListOf(),
 )
 
 
-//上記以外で保存が必要なのはプレイヤーNoぐらいなのでprefでok
+//上記以外で保存が必要なのはプレイヤーNoぐらい
+//プレイヤーNoはprefでok
 

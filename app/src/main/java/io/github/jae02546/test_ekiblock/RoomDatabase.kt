@@ -46,6 +46,7 @@ abstract class EkiWordDatabase : RoomDatabase() {
 
 private class Converters {
 
+    //Int
     private val intListType: Type = object : TypeToken<MutableList<Int>>() {}.type
 
     @TypeConverter
@@ -55,7 +56,7 @@ private class Converters {
     @TypeConverter
     fun intListToJson(intList: List<Int>): String = Gson().toJson(intList)
 
-
+    //String
     private val stringListType: Type = object : TypeToken<MutableList<String>>() {}.type
 
     @TypeConverter
@@ -65,7 +66,18 @@ private class Converters {
     @TypeConverter
     fun stringListToJson(stringList: List<String>): String = Gson().toJson(stringList)
 
+    //List<String>
+    private val stringListListType: Type =
+        object : TypeToken<MutableList<MutableList<String>>>() {}.type
 
+    @TypeConverter
+    fun fromStringListListJson(stringListListJson: String): List<List<String>> =
+        Gson().fromJson(stringListListJson, stringListListType)
+
+    @TypeConverter
+    fun stringListListToJson(stringListList: List<List<String>>): String = Gson().toJson(stringListList)
+
+    //QuestionItemTbl
     private val questionItemListType: Type =
         object : TypeToken<MutableList<QuestionItemTbl>>() {}.type
 
@@ -77,7 +89,7 @@ private class Converters {
     fun questionItemListToJson(questionItemList: List<QuestionItemTbl>): String =
         Gson().toJson(questionItemList)
 
-
+    //Duration
     @TypeConverter
     fun fromDuration(charSequence: String): Duration =
         Duration.parse(charSequence)
@@ -86,7 +98,7 @@ private class Converters {
     fun durationToCharSequence(duration: Duration): String =
         duration.toString()
 
-
+    //Date
     @TypeConverter
     fun fromTimestamp(value: Long?): Date? {
         return value?.let { Date(it) }
@@ -97,7 +109,7 @@ private class Converters {
         return date?.time?.toLong()
     }
 
-
+    //LocalDateTime
     @TypeConverter
     fun fromLocalDateTime(dateTime: LocalDateTime): String {
         return dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
