@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
+import android.text.method.LinkMovementMethod
 import android.view.Gravity
 import android.view.View
 import android.widget.TextView
@@ -13,6 +14,7 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.text.HtmlCompat
 import com.google.android.gms.ads.AdSize
 
 
@@ -231,25 +233,26 @@ object MainLayout {
         //question item
         val qic = context.getThemeColor(R.attr.editTextColor)
 //        val vWeight: MutableList<Float> = mutableListOf(0.5f, 1.0f, 0.5f, 0.5f)
-        val vWeight: MutableList<Float> = mutableListOf(1.0f, 1.0f, 1.0f, 1.0f)
-        val fSize: MutableList<Float> = mutableListOf(10f, 0f, 10f, 0f)
+        val vWeight: MutableList<Float> = mutableListOf(1.0f, 1.0f, 1.0f, 1.0f, 1.0f)
+        val fSize: MutableList<Float> = mutableListOf(10f, 10f, 0f, 10f, 10f)
         val gravity: MutableList<Int> =
             mutableListOf(
+                Gravity.START + Gravity.CENTER_VERTICAL,
                 Gravity.CENTER_HORIZONTAL + Gravity.BOTTOM,
                 Gravity.CENTER,
                 Gravity.CENTER_HORIZONTAL + Gravity.TOP,
                 Gravity.CENTER
             )
-        val numQuestionItems = 4
+        val numQuestionItems = 5
         for (v in 0 until numQuestionItems) {
             val vPara: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0..0) {
                 vPara += ItemPara(
                     View.generateViewId(),
                     0, 0,
-                    0, 0, 0, 0,
+                    if (v != 0) 0 else 20, 0, 0, 0,
                     LayerDrawable(arrayOf<Drawable>()),
-                    EnumViewType.TextView, vWeight[v], fSize[v], if (v != 1) 0 else qic, gravity[v],
+                    EnumViewType.TextView, vWeight[v], fSize[v], if (v != 2) 0 else qic, gravity[v],
                     v.toString() + v2.toString() //""
                 )
             }
@@ -834,6 +837,7 @@ object MainLayout {
     fun showLayout(
         layout: ConstraintLayout,
         pNo: Int,
+        newGame: Boolean,
     ) {
         //スコア表示
         val sRec = RoomMain.getScoreRecord(layout.context, pNo)
@@ -847,8 +851,8 @@ object MainLayout {
         }
         //問い表示
         var lRec = RoomMain.getLastStateRecord(layout.context, pNo)
-        //ラスト状態が無い場合は問いを作成
-        if (lRec == null) {
+        //ラスト状態が無い場合も問いを作成
+        if (lRec == null || newGame) {
             newGame(layout.context, pNo)
             //再読み込み
             lRec = RoomMain.getLastStateRecord(layout.context, pNo)
@@ -856,14 +860,22 @@ object MainLayout {
         if (lRec != null) {
             val qRec = RoomMain.getQuestionRecord(layout.context, lRec.qNo)
             if (qRec != null) {
-                val kana = layout.findViewById<TextView>(qiPara[0][0].id)
+                val hint = layout.findViewById<TextView>(qiPara[0][0].id)
+                val foo =
+                    if (qRec.url != "") "<a href=" + (qRec.url) + ">" + "Hint" + "</a>" else ""
+                hint.text = HtmlCompat.fromHtml(foo, HtmlCompat.FROM_HTML_MODE_COMPACT)
+                hint.movementMethod = LinkMovementMethod.getInstance()
+                val kana = layout.findViewById<TextView>(qiPara[1][0].id)
                 kana.text = qRec.kana
-                val name = layout.findViewById<TextView>(qiPara[1][0].id)
+                val name = layout.findViewById<TextView>(qiPara[2][0].id)
                 name.text = qRec.name
-                val english = layout.findViewById<TextView>(qiPara[2][0].id)
+                val english = layout.findViewById<TextView>(qiPara[3][0].id)
                 english.text = qRec.english
-                val info = layout.findViewById<TextView>(qiPara[3][0].id)
-                info.text = qRec.info3
+                val info = layout.findViewById<TextView>(qiPara[4][0].id)
+                //info.text = qRec.info3
+                val bar = qRec.name + "の駅を" + lRec.cList.count() + "駅答えてください"
+                info.text = bar
+
             } else {
                 //ここにはこないはず
                 for (v in qiPara) {
@@ -884,17 +896,30 @@ object MainLayout {
         }
         //回答表示
         if (lRec != null) {
-            for (v in lRec.cList) {
-                val qRec = RoomMain.getQuestionRecord(layout.context, lRec.qNo)
-                if (qRec != null) {
-
-
-
+            for (v in 0 until numAnswers) {
+                for (v2 in 0 until numItems) {
+                    val atv = layout.findViewById<TextView>(aiPara[v][v2].id)
+                    if (lRec.aList.count() > v && lRec.aList[v].count() > v2) {
+                        atv.text = lRec.aList[v][v2]
+                    } else {
+                        atv.text = ""
+                    }
                 }
             }
         }
-
-
+        //持ち札表示
+        if (lRec != null) {
+            for (v in 0 until numPieces) {
+                for (v2 in 0 until numItems) {
+                    val ptv = layout.findViewById<TextView>(piPara[v][v2].id)
+                    if (lRec.pList.count() > v && lRec.pList[v].count() > v2) {
+                        ptv.text = lRec.pList[v][v2]
+                    } else {
+                        ptv.text = ""
+                    }
+                }
+            }
+        }
 
 
     }
@@ -914,13 +939,31 @@ object MainLayout {
                 for (v in qRec.qiList)
                     qiList += v
                 qiList.shuffle()
+
+
+                //表示できる持ち札数以下になるように3*8=24文字以内
+
                 //先頭から5駅分を問題とする、ただし8文字以下の駅を対象とする
-                val cList: MutableList<Int> = mutableListOf()
+
+                //正解Noリスト
+                val cNoList: MutableList<Int> = mutableListOf()
                 for (v in qiList) {
                     if (v.name.length <= numItems)
-                        cList += v.iNo
-                    if (cList.count() >= numAnswers)
+                        cNoList += v.iNo
+                    if (cNoList.count() >= numAnswers)
                         break
+                }
+
+
+                //正解リスト
+                val cList: MutableList<String> = mutableListOf()
+                for (v in cNoList) {
+                    for (v2 in qRec.qiList) {
+                        if (v == v2.iNo) {
+                            cList += v2.name
+                            break
+                        }
+                    }
                 }
                 //回答リストは空文字列で作成
                 val aList: MutableList<MutableList<String>> = mutableListOf()
@@ -933,7 +976,7 @@ object MainLayout {
                 //持ち札リストはランダムに配置
                 val pList: MutableList<MutableList<String>> = mutableListOf()
                 val piece: MutableList<String> = mutableListOf()
-                for (v in cList) {
+                for (v in cNoList) {
                     for (v2 in qRec.qiList) {
                         if (v == v2.iNo) {
                             for (v3 in v2.name.indices) {
@@ -959,7 +1002,7 @@ object MainLayout {
                 //問い書込み
                 RoomMain.putLastStateRecord(
                     context,
-                    LastStateTbl(pNo, qRec.qNo, cList, aList, pList)
+                    LastStateTbl(pNo, qRec.qNo, cNoList, cList, aList, pList, false)
                 )
             }
         }

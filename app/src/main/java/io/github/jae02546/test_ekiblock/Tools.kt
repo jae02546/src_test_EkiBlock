@@ -85,6 +85,58 @@ object Tools {
 //
 //    var qMap: MutableMap<Int, QuestionDc> = mutableMapOf()
 
+    //回答をラスト状態テーブルに書き込む
+    fun putAnswerToLastState(context: Context, pNo: Int, y: Int, x: Int, v: String) {
+        //レコードが無い場合は抜ける
+        val lRec = RoomMain.getLastStateRecord(context, pNo) ?: return
+        //compならcTimeはそのまま
+//        var ct = aRec.cTime
+//        if (!isComp(context, pNo, qNo))
+//            ct = ct.plusMillis(System.currentTimeMillis() - startTime)
+//        //PlayerAnswer.dbに書込み
+//        val at = AnswerTbl(
+//            aRec.pNo,
+//            aRec.qNo,
+//            aRec.aList,
+//            aRec.aCompList,
+//            ct,
+//            aRec.inPlay,
+//            offSet,
+//        )
+//        RoomMain.putAnswerRecord(context, at)
+
+    }
+
+    //開始状態取得
+    fun isStarted(context: Context, pNo: Int): Boolean {
+        val lRec = RoomMain.getLastStateRecord(context, pNo)
+        return lRec?.started ?: false
+    }
+
+    //comp状態取得
+    fun isComp(context: Context, pNo: Int): Boolean {
+        val lRec = RoomMain.getLastStateRecord(context, pNo)
+        val foo: MutableList<String> = mutableListOf()
+        var count = 0
+        if (lRec != null) {
+            for (v in lRec.aList) {
+                val bar = v.joinToString("")
+                if (bar != "")
+                    foo += bar
+            }
+            for (v in lRec.cList) {
+                for (v2 in foo) {
+                    if (v == v2) {
+                        count++
+                        break
+                    }
+                }
+            }
+        }
+
+        return count == lRec?.cList?.count() ?: false
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.R)
     fun getScreenSize(windowMetrics: WindowMetrics): MutableList<Int> {

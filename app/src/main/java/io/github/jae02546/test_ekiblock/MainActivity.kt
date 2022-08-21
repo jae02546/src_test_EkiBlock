@@ -33,6 +33,7 @@ class MainActivity : AppCompatActivity() {
 
     private var mMode = false //保守モード
     private var mCnt = 0 //保守モードカウント
+    private lateinit var mLayout: ConstraintLayout //メイン画面レイアウト
 
     @RequiresApi(Build.VERSION_CODES.R)
     @SuppressLint("CutPasteId", "ResourceType", "SourceLockedOrientationActivity")
@@ -41,8 +42,9 @@ class MainActivity : AppCompatActivity() {
         //setContentView(R.layout.activity_main)
         val screenSize = Tools.getScreenSize(this.windowManager.currentWindowMetrics)
 //        setContentView(MainLayout.makeLayout(this, screenSize))
-        val layout = MainLayout.makeLayout(this, screenSize)
-        setContentView(layout)
+//        val layout = MainLayout.makeLayout(this, screenSize)
+        mLayout = MainLayout.makeLayout(this, screenSize)
+        setContentView(mLayout)
         supportActionBar?.setTitle(R.string.app_label)
 
         //縦固定
@@ -151,7 +153,7 @@ class MainActivity : AppCompatActivity() {
 //                    //Roomよりデータ読込
 //                    Tools.qMap = RoomMain.getQuestionMap(this)
                     //レイアウト表示
-                    MainLayout.showLayout(layout, pNo)
+                    MainLayout.showLayout(mLayout, pNo, false)
                 })
             } catch (e: Exception) {
                 //gitからのデータ取得できなかった場合はここにくるようだ
@@ -162,7 +164,7 @@ class MainActivity : AppCompatActivity() {
 //                    //Roomよりデータ読込
 //                    Tools.qMap = RoomMain.getQuestionMap(this)
                     //レイアウト表示
-                    MainLayout.showLayout(layout, pNo)
+                    MainLayout.showLayout(mLayout, pNo, false)
                 })
             }
         }
@@ -225,9 +227,7 @@ class MainActivity : AppCompatActivity() {
             for (v2 in 0 until qiCountX) {
                 val tapQi = findViewById<TextView>(MainLayout.qiPara[v][v2].id)
                 tapQi.setOnClickListener {
-                    Toast.makeText(this, "qi$v$v2", Toast.LENGTH_SHORT).show()
-
-
+                    //Toast.makeText(this, "qi$v$v2", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -267,23 +267,22 @@ class MainActivity : AppCompatActivity() {
             for (v2 in 0 until nCountX) {
                 val tapN = findViewById<TextView>(MainLayout.nPara[v][v2].id)
                 tapN.setOnClickListener {
-                    Toast.makeText(this, "n$v$v2", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this, "n$v$v2", Toast.LENGTH_SHORT).show()
+
+                    //game途中の場合は確認が必要
 
 
+                    //prefからpNo取得
+                    val foo = Tools.getPrefInt(
+                        this,
+                        getString(R.string.pref_playerNo_key),
+                        getString(R.string.pref_playerNo_defaultValue).toInt()
+                    )
+                    //新しいゲームを作成して再表示
+                    MainLayout.showLayout(mLayout, foo, true)
                 }
             }
         }
-
-
-//        // !
-//        val tapNot = findViewById<TextView>(MainLayout.b0Para[0][1].id)
-//        tapNot.setOnClickListener {
-//            //Toast.makeText(this, "!", Toast.LENGTH_SHORT).show()
-//            Question.inv(selLine, 8)
-//            //レイアウト表示
-//            showMainLayout(layout)
-//        }
-
 
         //効果音ロード
         SoundAndVibrator.loadSound(this)
@@ -337,12 +336,8 @@ class MainActivity : AppCompatActivity() {
                     Tools.putPrefInt(this, getString(R.string.pref_playerNo_key), playerNo)
                     //プレーヤが変更されたのでメニュー更新onPrepareOptionsMenu
                     invalidateOptionsMenu()
-
-
-                    //プレーヤが変更されたのでrvData再表示
-                    //rvDataSetChanged(false)
-
-
+                    //プレーヤが変更されたので再表示
+                    MainLayout.showLayout(mLayout, playerNo, false)
                 }
                 true
             }
