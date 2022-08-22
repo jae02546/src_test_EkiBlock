@@ -85,26 +85,58 @@ object Tools {
 //
 //    var qMap: MutableMap<Int, QuestionDc> = mutableMapOf()
 
-    //回答をラスト状態テーブルに書き込む
-    fun putAnswerToLastState(context: Context, pNo: Int, y: Int, x: Int, v: String) {
+    //持ち札の移動を状態テーブルに書き込む
+    fun moveOfPiece(
+        context: Context,
+        pNo: Int,
+        fromAnswer: Boolean,
+        fromRow: Int,
+        fromColumn: Int,
+        toAnswer: Boolean,
+        toRow: Int,
+        toColumn: Int
+    ) {
         //レコードが無い場合は抜ける
         val lRec = RoomMain.getLastStateRecord(context, pNo) ?: return
-        //compならcTimeはそのまま
-//        var ct = aRec.cTime
-//        if (!isComp(context, pNo, qNo))
-//            ct = ct.plusMillis(System.currentTimeMillis() - startTime)
-//        //PlayerAnswer.dbに書込み
-//        val at = AnswerTbl(
-//            aRec.pNo,
-//            aRec.qNo,
-//            aRec.aList,
-//            aRec.aCompList,
-//            ct,
-//            aRec.inPlay,
-//            offSet,
-//        )
-//        RoomMain.putAnswerRecord(context, at)
-
+        //行桁の位置がリスト範囲外なら抜ける
+        if (fromAnswer) {
+            if (lRec.aList.count() < fromRow || lRec.aList[0].count() < fromColumn) return
+        } else {
+            if (lRec.pList.count() < fromRow || lRec.pList[0].count() < fromColumn) return
+        }
+        if (toAnswer) {
+            if (lRec.aList.count() < toRow || lRec.aList[0].count() < toColumn) return
+        } else {
+            if (lRec.pList.count() < toRow || lRec.pList[0].count() < toColumn) return
+        }
+        //移動は交換（移動先が空白でなかった場合は交換しないと消えてしまう）
+        val from = if (fromAnswer)
+            lRec.aList[fromRow][fromColumn]
+        else
+            lRec.pList[fromRow][fromColumn]
+        val to = if (toAnswer)
+            lRec.aList[toRow][toColumn]
+        else
+            lRec.pList[toRow][toColumn]
+        if (fromAnswer)
+            lRec.aList[fromRow][fromColumn] = to
+        else
+            lRec.pList[fromRow][fromColumn] = to
+        if (toAnswer)
+            lRec.aList[toRow][toColumn] = from
+        else
+            lRec.pList[toRow][toColumn] = from
+        //書込み
+        val rec = LastStateTbl(
+            lRec.pNo,
+            lRec.qNo,
+            lRec.cNoList,
+            lRec.cList,
+            lRec.aList,
+            lRec.pList,
+            true,
+        )
+        RoomMain.putLastStateRecord(context, rec)
     }
 
     //開始状態取得

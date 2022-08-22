@@ -45,7 +45,7 @@ data class ScoreTbl(
     val cCount: Int = 0,
 )
 
-//最終状態テーブル
+//ラスト状態テーブル
 //プレイヤーNo,問いNo,正解Noリスト,正解リスト[行],回答リスト[行][列],持ち札リスト[行][列],開始済み
 @Entity(primaryKeys = ["pNo"])
 data class LastStateTbl(
