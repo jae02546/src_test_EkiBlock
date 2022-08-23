@@ -49,7 +49,7 @@ object MainLayout {
     private const val numAnswers = 5
 
     //持ち札縦item数
-    private const val numPieces = 3
+    private const val numCards = 3
 
     //Viewマージン それぞれのViewがこのマージンを取るので実際の間隔は倍となる
     private const val viewMargin = 10 //dp
@@ -159,7 +159,7 @@ object MainLayout {
                     iWidth * numAnswers + iWidth / 2 //+ iWidth / 2 はタイトル
                 }
                 3 -> { //持ち札
-                    iWidth * numPieces + iWidth / 2 //+ iWidth / 2 はタイトル
+                    iWidth * numCards + iWidth / 2 //+ iWidth / 2 はタイトル
                 }
                 5 -> { //adView
                     Tools.convertDp2Px(adViewHeight.toFloat(), context).toInt()
@@ -484,13 +484,13 @@ object MainLayout {
         val ldCardPiece = LayerDrawable(arrayOf<Drawable>(gdCardPiece))
         ldCardPiece.setLayerInset(0, 0, 0, 0, 0)
         val cpc = context.getThemeColor(R.attr.editTextColor)
-        for (v in 0 until numPieces) {
+        for (v in 0 until numCards) {
             val vPara: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0 until numItems) {
                 val lMargin = if (v2 != 0) viewMargin else viewMargin * 2
                 val rMargin = if (v2 != numItems - 1) viewMargin else viewMargin * 2
                 val tMargin = if (v != 0) viewMargin else viewMargin * 2
-                val bMargin = if (v != numPieces - 1) viewMargin else viewMargin * 2
+                val bMargin = if (v != numCards - 1) viewMargin else viewMargin * 2
                 vPara += ItemPara(
                     View.generateViewId(),
                     0, 0,
@@ -1034,7 +1034,7 @@ object MainLayout {
         }
         //持ち札表示
         if (lRec != null) {
-            for (v in 0 until numPieces) {
+            for (v in 0 until numCards) {
                 for (v2 in 0 until numItems) {
                     val ptv = layout.findViewById<TextView>(cpPara[v][v2].id)
                     if (lRec.pList.count() > v && lRec.pList[v].count() > v2) {
@@ -1096,7 +1096,7 @@ object MainLayout {
                             }
                         }
                         piece.shuffle()
-                        for (v in 0 until numPieces) {
+                        for (v in 0 until numCards) {
                             val foo: MutableList<String> = mutableListOf()
                             for (v2 in 0 until numItems) {
                                 val i = numItems * v + v2
@@ -1120,27 +1120,34 @@ object MainLayout {
             }
         }
     }
-}
 
-private fun newGameSelectSta(questionTbl: QuestionTbl): MutableList<Int> {
-    //qListをシャッフルして先頭の路線から新しい問題を作成
-    //その路線の駅をシャッフルし先頭から5駅分を問題とする
-    //ただし8文字以下の駅を対象とする
-    //ただし合計文字数が24文字を超えない駅数とする
-    //上記に当てはまらない路線の場合は次の路線から問題を作成
-    //上記に当てはまるまで繰り返す
-
-    val qRec = RoomMain.getQuestionRecord(context, qNoList[0])
-    if (qRec != null) {
+    private fun newGameSelectSta(qRec: QuestionTbl): MutableList<Int> {
+        //路線の駅をシャッフルし先頭から最大5駅分を問題とする
+        //ただし8文字以下の駅を対象とする
+        //ただし合計文字数が24文字を超えない駅数とする
+        val staList: MutableList<Int> = mutableListOf()
         val qiList: MutableList<QuestionItemTbl> = mutableListOf()
         for (v in qRec.qiList)
             qiList += v
         qiList.shuffle()
+        var count = 0
+        for (v in qiList) {
+            //8文字以下
+            if (v.name.length <= numItems) {
+                count += v.name.length
+                //24文字以下
+                if (count <= numCards * numItems)
+                    staList += v.iNo
+                else
+                    break
+            }
+            //最大5駅
+            if (staList.count() >= numAnswers)
+                break
+        }
 
+        return staList
     }
-
-
-}
 
 
 }
