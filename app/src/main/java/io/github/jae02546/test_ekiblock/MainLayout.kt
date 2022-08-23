@@ -25,15 +25,22 @@ object MainLayout {
     var sPara: MutableList<MutableList<ItemPara>> = mutableListOf() //score
     var qPara: MutableList<MutableList<ItemPara>> = mutableListOf() //question
     var qiPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionItem
+    var qhPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionHint
+    var qnPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionName
     var aPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answer
     var aiPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answerItem
-    var pPara: MutableList<MutableList<ItemPara>> = mutableListOf() //piece
-    var piPara: MutableList<MutableList<ItemPara>> = mutableListOf() //pieceItem
+    var atPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answerTitle
+    var apPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answerPiece
+    var cPara: MutableList<MutableList<ItemPara>> = mutableListOf() //card
+    var ciPara: MutableList<MutableList<ItemPara>> = mutableListOf() //cardItem
+    var ctPara: MutableList<MutableList<ItemPara>> = mutableListOf() //cardTitle
+    var cpPara: MutableList<MutableList<ItemPara>> = mutableListOf() //cardPiece
     var nPara: MutableList<MutableList<ItemPara>> = mutableListOf() //new game
     var adViewPara: MutableList<MutableList<ItemPara>> = mutableListOf() //adView
 
     //横item数
-    private const val numItems = 8 //item幅計算時の分割数となる
+//    private const val numItems = 8 //item幅計算時の分割数となる
+    private const val numItems = 9 //item幅計算時の分割数となる
 
     //問題縦item数（高さに使用）
     private const val numQuestion = 2
@@ -46,7 +53,6 @@ object MainLayout {
 
     //Viewマージン それぞれのViewがこのマージンを取るので実際の間隔は倍となる
     private const val viewMargin = 10 //dp
-
 
     //adView高さ
     private const val adViewHeight = 50 //dp
@@ -93,10 +99,16 @@ object MainLayout {
         sPara = mutableListOf()
         qPara = mutableListOf()
         qiPara = mutableListOf()
+        qhPara = mutableListOf()
+        qnPara = mutableListOf()
         aPara = mutableListOf()
         aiPara = mutableListOf()
-        pPara = mutableListOf()
-        piPara = mutableListOf()
+        atPara = mutableListOf()
+        apPara = mutableListOf()
+        cPara = mutableListOf()
+        ciPara = mutableListOf()
+        ctPara = mutableListOf()
+        cpPara = mutableListOf()
         nPara = mutableListOf()
         adViewPara = mutableListOf()
 
@@ -141,13 +153,13 @@ object MainLayout {
         for (v in 0 until numMains) {
             val height = when (v) {
                 1 -> { //問題
-                    iWidth * numQuestion
+                    iWidth * numQuestion - iWidth / 2 //- iWidth / 2 は調整
                 }
                 2 -> { //回答
-                    iWidth * numAnswers
+                    iWidth * numAnswers + iWidth / 2 //+ iWidth / 2 はタイトル
                 }
                 3 -> { //持ち札
-                    iWidth * numPieces
+                    iWidth * numPieces + iWidth / 2 //+ iWidth / 2 はタイトル
                 }
                 5 -> { //adView
                     Tools.convertDp2Px(adViewHeight.toFloat(), context).toInt()
@@ -177,14 +189,14 @@ object MainLayout {
         )
 
         //score
-        val bdScore = GradientDrawable()
-        bdScore.setStroke(
+        val gdScore = GradientDrawable()
+        gdScore.setStroke(
             Tools.convertDp2Px(1f, context).toInt(),
             context.getThemeColor(R.attr.colorButtonNormal)
         )
         //塗りつぶしはコメントを外す
         //bdScore.setColor(context.getThemeColor(R.attr.colorButtonNormal))
-        val ldScore = LayerDrawable(arrayOf<Drawable>(bdScore))
+        val ldScore = LayerDrawable(arrayOf<Drawable>(gdScore))
         ldScore.setLayerInset(0, 0, 0, 0, 0)
         for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
@@ -204,14 +216,14 @@ object MainLayout {
         sLayout = getConstraintLayout(sLayout, sPara)
 
         //question
-        val bdQuestion = GradientDrawable()
-        bdQuestion.setStroke(
+        val gdQuestion = GradientDrawable()
+        gdQuestion.setStroke(
             Tools.convertDp2Px(1f, context).toInt(),
             context.getThemeColor(R.attr.colorButtonNormal)
         )
         //塗りつぶしはコメントを外す
         //bdQuestion.setColor(context.getThemeColor(R.attr.colorButtonNormal))
-        val ldQuestion = LayerDrawable(arrayOf<Drawable>(bdQuestion))
+        val ldQuestion = LayerDrawable(arrayOf<Drawable>(gdQuestion))
         ldQuestion.setLayerInset(0, 0, 0, 0, 0)
         for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
@@ -231,28 +243,15 @@ object MainLayout {
         qLayout = getConstraintLayout(qLayout, qPara)
 
         //question item
-        val qic = context.getThemeColor(R.attr.editTextColor)
-//        val vWeight: MutableList<Float> = mutableListOf(0.5f, 1.0f, 0.5f, 0.5f)
-        val vWeight: MutableList<Float> = mutableListOf(1.0f, 1.0f, 1.0f, 1.0f, 1.0f)
-        val fSize: MutableList<Float> = mutableListOf(10f, 10f, 0f, 10f, 10f)
-        val gravity: MutableList<Int> =
-            mutableListOf(
-                Gravity.START + Gravity.CENTER_VERTICAL,
-                Gravity.CENTER_HORIZONTAL + Gravity.BOTTOM,
-                Gravity.CENTER,
-                Gravity.CENTER_HORIZONTAL + Gravity.TOP,
-                Gravity.CENTER
-            )
-        val numQuestionItems = 5
-        for (v in 0 until numQuestionItems) {
+        for (v in 0..0) {
             val vPara: MutableList<ItemPara> = mutableListOf()
-            for (v2 in 0..0) {
+            for (v2 in 0..2) {
                 vPara += ItemPara(
                     View.generateViewId(),
-                    0, 0,
-                    if (v != 0) 0 else 20, 0, 0, 0,
+                    if (v2 != 1) iWidth else 0, 0,
+                    0, 0, 0, 0,
                     LayerDrawable(arrayOf<Drawable>()),
-                    EnumViewType.TextView, vWeight[v], fSize[v], if (v != 2) 0 else qic, gravity[v],
+                    EnumViewType.ConstraintLayout, 0f, 0f, 0, Gravity.CENTER,
                     v.toString() + v2.toString() //""
                 )
             }
@@ -261,15 +260,70 @@ object MainLayout {
         var qiLayout = qLayout.getViewById(qPara[0][0].id) as ConstraintLayout
         qiLayout = getConstraintLayout(qiLayout, qiPara)
 
+        //question hint
+        for (v in 0..0) {
+            val vPara: MutableList<ItemPara> = mutableListOf()
+            for (v2 in 0..0) {
+                vPara += ItemPara(
+                    View.generateViewId(),
+                    0, 0,
+                    0, 0, 0, 0,
+                    LayerDrawable(arrayOf<Drawable>()),
+                    EnumViewType.TextView,
+                    0f,
+                    10f,
+                    0,
+                    Gravity.CENTER,
+                    v.toString() + v2.toString() //""
+                )
+            }
+            qhPara += vPara
+        }
+        var qhLayout = qiLayout.getViewById(qiPara[0][0].id) as ConstraintLayout
+        qhLayout = getConstraintLayout(qhLayout, qhPara)
+
+        //question name
+        val qnc = context.getThemeColor(R.attr.editTextColor)
+        val vWeight: MutableList<Float> = mutableListOf(1.0f, 1.0f, 1.0f, 1.0f)
+        val fSize: MutableList<Float> = mutableListOf(10f, 0f, 10f, 10f)
+        val gravity: MutableList<Int> =
+            mutableListOf(
+                Gravity.CENTER_HORIZONTAL + Gravity.BOTTOM,
+                Gravity.CENTER,
+                Gravity.CENTER_HORIZONTAL + Gravity.TOP,
+                Gravity.CENTER
+            )
+        val numName = 4
+        for (v in 0 until numName) {
+            val vPara: MutableList<ItemPara> = mutableListOf()
+            for (v2 in 0..0) {
+                vPara += ItemPara(
+                    View.generateViewId(),
+                    0, 0,
+                    0, 0, 0, 0,
+                    LayerDrawable(arrayOf<Drawable>()),
+                    EnumViewType.TextView,
+                    vWeight[v],
+                    fSize[v],
+                    if (v != 1) 0 else qnc,
+                    gravity[v],
+                    v.toString() + v2.toString() //""
+                )
+            }
+            qnPara += vPara
+        }
+        var qnLayout = qiLayout.getViewById(qiPara[0][1].id) as ConstraintLayout
+        qnLayout = getConstraintLayout(qnLayout, qnPara)
+
         //answer
-        val bdAnswer = GradientDrawable()
-        bdAnswer.setStroke(
+        val gdAnswer = GradientDrawable()
+        gdAnswer.setStroke(
             Tools.convertDp2Px(1f, context).toInt(),
             context.getThemeColor(R.attr.colorButtonNormal)
         )
         //塗りつぶしはコメントを外す
         //bdAnswer.setColor(context.getThemeColor(R.attr.colorSecondaryVariant))
-        val ldAnswer = LayerDrawable(arrayOf<Drawable>(bdAnswer))
+        val ldAnswer = LayerDrawable(arrayOf<Drawable>(gdAnswer))
         ldAnswer.setLayerInset(0, 0, 0, 0, 0)
         for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
@@ -289,16 +343,52 @@ object MainLayout {
         aLayout = getConstraintLayout(aLayout, aPara)
 
         //answer item
-        val bdAnswerItem = GradientDrawable()
-        bdAnswerItem.setStroke(
+        for (v in 0..1) {
+            val foo: MutableList<ItemPara> = mutableListOf()
+            for (v2 in 0..0) {
+                foo += ItemPara(
+                    View.generateViewId(),
+                    0, if (v == 0) iWidth / 2 else 0,
+                    0, 0, 0, 0,
+                    LayerDrawable(arrayOf<Drawable>()),
+                    EnumViewType.ConstraintLayout, 0f, 0f, 0, Gravity.CENTER,
+                    ""
+                )
+            }
+            aiPara += foo
+        }
+        var aiLayout = aLayout.getViewById(aPara[0][0].id) as ConstraintLayout
+        aiLayout = getConstraintLayout(aiLayout, aiPara)
+
+        //answer title
+        for (v in 0..0) {
+            val foo: MutableList<ItemPara> = mutableListOf()
+            for (v2 in 0..0) {
+                foo += ItemPara(
+                    View.generateViewId(),
+                    0, 0,
+                    0, 0, 0, 0,
+                    LayerDrawable(arrayOf<Drawable>()),
+                    EnumViewType.TextView, 0f, 10f, 0, Gravity.CENTER_HORIZONTAL + Gravity.BOTTOM,
+                    "テーブル"
+                )
+            }
+            atPara += foo
+        }
+        var atLayout = aiLayout.getViewById(aiPara[0][0].id) as ConstraintLayout
+        atLayout = getConstraintLayout(atLayout, atPara)
+
+        //answer piece
+        val gdAnswerPiece = GradientDrawable()
+        gdAnswerPiece.setStroke(
             Tools.convertDp2Px(1f, context).toInt(),
             context.getThemeColor(R.attr.colorButtonNormal)
         )
         //塗りつぶしはコメントを外す
-        bdAnswerItem.setColor(context.getThemeColor(R.attr.colorOnPrimary)) //これだ
-        val ldAnswerItem = LayerDrawable(arrayOf<Drawable>(bdAnswerItem))
-        ldAnswerItem.setLayerInset(0, 0, 0, 0, 0)
-        val aic = context.getThemeColor(R.attr.editTextColor)
+        gdAnswerPiece.setColor(context.getThemeColor(R.attr.colorOnPrimary)) //これだ
+        val ldAnswerPiece = LayerDrawable(arrayOf<Drawable>(gdAnswerPiece))
+        ldAnswerPiece.setLayerInset(0, 0, 0, 0, 0)
+        val apc = context.getThemeColor(R.attr.editTextColor)
         for (v in 0 until numAnswers) {
             val vPara: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0 until numItems) {
@@ -310,26 +400,26 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     lMargin, rMargin, tMargin, bMargin,
-                    ldAnswerItem,
-                    EnumViewType.TextView, 0f, 0f, aic, Gravity.CENTER,
+                    ldAnswerPiece,
+                    EnumViewType.TextView, 0f, 0f, apc, Gravity.CENTER,
                     v.toString() + v2.toString() //""
                 )
             }
-            aiPara += vPara
+            apPara += vPara
         }
-        var aiLayout = aLayout.getViewById(aPara[0][0].id) as ConstraintLayout
-        aiLayout = getConstraintLayout(aiLayout, aiPara)
+        var apLayout = aiLayout.getViewById(aiPara[1][0].id) as ConstraintLayout
+        apLayout = getConstraintLayout(apLayout, apPara)
 
-        //piece
-        val bdPiece = GradientDrawable()
-        bdPiece.setStroke(
+        //card
+        val gdCard = GradientDrawable()
+        gdCard.setStroke(
             Tools.convertDp2Px(1f, context).toInt(),
             context.getThemeColor(R.attr.colorButtonNormal)
         )
         //塗りつぶしはコメントを外す
         //bdPiece.setColor(context.getThemeColor(R.attr.colorPrimaryVariant))
-        val ldPiece = LayerDrawable(arrayOf<Drawable>(bdPiece))
-        ldPiece.setLayerInset(0, 0, 0, 0, 0)
+        val ldCard = LayerDrawable(arrayOf<Drawable>(gdCard))
+        ldCard.setLayerInset(0, 0, 0, 0, 0)
         for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0..0) {
@@ -337,27 +427,63 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     0, 0, 0, 0,
-                    ldPiece,
+                    ldCard,
                     EnumViewType.ConstraintLayout, 0f, 0f, 0, Gravity.CENTER,
                     ""
                 )
             }
-            pPara += foo
+            cPara += foo
         }
-        var pLayout = mLayout.getViewById(mPara[3][0].id) as ConstraintLayout
-        pLayout = getConstraintLayout(pLayout, pPara)
+        var cLayout = mLayout.getViewById(mPara[3][0].id) as ConstraintLayout
+        cLayout = getConstraintLayout(cLayout, cPara)
 
-        //piece item
-        val bdPieceItem = GradientDrawable()
-        bdPieceItem.setStroke(
+        //card item
+        for (v in 0..1) {
+            val foo: MutableList<ItemPara> = mutableListOf()
+            for (v2 in 0..0) {
+                foo += ItemPara(
+                    View.generateViewId(),
+                    0, if (v == 0) iWidth / 2 else 0,
+                    0, 0, 0, 0,
+                    LayerDrawable(arrayOf<Drawable>()),
+                    EnumViewType.ConstraintLayout, 0f, 0f, 0, Gravity.CENTER,
+                    ""
+                )
+            }
+            ciPara += foo
+        }
+        var ciLayout = cLayout.getViewById(cPara[0][0].id) as ConstraintLayout
+        ciLayout = getConstraintLayout(ciLayout, ciPara)
+
+        //card title
+        for (v in 0..0) {
+            val foo: MutableList<ItemPara> = mutableListOf()
+            for (v2 in 0..0) {
+                foo += ItemPara(
+                    View.generateViewId(),
+                    0, 0,
+                    0, 0, 0, 0,
+                    LayerDrawable(arrayOf<Drawable>()),
+                    EnumViewType.TextView, 0f, 10f, 0, Gravity.CENTER_HORIZONTAL + Gravity.BOTTOM,
+                    "持ち札"
+                )
+            }
+            ctPara += foo
+        }
+        var ctLayout = ciLayout.getViewById(ciPara[0][0].id) as ConstraintLayout
+        ctLayout = getConstraintLayout(ctLayout, ctPara)
+
+        //card piece
+        val gdCardPiece = GradientDrawable()
+        gdCardPiece.setStroke(
             Tools.convertDp2Px(1f, context).toInt(),
             context.getThemeColor(R.attr.colorButtonNormal)
         )
         //塗りつぶしはコメントを外す
-        bdPieceItem.setColor(context.getThemeColor(R.attr.colorOnPrimary)) //これだ
-        val ldPieceItem = LayerDrawable(arrayOf<Drawable>(bdPieceItem))
-        ldPieceItem.setLayerInset(0, 0, 0, 0, 0)
-        val pic = context.getThemeColor(R.attr.editTextColor)
+        gdCardPiece.setColor(context.getThemeColor(R.attr.colorOnPrimary)) //これだ
+        val ldCardPiece = LayerDrawable(arrayOf<Drawable>(gdCardPiece))
+        ldCardPiece.setLayerInset(0, 0, 0, 0, 0)
+        val cpc = context.getThemeColor(R.attr.editTextColor)
         for (v in 0 until numPieces) {
             val vPara: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0 until numItems) {
@@ -369,25 +495,25 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     lMargin, rMargin, tMargin, bMargin,
-                    ldPieceItem,
-                    EnumViewType.TextView, 0f, 0f, pic, Gravity.CENTER,
+                    ldCardPiece,
+                    EnumViewType.TextView, 0f, 0f, cpc, Gravity.CENTER,
                     v.toString() + v2.toString() //""
                 )
             }
-            piPara += vPara
+            cpPara += vPara
         }
-        var piLayout = pLayout.getViewById(pPara[0][0].id) as ConstraintLayout
-        piLayout = getConstraintLayout(piLayout, piPara)
+        var cpLayout = ciLayout.getViewById(ciPara[1][0].id) as ConstraintLayout
+        cpLayout = getConstraintLayout(cpLayout, cpPara)
 
         //newGame
-        val bdNewGame = GradientDrawable()
-        bdNewGame.setStroke(
+        val gdNewGame = GradientDrawable()
+        gdNewGame.setStroke(
             Tools.convertDp2Px(1f, context).toInt(),
             context.getThemeColor(R.attr.colorButtonNormal)
         )
         //塗りつぶしはコメントを外す
         //bdNewGame.setColor(context.getThemeColor(R.attr.colorButtonNormal))
-        val ldNewGame = LayerDrawable(arrayOf<Drawable>(bdNewGame))
+        val ldNewGame = LayerDrawable(arrayOf<Drawable>(gdNewGame))
         ldNewGame.setLayerInset(0, 0, 0, 0, 0)
         for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
@@ -860,25 +986,24 @@ object MainLayout {
         if (lRec != null) {
             val qRec = RoomMain.getQuestionRecord(layout.context, lRec.qNo)
             if (qRec != null) {
-                val hint = layout.findViewById<TextView>(qiPara[0][0].id)
+                val hint = layout.findViewById<TextView>(qhPara[0][0].id)
                 val foo =
                     if (qRec.url != "") "<a href=" + (qRec.url) + ">" + "Hint" + "</a>" else ""
                 hint.text = HtmlCompat.fromHtml(foo, HtmlCompat.FROM_HTML_MODE_COMPACT)
                 hint.movementMethod = LinkMovementMethod.getInstance()
-                val kana = layout.findViewById<TextView>(qiPara[1][0].id)
+                val kana = layout.findViewById<TextView>(qnPara[0][0].id)
                 kana.text = qRec.kana
-                val name = layout.findViewById<TextView>(qiPara[2][0].id)
+                val name = layout.findViewById<TextView>(qnPara[1][0].id)
                 name.text = qRec.name
-                val english = layout.findViewById<TextView>(qiPara[3][0].id)
+                val english = layout.findViewById<TextView>(qnPara[2][0].id)
                 english.text = qRec.english
-                val info = layout.findViewById<TextView>(qiPara[4][0].id)
+                val info = layout.findViewById<TextView>(qnPara[3][0].id)
                 //info.text = qRec.info3
                 val bar = qRec.name + "の駅を" + lRec.cList.count() + "駅答えてください"
                 info.text = bar
-
             } else {
                 //ここにはこないはず
-                for (v in qiPara) {
+                for (v in qnPara) {
                     for (v2 in v) {
                         val foo = layout.findViewById<TextView>(v2.id)
                         foo.text = ""
@@ -887,7 +1012,7 @@ object MainLayout {
             }
         } else {
             //ここにはこないはず
-            for (v in qiPara) {
+            for (v in qnPara) {
                 for (v2 in v) {
                     val foo = layout.findViewById<TextView>(v2.id)
                     foo.text = ""
@@ -898,7 +1023,7 @@ object MainLayout {
         if (lRec != null) {
             for (v in 0 until numAnswers) {
                 for (v2 in 0 until numItems) {
-                    val atv = layout.findViewById<TextView>(aiPara[v][v2].id)
+                    val atv = layout.findViewById<TextView>(apPara[v][v2].id)
                     if (lRec.aList.count() > v && lRec.aList[v].count() > v2) {
                         atv.text = lRec.aList[v][v2]
                     } else {
@@ -911,7 +1036,7 @@ object MainLayout {
         if (lRec != null) {
             for (v in 0 until numPieces) {
                 for (v2 in 0 until numItems) {
-                    val ptv = layout.findViewById<TextView>(piPara[v][v2].id)
+                    val ptv = layout.findViewById<TextView>(cpPara[v][v2].id)
                     if (lRec.pList.count() > v && lRec.pList[v].count() > v2) {
                         ptv.text = lRec.pList[v][v2]
                     } else {
@@ -924,89 +1049,98 @@ object MainLayout {
 
     }
 
-
-    private fun newGame(
-        context: Context,
-        pNo: Int,
-    ) {
+    //新しい問題を作成
+    private fun newGame(context: Context, pNo: Int) {
         val qNoList = RoomMain.getQuestionNoList(context)
         if (qNoList.count() > 0) {
-            //qListをシャッフルして先頭の問いから新しい問題を作成
+            //qListをシャッフルして問題を作成
             qNoList.shuffle()
-            val qRec = RoomMain.getQuestionRecord(context, qNoList[0])
-            if (qRec != null) {
-                val qiList: MutableList<QuestionItemTbl> = mutableListOf()
-                for (v in qRec.qiList)
-                    qiList += v
-                qiList.shuffle()
-
-
-                //表示できる持ち札数以下になるように3*8=24文字以内
-
-                //先頭から5駅分を問題とする、ただし8文字以下の駅を対象とする
-
-                //正解Noリスト
-                val cNoList: MutableList<Int> = mutableListOf()
-                for (v in qiList) {
-                    if (v.name.length <= numItems)
-                        cNoList += v.iNo
-                    if (cNoList.count() >= numAnswers)
-                        break
-                }
-
-
-                //正解リスト
-                val cList: MutableList<String> = mutableListOf()
-                for (v in cNoList) {
-                    for (v2 in qRec.qiList) {
-                        if (v == v2.iNo) {
-                            cList += v2.name
-                            break
-                        }
-                    }
-                }
-                //回答リストは空文字列で作成
-                val aList: MutableList<MutableList<String>> = mutableListOf()
-                for (v in 0 until numAnswers) {
-                    val foo: MutableList<String> = mutableListOf()
-                    for (v2 in 0 until numItems)
-                        foo += ""
-                    aList += foo
-                }
-                //持ち札リストはランダムに配置
-                val pList: MutableList<MutableList<String>> = mutableListOf()
-                val piece: MutableList<String> = mutableListOf()
-                for (v in cNoList) {
-                    for (v2 in qRec.qiList) {
-                        if (v == v2.iNo) {
-                            for (v3 in v2.name.indices) {
-                                piece += v2.name[v3].toString()
+            //問題として妥当性のある路線があるまで繰り返す
+            for (v in qNoList) {
+                var cNoList: MutableList<Int> = mutableListOf()
+                val qRec = RoomMain.getQuestionRecord(context, v)
+                if (qRec != null) {
+                    //正解Noリスト取得
+                    cNoList = newGameSelectSta(qRec)
+                    //妥当性あり
+                    if (cNoList.count() > 0) {
+                        //正解リスト
+                        val cList: MutableList<String> = mutableListOf()
+                        for (v in cNoList) {
+                            for (v2 in qRec.qiList) {
+                                if (v == v2.iNo) {
+                                    cList += v2.name
+                                    break
+                                }
                             }
-                            break
                         }
+                        //回答リストは空文字列で作成
+                        val aList: MutableList<MutableList<String>> = mutableListOf()
+                        for (v in 0 until numAnswers) {
+                            val foo: MutableList<String> = mutableListOf()
+                            for (v2 in 0 until numItems)
+                                foo += ""
+                            aList += foo
+                        }
+                        //持ち札リストはランダムに配置
+                        val pList: MutableList<MutableList<String>> = mutableListOf()
+                        val piece: MutableList<String> = mutableListOf()
+                        for (v in cNoList) {
+                            for (v2 in qRec.qiList) {
+                                if (v == v2.iNo) {
+                                    for (v3 in v2.name.indices) {
+                                        piece += v2.name[v3].toString()
+                                    }
+                                    break
+                                }
+                            }
+                        }
+                        piece.shuffle()
+                        for (v in 0 until numPieces) {
+                            val foo: MutableList<String> = mutableListOf()
+                            for (v2 in 0 until numItems) {
+                                val i = numItems * v + v2
+                                foo += if (piece.count() > i) {
+                                    piece[i]
+                                } else {
+                                    ""
+                                }
+                            }
+                            pList += foo
+                        }
+                        //問い書込み
+                        RoomMain.putLastStateRecord(
+                            context,
+                            LastStateTbl(pNo, qRec.qNo, cNoList, cList, aList, pList, false)
+                        )
+
+                        break
                     }
                 }
-                piece.shuffle()
-                for (v in 0 until numPieces) {
-                    val foo: MutableList<String> = mutableListOf()
-                    for (v2 in 0 until numItems) {
-                        val i = numItems * v + v2
-                        foo += if (piece.count() > i) {
-                            piece[i]
-                        } else {
-                            ""
-                        }
-                    }
-                    pList += foo
-                }
-                //問い書込み
-                RoomMain.putLastStateRecord(
-                    context,
-                    LastStateTbl(pNo, qRec.qNo, cNoList, cList, aList, pList, false)
-                )
             }
         }
     }
+}
+
+private fun newGameSelectSta(questionTbl: QuestionTbl): MutableList<Int> {
+    //qListをシャッフルして先頭の路線から新しい問題を作成
+    //その路線の駅をシャッフルし先頭から5駅分を問題とする
+    //ただし8文字以下の駅を対象とする
+    //ただし合計文字数が24文字を超えない駅数とする
+    //上記に当てはまらない路線の場合は次の路線から問題を作成
+    //上記に当てはまるまで繰り返す
+
+    val qRec = RoomMain.getQuestionRecord(context, qNoList[0])
+    if (qRec != null) {
+        val qiList: MutableList<QuestionItemTbl> = mutableListOf()
+        for (v in qRec.qiList)
+            qiList += v
+        qiList.shuffle()
+
+    }
+
+
+}
 
 
 }

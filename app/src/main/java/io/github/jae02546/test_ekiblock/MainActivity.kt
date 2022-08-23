@@ -221,11 +221,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         //question item イベント
-        val qiCountY = MainLayout.qiPara.count()
-        val qiCountX = MainLayout.qiPara[0].count()
+        val qiCountY = MainLayout.qnPara.count()
+        val qiCountX = MainLayout.qnPara[0].count()
         for (v in 0 until qiCountY) {
             for (v2 in 0 until qiCountX) {
-                val tapQi = findViewById<TextView>(MainLayout.qiPara[v][v2].id)
+                val tapQi = findViewById<TextView>(MainLayout.qnPara[v][v2].id)
                 tapQi.setOnClickListener {
                     //Toast.makeText(this, "qi$v$v2", Toast.LENGTH_SHORT).show()
                 }
@@ -233,11 +233,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         //answer item イベント
-        val aiCountY = MainLayout.aiPara.count()
-        val aiCountX = MainLayout.aiPara[0].count()
+        val aiCountY = MainLayout.apPara.count()
+        val aiCountX = MainLayout.apPara[0].count()
         for (v in 0 until aiCountY) {
             for (v2 in 0 until aiCountX) {
-                val tapAi = findViewById<TextView>(MainLayout.aiPara[v][v2].id)
+                val tapAi = findViewById<TextView>(MainLayout.apPara[v][v2].id)
                 tapAi.setOnClickListener {
                     Toast.makeText(this, "ai$v$v2", Toast.LENGTH_SHORT).show()
 
@@ -247,11 +247,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         //piece item イベント
-        val piCountY = MainLayout.piPara.count()
-        val piCountX = MainLayout.piPara[0].count()
+        val piCountY = MainLayout.cpPara.count()
+        val piCountX = MainLayout.cpPara[0].count()
         for (v in 0 until piCountY) {
             for (v2 in 0 until piCountX) {
-                val tapPi = findViewById<TextView>(MainLayout.piPara[v][v2].id)
+                val tapPi = findViewById<TextView>(MainLayout.cpPara[v][v2].id)
                 tapPi.setOnClickListener {
                     Toast.makeText(this, "pi$v$v2", Toast.LENGTH_SHORT).show()
 
