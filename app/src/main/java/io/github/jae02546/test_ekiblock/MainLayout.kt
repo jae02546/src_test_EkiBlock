@@ -19,6 +19,25 @@ import com.google.android.gms.ads.AdSize
 
 
 object MainLayout {
+    //定数
+
+    //横item数
+    private const val mItems = 8 //item幅計算時の分割数となる
+
+    //問題縦item数（高さに使用）
+    private const val mQuestionHeight = 2
+
+    //解答駅数
+    private const val mAnswers = 5
+
+    //持ち札エリア行数
+    private const val mCardRows = 3
+
+    //Viewマージン それぞれのViewがこのマージンを取るので実際の間隔は倍となる
+    private const val mViewMargin = 10 //dp
+
+    //adView高さ
+    private const val mAdViewHeight = 50 //dp
 
     //レイアウトパラメータ
     var mPara: MutableList<MutableList<ItemPara>> = mutableListOf() //main
@@ -38,24 +57,12 @@ object MainLayout {
     var nPara: MutableList<MutableList<ItemPara>> = mutableListOf() //new game
     var adViewPara: MutableList<MutableList<ItemPara>> = mutableListOf() //adView
 
-    //横item数
-//    private const val numItems = 8 //item幅計算時の分割数となる
-    private const val numItems = 9 //item幅計算時の分割数となる
-
-    //問題縦item数（高さに使用）
-    private const val numQuestion = 2
-
-    //回答縦item数
-    private const val numAnswers = 5
-
-    //持ち札縦item数
-    private const val numCards = 3
-
-    //Viewマージン それぞれのViewがこのマージンを取るので実際の間隔は倍となる
-    private const val viewMargin = 10 //dp
-
-    //adView高さ
-    private const val adViewHeight = 50 //dp
+    //選択状態
+    private var mSelectIni = false; //true:初期状態
+    private var mSelect: Boolean = false //true:選択中
+    private var mSelectAnswer: Boolean = false //true:テーブル選択 false:持ち札選択
+    private var mSelectRow: Int = 0 //最終選択行
+    private var mSelectColumn: Int = 0 //最終選択桁
 
 
     enum class EnumViewType {
@@ -113,7 +120,7 @@ object MainLayout {
         adViewPara = mutableListOf()
 
         //item基本幅
-        val iWidth = screenSize[0] / numItems
+        val iWidth = screenSize[0] / mItems
 
         //main[score][question][answer][piece][newGame][adView]
         val numMains = 6
@@ -153,16 +160,16 @@ object MainLayout {
         for (v in 0 until numMains) {
             val height = when (v) {
                 1 -> { //問題
-                    iWidth * numQuestion - iWidth / 2 //- iWidth / 2 は調整
+                    iWidth * mQuestionHeight - iWidth / 2 //- iWidth / 2 は調整
                 }
                 2 -> { //回答
-                    iWidth * numAnswers + iWidth / 2 //+ iWidth / 2 はタイトル
+                    iWidth * mAnswers + iWidth / 2 //+ iWidth / 2 はタイトル
                 }
                 3 -> { //持ち札
-                    iWidth * numCards + iWidth / 2 //+ iWidth / 2 はタイトル
+                    iWidth * mCardRows + iWidth / 2 //+ iWidth / 2 はタイトル
                 }
                 5 -> { //adView
-                    Tools.convertDp2Px(adViewHeight.toFloat(), context).toInt()
+                    Tools.convertDp2Px(mAdViewHeight.toFloat(), context).toInt()
                 }
                 else -> { //score newGame
                     0
@@ -389,13 +396,13 @@ object MainLayout {
         val ldAnswerPiece = LayerDrawable(arrayOf<Drawable>(gdAnswerPiece))
         ldAnswerPiece.setLayerInset(0, 0, 0, 0, 0)
         val apc = context.getThemeColor(R.attr.editTextColor)
-        for (v in 0 until numAnswers) {
+        for (v in 0 until mAnswers) {
             val vPara: MutableList<ItemPara> = mutableListOf()
-            for (v2 in 0 until numItems) {
-                val lMargin = if (v2 != 0) viewMargin else viewMargin * 2
-                val rMargin = if (v2 != numItems - 1) viewMargin else viewMargin * 2
-                val tMargin = if (v != 0) viewMargin else viewMargin * 2
-                val bMargin = if (v != numAnswers - 1) viewMargin else viewMargin * 2
+            for (v2 in 0 until mItems) {
+                val lMargin = if (v2 != 0) mViewMargin else mViewMargin * 2
+                val rMargin = if (v2 != mItems - 1) mViewMargin else mViewMargin * 2
+                val tMargin = if (v != 0) mViewMargin else mViewMargin * 2
+                val bMargin = if (v != mAnswers - 1) mViewMargin else mViewMargin * 2
                 vPara += ItemPara(
                     View.generateViewId(),
                     0, 0,
@@ -484,13 +491,13 @@ object MainLayout {
         val ldCardPiece = LayerDrawable(arrayOf<Drawable>(gdCardPiece))
         ldCardPiece.setLayerInset(0, 0, 0, 0, 0)
         val cpc = context.getThemeColor(R.attr.editTextColor)
-        for (v in 0 until numCards) {
+        for (v in 0 until mCardRows) {
             val vPara: MutableList<ItemPara> = mutableListOf()
-            for (v2 in 0 until numItems) {
-                val lMargin = if (v2 != 0) viewMargin else viewMargin * 2
-                val rMargin = if (v2 != numItems - 1) viewMargin else viewMargin * 2
-                val tMargin = if (v != 0) viewMargin else viewMargin * 2
-                val bMargin = if (v != numCards - 1) viewMargin else viewMargin * 2
+            for (v2 in 0 until mItems) {
+                val lMargin = if (v2 != 0) mViewMargin else mViewMargin * 2
+                val rMargin = if (v2 != mItems - 1) mViewMargin else mViewMargin * 2
+                val tMargin = if (v != 0) mViewMargin else mViewMargin * 2
+                val bMargin = if (v != mCardRows - 1) mViewMargin else mViewMargin * 2
                 vPara += ItemPara(
                     View.generateViewId(),
                     0, 0,
@@ -979,7 +986,8 @@ object MainLayout {
         var lRec = RoomMain.getLastStateRecord(layout.context, pNo)
         //ラスト状態が無い場合も問いを作成
         if (lRec == null || newGame) {
-            newGame(layout.context, pNo)
+            mSelectIni = true
+            Tools.newGame(layout.context, pNo, mAnswers, mCardRows, mItems)
             //再読み込み
             lRec = RoomMain.getLastStateRecord(layout.context, pNo)
         }
@@ -1021,8 +1029,8 @@ object MainLayout {
         }
         //回答表示
         if (lRec != null) {
-            for (v in 0 until numAnswers) {
-                for (v2 in 0 until numItems) {
+            for (v in 0 until mAnswers) {
+                for (v2 in 0 until mItems) {
                     val atv = layout.findViewById<TextView>(apPara[v][v2].id)
                     if (lRec.aList.count() > v && lRec.aList[v].count() > v2) {
                         atv.text = lRec.aList[v][v2]
@@ -1034,8 +1042,8 @@ object MainLayout {
         }
         //持ち札表示
         if (lRec != null) {
-            for (v in 0 until numCards) {
-                for (v2 in 0 until numItems) {
+            for (v in 0 until mCardRows) {
+                for (v2 in 0 until mItems) {
                     val ptv = layout.findViewById<TextView>(cpPara[v][v2].id)
                     if (lRec.pList.count() > v && lRec.pList[v].count() > v2) {
                         ptv.text = lRec.pList[v][v2]
@@ -1049,104 +1057,57 @@ object MainLayout {
 
     }
 
-    //新しい問題を作成
-    private fun newGame(context: Context, pNo: Int) {
-        val qNoList = RoomMain.getQuestionNoList(context)
-        if (qNoList.count() > 0) {
-            //qListをシャッフルして問題を作成
-            qNoList.shuffle()
-            //問題として妥当性のある路線があるまで繰り返す
-            for (v in qNoList) {
-                var cNoList: MutableList<Int> = mutableListOf()
-                val qRec = RoomMain.getQuestionRecord(context, v)
-                if (qRec != null) {
-                    //正解Noリスト取得
-                    cNoList = newGameSelectSta(qRec)
-                    //妥当性あり
-                    if (cNoList.count() > 0) {
-                        //正解リスト
-                        val cList: MutableList<String> = mutableListOf()
-                        for (v in cNoList) {
-                            for (v2 in qRec.qiList) {
-                                if (v == v2.iNo) {
-                                    cList += v2.name
-                                    break
-                                }
-                            }
-                        }
-                        //回答リストは空文字列で作成
-                        val aList: MutableList<MutableList<String>> = mutableListOf()
-                        for (v in 0 until numAnswers) {
-                            val foo: MutableList<String> = mutableListOf()
-                            for (v2 in 0 until numItems)
-                                foo += ""
-                            aList += foo
-                        }
-                        //持ち札リストはランダムに配置
-                        val pList: MutableList<MutableList<String>> = mutableListOf()
-                        val piece: MutableList<String> = mutableListOf()
-                        for (v in cNoList) {
-                            for (v2 in qRec.qiList) {
-                                if (v == v2.iNo) {
-                                    for (v3 in v2.name.indices) {
-                                        piece += v2.name[v3].toString()
-                                    }
-                                    break
-                                }
-                            }
-                        }
-                        piece.shuffle()
-                        for (v in 0 until numCards) {
-                            val foo: MutableList<String> = mutableListOf()
-                            for (v2 in 0 until numItems) {
-                                val i = numItems * v + v2
-                                foo += if (piece.count() > i) {
-                                    piece[i]
-                                } else {
-                                    ""
-                                }
-                            }
-                            pList += foo
-                        }
-                        //問い書込み
-                        RoomMain.putLastStateRecord(
-                            context,
-                            LastStateTbl(pNo, qRec.qNo, cNoList, cList, aList, pList, false)
-                        )
-
-                        break
-                    }
-                }
-            }
+    //pieceを選択表示にする
+    fun showSelect(layout: ConstraintLayout, answer: Boolean, row: Int, column: Int) {
+        //行桁の位置がリスト範囲外なら抜ける
+        if (answer) {
+            if (apPara.count() < row || apPara[0].count() < column) return
+        } else {
+            if (cpPara.count() < row || cpPara[0].count() < column) return
         }
-    }
+        //Layer normal
+        val gd = GradientDrawable()
+        gd.setStroke(
+            Tools.convertDp2Px(1f, layout.context).toInt(),
+            layout.context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        val ld = LayerDrawable(arrayOf<Drawable>(gd))
+        ld.setLayerInset(0, 0, 0, 0, 0)
+        //Layer select
+        val gdSel = GradientDrawable()
+        gdSel.setStroke(
+            Tools.convertDp2Px(1f, layout.context).toInt(),
+            Color.RED
+        )
+        val ldSel = LayerDrawable(arrayOf<Drawable>(gdSel))
+        ldSel.setLayerInset(0, 0, 0, 0, 0)
+        if (mSelectIni || (mSelectAnswer != answer) || (mSelectRow != row) || (mSelectColumn == column)) {
+            //選択フラグ 初期状態または前回と場所が違う場合は選択
+            mSelect = true
+        } else {
+            //それ以外はトグル
+            mSelect != mSelect
+        }
+        mSelectIni = false
+        mSelectAnswer = answer
+        mSelectRow = row
+        mSelectColumn = column
 
-    private fun newGameSelectSta(qRec: QuestionTbl): MutableList<Int> {
-        //路線の駅をシャッフルし先頭から最大5駅分を問題とする
-        //ただし8文字以下の駅を対象とする
-        //ただし合計文字数が24文字を超えない駅数とする
-        val staList: MutableList<Int> = mutableListOf()
-        val qiList: MutableList<QuestionItemTbl> = mutableListOf()
-        for (v in qRec.qiList)
-            qiList += v
-        qiList.shuffle()
-        var count = 0
-        for (v in qiList) {
-            //8文字以下
-            if (v.name.length <= numItems) {
-                count += v.name.length
-                //24文字以下
-                if (count <= numCards * numItems)
-                    staList += v.iNo
-                else
-                    break
-            }
-            //最大5駅
-            if (staList.count() >= numAnswers)
-                break
+        //選択ピース以外は通常表示
+
+
+
+
+        //赤枠にする
+        if (answer) {
+            val p = layout.findViewById<TextView>(apPara[row][column].id)
+            p.background = ld
+        } else {
+            val p = layout.findViewById<TextView>(cpPara[row][column].id)
+            p.background = ld
         }
 
-        return staList
+
     }
 
 

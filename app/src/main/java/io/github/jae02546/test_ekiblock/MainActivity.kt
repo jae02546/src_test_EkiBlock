@@ -232,29 +232,33 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        //answer item イベント
-        val aiCountY = MainLayout.apPara.count()
-        val aiCountX = MainLayout.apPara[0].count()
-        for (v in 0 until aiCountY) {
-            for (v2 in 0 until aiCountX) {
+        //answer piece イベント
+        val apCountY = MainLayout.apPara.count()
+        val apCountX = MainLayout.apPara[0].count()
+        for (v in 0 until apCountY) {
+            for (v2 in 0 until apCountX) {
                 val tapAi = findViewById<TextView>(MainLayout.apPara[v][v2].id)
                 tapAi.setOnClickListener {
-                    Toast.makeText(this, "ai$v$v2", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this, "ai$v$v2", Toast.LENGTH_SHORT).show()
 
+                    //タップされた札を選択状態にする
+                    MainLayout.showSelect(mLayout, true, v, v2)
 
                 }
             }
         }
 
-        //piece item イベント
-        val piCountY = MainLayout.cpPara.count()
-        val piCountX = MainLayout.cpPara[0].count()
-        for (v in 0 until piCountY) {
-            for (v2 in 0 until piCountX) {
+        //card piece イベント
+        val cpCountY = MainLayout.cpPara.count()
+        val cpCountX = MainLayout.cpPara[0].count()
+        for (v in 0 until cpCountY) {
+            for (v2 in 0 until cpCountX) {
                 val tapPi = findViewById<TextView>(MainLayout.cpPara[v][v2].id)
                 tapPi.setOnClickListener {
-                    Toast.makeText(this, "pi$v$v2", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(this, "pi$v$v2", Toast.LENGTH_SHORT).show()
 
+                    //タップされた札を選択状態にする
+                    MainLayout.showSelect(mLayout, false, v, v2)
 
                 }
             }

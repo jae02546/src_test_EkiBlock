@@ -85,6 +85,111 @@ object Tools {
 //
 //    var qMap: MutableMap<Int, QuestionDc> = mutableMapOf()
 
+    //新しい問題を作成
+    fun newGame(context: Context, pNo: Int, numAnswers: Int, numCards: Int, numItems: Int) {
+        val qNoList = RoomMain.getQuestionNoList(context)
+        if (qNoList.count() > 0) {
+            //qListをシャッフルして問題を作成
+            qNoList.shuffle()
+            //問題として妥当性のある路線があるまで繰り返す
+            for (v in qNoList) {
+                var cNoList: MutableList<Int> = mutableListOf()
+                val qRec = RoomMain.getQuestionRecord(context, v)
+                if (qRec != null) {
+                    //正解Noリスト取得
+                    cNoList = newGameSelectSta(qRec, numAnswers, numCards, numItems)
+                    //妥当性あり
+                    if (cNoList.count() > 0) {
+                        //正解リスト
+                        val cList: MutableList<String> = mutableListOf()
+                        for (v in cNoList) {
+                            for (v2 in qRec.qiList) {
+                                if (v == v2.iNo) {
+                                    cList += v2.name
+                                    break
+                                }
+                            }
+                        }
+                        //回答リストは空文字列で作成
+                        val aList: MutableList<MutableList<String>> = mutableListOf()
+                        for (v in 0 until numAnswers) {
+                            val foo: MutableList<String> = mutableListOf()
+                            for (v2 in 0 until numItems)
+                                foo += ""
+                            aList += foo
+                        }
+                        //持ち札リストはランダムに配置
+                        val pList: MutableList<MutableList<String>> = mutableListOf()
+                        val piece: MutableList<String> = mutableListOf()
+                        for (v in cNoList) {
+                            for (v2 in qRec.qiList) {
+                                if (v == v2.iNo) {
+                                    for (v3 in v2.name.indices) {
+                                        piece += v2.name[v3].toString()
+                                    }
+                                    break
+                                }
+                            }
+                        }
+                        piece.shuffle()
+                        for (v in 0 until numCards) {
+                            val foo: MutableList<String> = mutableListOf()
+                            for (v2 in 0 until numItems) {
+                                val i = numItems * v + v2
+                                foo += if (piece.count() > i) {
+                                    piece[i]
+                                } else {
+                                    ""
+                                }
+                            }
+                            pList += foo
+                        }
+                        //問い書込み
+                        RoomMain.putLastStateRecord(
+                            context,
+                            LastStateTbl(pNo, qRec.qNo, cNoList, cList, aList, pList, false)
+                        )
+
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+    private fun newGameSelectSta(
+        qRec: QuestionTbl,
+        numAnswers: Int,
+        numCards: Int,
+        numItems: Int
+    ): MutableList<Int> {
+        //路線の駅をシャッフルし先頭から最大5駅分を問題とする
+        //ただし8文字以下の駅を対象とする
+        //ただし合計文字数が24文字を超えない駅数とする
+        val staList: MutableList<Int> = mutableListOf()
+        val qiList: MutableList<QuestionItemTbl> = mutableListOf()
+        for (v in qRec.qiList)
+            qiList += v
+        qiList.shuffle()
+        var count = 0
+        for (v in qiList) {
+            //8文字以下
+            if (v.name.length <= numItems) {
+                count += v.name.length
+                //24文字以下
+                if (count <= numCards * numItems)
+                    staList += v.iNo
+                else
+                    break
+            }
+            //最大5駅
+            if (staList.count() >= numAnswers)
+                break
+        }
+
+        return staList
+    }
+
     //持ち札の移動を状態テーブルに書き込む
     fun moveOfPiece(
         context: Context,
