@@ -191,7 +191,7 @@ object Tools {
     }
 
     //持ち札の移動を状態テーブルに書き込む
-    fun moveOfPiece(
+    fun swapPieces(
         context: Context,
         pNo: Int,
         fromAnswer: Boolean,

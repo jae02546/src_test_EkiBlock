@@ -240,10 +240,14 @@ class MainActivity : AppCompatActivity() {
                 val tapAi = findViewById<TextView>(MainLayout.apPara[v][v2].id)
                 tapAi.setOnClickListener {
                     //Toast.makeText(this, "ai$v$v2", Toast.LENGTH_SHORT).show()
-
+                    //prefからpNo取得
+                    val foo = Tools.getPrefInt(
+                        this,
+                        getString(R.string.pref_playerNo_key),
+                        getString(R.string.pref_playerNo_defaultValue).toInt()
+                    )
                     //タップされた札を選択状態にする
-                    MainLayout.showSelect(mLayout, true, v, v2)
-
+                    MainLayout.showSelect(mLayout, foo, true, v, v2)
                 }
             }
         }
@@ -256,10 +260,14 @@ class MainActivity : AppCompatActivity() {
                 val tapPi = findViewById<TextView>(MainLayout.cpPara[v][v2].id)
                 tapPi.setOnClickListener {
                     //Toast.makeText(this, "pi$v$v2", Toast.LENGTH_SHORT).show()
-
+                    //prefからpNo取得
+                    val foo = Tools.getPrefInt(
+                        this,
+                        getString(R.string.pref_playerNo_key),
+                        getString(R.string.pref_playerNo_defaultValue).toInt()
+                    )
                     //タップされた札を選択状態にする
-                    MainLayout.showSelect(mLayout, false, v, v2)
-
+                    MainLayout.showSelect(mLayout, foo, false, v, v2)
                 }
             }
         }

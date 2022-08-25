@@ -59,10 +59,10 @@ object MainLayout {
 
     //選択状態
     private var mSelectIni = false; //true:初期状態
-    private var mSelect: Boolean = false //true:選択中
-    private var mSelectAnswer: Boolean = false //true:テーブル選択 false:持ち札選択
-    private var mSelectRow: Int = 0 //最終選択行
-    private var mSelectColumn: Int = 0 //最終選択桁
+    private var mSelect = false //true:選択中
+    private var mSelectAnswer = false //true:テーブル選択 false:持ち札選択
+    private var mSelectRow = 0 //最終選択行
+    private var mSelectColumn = 0 //最終選択桁
 
 
     enum class EnumViewType {
@@ -986,7 +986,7 @@ object MainLayout {
         var lRec = RoomMain.getLastStateRecord(layout.context, pNo)
         //ラスト状態が無い場合も問いを作成
         if (lRec == null || newGame) {
-            mSelectIni = true
+            deselect(layout) //選択解除
             Tools.newGame(layout.context, pNo, mAnswers, mCardRows, mItems)
             //再読み込み
             lRec = RoomMain.getLastStateRecord(layout.context, pNo)
@@ -1057,14 +1057,85 @@ object MainLayout {
 
     }
 
-    //pieceを選択表示にする
-    fun showSelect(layout: ConstraintLayout, answer: Boolean, row: Int, column: Int) {
+    //選択解除
+    private fun deselect(layout: ConstraintLayout) {
+        mSelectIni = true
+        mSelect = false
+        mSelectAnswer = false
+        mSelectRow = 0
+        mSelectColumn = 0
+        val gd = GradientDrawable()
+        gd.setStroke(
+            Tools.convertDp2Px(1f, layout.context).toInt(),
+            layout.context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        val ld = LayerDrawable(arrayOf<Drawable>(gd))
+        ld.setLayerInset(0, 0, 0, 0, 0)
+        //テーブル選択解除
+        for (v in 0 until mAnswers) {
+            for (v2 in 0 until mItems) {
+                val tv = layout.findViewById<TextView>(apPara[v][v2].id)
+                tv.background = ld
+            }
+        }
+        //持ち札選択解除
+        for (v in 0 until mCardRows) {
+            for (v2 in 0 until mItems) {
+                val tv = layout.findViewById<TextView>(cpPara[v][v2].id)
+                tv.background = ld
+            }
+        }
+    }
+
+    //選択表示
+    fun showSelect(layout: ConstraintLayout, pNo: Int, answer: Boolean, row: Int, column: Int) {
         //行桁の位置がリスト範囲外なら抜ける
         if (answer) {
             if (apPara.count() < row || apPara[0].count() < column) return
         } else {
             if (cpPara.count() < row || cpPara[0].count() < column) return
         }
+        //前回が選択で今回違う箇所がタッチされた場合は交換
+        if (mSelect && ((mSelectAnswer != answer) || (mSelectRow != row) || (mSelectColumn != column))) {
+            //ピースを交換してラスト状態更新
+            Tools.swapPieces(
+                layout.context,
+                pNo,
+                mSelectAnswer,
+                mSelectRow,
+                mSelectColumn,
+                answer,
+                row,
+                column
+            )
+
+
+
+            //コンプ判断をここに
+
+
+
+            //再表示
+            showLayout(layout, pNo, false)
+
+            mSelect = false
+        } else {
+            if (mSelectIni || (mSelectAnswer != answer) || (mSelectRow != row) || (mSelectColumn != column)) {
+                //初回、前回と場所が違う場合は選択
+                mSelect = true
+            } else {
+                //前回と同じ場合はトグル
+                mSelect = !mSelect
+            }
+        }
+
+        //前回値保存
+        mSelectIni = false
+        mSelectAnswer = answer
+        mSelectRow = row
+        mSelectColumn = column
+
+        //選択ピース以外は通常表示
         //Layer normal
         val gd = GradientDrawable()
         gd.setStroke(
@@ -1081,33 +1152,26 @@ object MainLayout {
         )
         val ldSel = LayerDrawable(arrayOf<Drawable>(gdSel))
         ldSel.setLayerInset(0, 0, 0, 0, 0)
-        if (mSelectIni || (mSelectAnswer != answer) || (mSelectRow != row) || (mSelectColumn == column)) {
-            //選択フラグ 初期状態または前回と場所が違う場合は選択
-            mSelect = true
-        } else {
-            //それ以外はトグル
-            mSelect != mSelect
+        //回答表示
+        for (v in 0 until mAnswers) {
+            for (v2 in 0 until mItems) {
+                val tv = layout.findViewById<TextView>(apPara[v][v2].id)
+                if (mSelect && answer && v == row && v2 == column)
+                    tv.background = ldSel
+                else
+                    tv.background = ld
+            }
         }
-        mSelectIni = false
-        mSelectAnswer = answer
-        mSelectRow = row
-        mSelectColumn = column
-
-        //選択ピース以外は通常表示
-
-
-
-
-        //赤枠にする
-        if (answer) {
-            val p = layout.findViewById<TextView>(apPara[row][column].id)
-            p.background = ld
-        } else {
-            val p = layout.findViewById<TextView>(cpPara[row][column].id)
-            p.background = ld
+        //持ち札表示
+        for (v in 0 until mCardRows) {
+            for (v2 in 0 until mItems) {
+                val tv = layout.findViewById<TextView>(cpPara[v][v2].id)
+                if (mSelect && !answer && v == row && v2 == column)
+                    tv.background = ldSel
+                else
+                    tv.background = ld
+            }
         }
-
-
     }
 
 
