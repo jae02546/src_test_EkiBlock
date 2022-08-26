@@ -560,7 +560,7 @@ object MainLayout {
         return mLayout
     }
 
-    private fun getConstraintLayout(
+    fun getConstraintLayout(
         layout: ConstraintLayout,
         para: MutableList<MutableList<ItemPara>>
     ): ConstraintLayout {
@@ -972,6 +972,20 @@ object MainLayout {
         pNo: Int,
         newGame: Boolean,
     ) {
+        //ラスト状態の取得と新ゲーム、スコア更新
+        var lRec = RoomMain.getLastStateRecord(layout.context, pNo)
+        //ラスト状態が無い場合も新ゲーム作成
+        if (lRec == null || newGame) {
+            //初期起動時、一度以上操作があった場合はスコア更新
+            if (lRec == null || Tools.isStarted(layout.context, pNo))
+                Tools.incPlayCount(layout.context, pNo) //プレイ回数インクリメント
+            //新ゲーム作成
+            Tools.newGame(layout.context, pNo, mAnswers, mCardRows, mItems)
+            //再読み込み
+            lRec = RoomMain.getLastStateRecord(layout.context, pNo)
+            //選択解除
+            deselect(layout)
+        }
         //スコア表示
         val sRec = RoomMain.getScoreRecord(layout.context, pNo)
         val stv = layout.findViewById<TextView>(sPara[0][0].id)
@@ -983,14 +997,6 @@ object MainLayout {
             stv.text = foo
         }
         //問い表示
-        var lRec = RoomMain.getLastStateRecord(layout.context, pNo)
-        //ラスト状態が無い場合も問いを作成
-        if (lRec == null || newGame) {
-            deselect(layout) //選択解除
-            Tools.newGame(layout.context, pNo, mAnswers, mCardRows, mItems)
-            //再読み込み
-            lRec = RoomMain.getLastStateRecord(layout.context, pNo)
-        }
         if (lRec != null) {
             val qRec = RoomMain.getQuestionRecord(layout.context, lRec.qNo)
             if (qRec != null) {
@@ -1053,8 +1059,6 @@ object MainLayout {
                 }
             }
         }
-
-
     }
 
     //選択解除
@@ -1089,6 +1093,8 @@ object MainLayout {
 
     //選択表示
     fun showSelect(layout: ConstraintLayout, pNo: Int, answer: Boolean, row: Int, column: Int) {
+        //コンプなら抜ける
+        if (Tools.isComp(layout.context, pNo)) return
         //行桁の位置がリスト範囲外なら抜ける
         if (answer) {
             if (apPara.count() < row || apPara[0].count() < column) return
@@ -1108,13 +1114,9 @@ object MainLayout {
                 row,
                 column
             )
-
-
-
-            //コンプ判断をここに
-
-
-
+            //コンプ判断、スコア更新
+            if (Tools.isComp(layout.context, pNo))
+                Tools.incCompCount(layout.context, pNo)
             //再表示
             showLayout(layout, pNo, false)
 

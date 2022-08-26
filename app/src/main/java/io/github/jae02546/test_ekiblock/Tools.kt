@@ -274,6 +274,21 @@ object Tools {
         return count == lRec?.cList?.count() ?: false
     }
 
+    //プレイ回数インクリメント
+    fun incPlayCount(context: Context, pNo: Int) {
+        val rec = RoomMain.getScoreRecord(context, pNo)
+        if (rec != null)
+            RoomMain.putScoreRecord(context, ScoreTbl(pNo, rec.pCount + 1, rec.cCount))
+        else
+            RoomMain.putScoreRecord(context, ScoreTbl(pNo, 1, 0))
+    }
+
+    //コンプ回数インクリメント
+    fun incCompCount(context: Context, pNo: Int) {
+        val rec = RoomMain.getScoreRecord(context, pNo)
+        if (rec != null)
+            RoomMain.putScoreRecord(context, ScoreTbl(rec.pNo, rec.pCount, rec.cCount + 1))
+    }
 
     @RequiresApi(Build.VERSION_CODES.R)
     fun getScreenSize(windowMetrics: WindowMetrics): MutableList<Int> {

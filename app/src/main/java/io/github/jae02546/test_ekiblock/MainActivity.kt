@@ -280,18 +280,45 @@ class MainActivity : AppCompatActivity() {
                 val tapN = findViewById<TextView>(MainLayout.nPara[v][v2].id)
                 tapN.setOnClickListener {
                     //Toast.makeText(this, "n$v$v2", Toast.LENGTH_SHORT).show()
-
-                    //game途中の場合は確認が必要
-
-
                     //prefからpNo取得
                     val foo = Tools.getPrefInt(
                         this,
                         getString(R.string.pref_playerNo_key),
                         getString(R.string.pref_playerNo_defaultValue).toInt()
                     )
-                    //新しいゲームを作成して再表示
-                    MainLayout.showLayout(mLayout, foo, true)
+
+
+
+                    //場所がここじゃないよね
+
+                    //compの場合はcomp画面表示
+                    if (Tools.isComp(this, pNo)) {
+                        val compLayout = CompLayout.makeLayout(this, screenSize)
+                        AlertDialog.Builder(this)
+                            .setTitle("コンプ")
+                            .setView(compLayout)
+                            .setPositiveButton("OK", null)
+                            .show()
+
+
+
+                    } else {
+                        //game途中の場合は確認
+                        if (Tools.isStarted(this, foo)) {
+                            AlertDialog.Builder(this)
+                                .setTitle(R.string.app_label)
+                                //.setMessage("ゲーム途中ですが新しいゲームにしますか?\nスコア上は未コンプとなります")
+                                .setMessage("ゲーム途中ですが新しいゲームにしますか?")
+                                .setPositiveButton("OK") { _, _ ->
+                                    //新しいゲームを作成して再表示
+                                    MainLayout.showLayout(mLayout, foo, true)
+                                }
+                                .setNegativeButton("No") { _, _ ->
+                                    //何もしない
+                                }
+                                .show()
+                        }
+                    }
                 }
             }
         }
