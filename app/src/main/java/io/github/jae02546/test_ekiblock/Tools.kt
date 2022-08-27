@@ -274,6 +274,33 @@ object Tools {
         return count == lRec?.cList?.count() ?: false
     }
 
+    //comp状態リスト取得
+    fun getCompList(context: Context, pNo: Int): MutableList<QuestionItemTbl> {
+        val ret: MutableList<QuestionItemTbl> = mutableListOf()
+        val lRec = RoomMain.getLastStateRecord(context, pNo)
+        if (lRec != null) {
+            val qRec = RoomMain.getQuestionRecord(context, lRec.qNo)
+            if (qRec != null) {
+                val foo: MutableList<String> = mutableListOf()
+                for (v in lRec.aList) {
+                    val bar = v.joinToString("")
+                    if (bar != "")
+                        foo += bar
+                }
+                for (v in foo) {
+                    for (v2 in 0 until qRec.qiList.count()) {
+                        if (v == qRec.qiList[v2].name) {
+                            ret += qRec.qiList[v2]
+                            break
+                        }
+                    }
+                }
+            }
+        }
+
+        return ret
+    }
+
     //プレイ回数インクリメント
     fun incPlayCount(context: Context, pNo: Int) {
         val rec = RoomMain.getScoreRecord(context, pNo)

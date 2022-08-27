@@ -288,18 +288,16 @@ class MainActivity : AppCompatActivity() {
                     )
 
 
-
                     //場所がここじゃないよね
 
                     //compの場合はcomp画面表示
                     if (Tools.isComp(this, pNo)) {
-                        val compLayout = CompLayout.makeLayout(this, screenSize)
+                        val compLayout = CompLayout.makeLayout(this, screenSize, foo)
                         AlertDialog.Builder(this)
                             .setTitle("コンプ")
                             .setView(compLayout)
                             .setPositiveButton("OK", null)
                             .show()
-
 
 
                     } else {

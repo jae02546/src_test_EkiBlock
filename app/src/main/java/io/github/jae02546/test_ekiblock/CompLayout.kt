@@ -25,13 +25,21 @@ object CompLayout {
     private var i3Para: MutableList<MutableList<MutableList<MainLayout.ItemPara>>> = mutableListOf()
 
     //レイアウト作成
-    fun makeLayout(context: Context, screenSize: MutableList<Int>): ConstraintLayout {
+    fun makeLayout(context: Context, screenSize: MutableList<Int>, pNo: Int): ConstraintLayout {
         //パラメータ初期化
         mPara = mutableListOf()
         iPara = mutableListOf()
         i1Para = mutableListOf()
         i2Para = mutableListOf()
         i3Para = mutableListOf()
+        //コンプリスト取得
+        val compList = Tools.getCompList(context, pNo)
+        for (v in 0 until mAnswers) {
+            if (compList.count() < mAnswers)
+                compList += mutableListOf()
+            else
+                break
+        }
         //main
         val gd = GradientDrawable()
         gd.setStroke(
@@ -42,7 +50,7 @@ object CompLayout {
         ldTopBottom.setLayerInset(0, -10, 0, -10, 0)
         val ldBottom = LayerDrawable(arrayOf<Drawable>(gd))
         ldBottom.setLayerInset(0, -10, -10, -10, 0)
-        val iHeight = screenSize[1] / 10
+        val iHeight = screenSize[0] / 5
         for (v in 0 until mAnswers) {
             val foo: MutableList<MainLayout.ItemPara> = mutableListOf()
             for (v2 in 0..0) {
@@ -98,9 +106,11 @@ object CompLayout {
                         0, 0,
                         0, 0, 0, 0,
                         LayerDrawable(arrayOf<Drawable>()),
-                        MainLayout.EnumViewType.TextView, 0f, 0f, 0, Gravity.CENTER,
-                        v.toString() + v2.toString() + v3.toString()
-                        //""
+                        MainLayout.EnumViewType.TextView, 0f, 10f, 0, Gravity.CENTER,
+                        //v.toString() + v2.toString() + v3.toString()
+                        if (v2 == 0) "" else {
+                            if (v2 == 1) compList[v].info2 else compList[v].info3
+                        }
                     )
                 }
                 vPara += v2Para
@@ -110,6 +120,17 @@ object CompLayout {
             i1Layout = MainLayout.getConstraintLayout(i1Layout, vPara)
         }
         //main内item内item2[かな][駅名][ローマ字][補足3]
+        val vWeight: MutableList<Float> = mutableListOf(1.0f, 1.0f, 1.0f, 1.0f)
+        val fSize: MutableList<Float> = mutableListOf(10f, 0f, 10f, 10f)
+        val fColor: MutableList<Int> =
+            mutableListOf(0, context.getThemeColor(R.attr.editTextColor), 0, 0)
+        val gravity: MutableList<Int> =
+            mutableListOf(
+                Gravity.CENTER_HORIZONTAL + Gravity.BOTTOM,
+                Gravity.CENTER,
+                Gravity.CENTER_HORIZONTAL + Gravity.TOP,
+                Gravity.CENTER
+            )
         for (v in 0 until mAnswers) {
             val vPara: MutableList<MutableList<MainLayout.ItemPara>> = mutableListOf()
             for (v2 in 0..3) {
@@ -120,14 +141,17 @@ object CompLayout {
                         0, 0,
                         0, 0, 0, 0,
                         LayerDrawable(arrayOf<Drawable>()),
-
-
-                        //verticalWeightとfont色の指定
-                        MainLayout.EnumViewType.TextView, 0f, 0f, 0, Gravity.CENTER,
-
-
-                        v.toString() + v2.toString() + v3.toString()
-                        //""
+                        MainLayout.EnumViewType.TextView,
+                        vWeight[v2],
+                        fSize[v2],
+                        fColor[v2],
+                        gravity[v2],
+                        //v.toString() + v2.toString() + v3.toString()
+                        if (v2 == 0) compList[v].kana else {
+                            if (v2 == 1) compList[v].name else {
+                                if (v2 == 2) compList[v].english else compList[v].info1
+                            }
+                        }
                     )
                 }
                 vPara += v2Para
