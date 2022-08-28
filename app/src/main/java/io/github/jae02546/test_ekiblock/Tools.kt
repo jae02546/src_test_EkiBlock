@@ -102,40 +102,40 @@ object Tools {
                     if (cNoList.count() > 0) {
                         //正解リスト
                         val cList: MutableList<String> = mutableListOf()
-                        for (v in cNoList) {
-                            for (v2 in qRec.qiList) {
-                                if (v == v2.iNo) {
-                                    cList += v2.name
+                        for (v2 in cNoList) {
+                            for (v3 in qRec.qiList) {
+                                if (v2 == v3.iNo) {
+                                    cList += v3.name
                                     break
                                 }
                             }
                         }
                         //回答リストは空文字列で作成
                         val aList: MutableList<MutableList<String>> = mutableListOf()
-                        for (v in 0 until numAnswers) {
+                        for (v2 in 0 until numAnswers) {
                             val foo: MutableList<String> = mutableListOf()
-                            for (v2 in 0 until numItems)
+                            for (v3 in 0 until numItems)
                                 foo += ""
                             aList += foo
                         }
                         //持ち札リストはランダムに配置
                         val pList: MutableList<MutableList<String>> = mutableListOf()
                         val piece: MutableList<String> = mutableListOf()
-                        for (v in cNoList) {
-                            for (v2 in qRec.qiList) {
-                                if (v == v2.iNo) {
-                                    for (v3 in v2.name.indices) {
-                                        piece += v2.name[v3].toString()
+                        for (v2 in cNoList) {
+                            for (v3 in qRec.qiList) {
+                                if (v2 == v3.iNo) {
+                                    for (v4 in v3.name.indices) {
+                                        piece += v3.name[v4].toString()
                                     }
                                     break
                                 }
                             }
                         }
                         piece.shuffle()
-                        for (v in 0 until numCards) {
+                        for (v2 in 0 until numCards) {
                             val foo: MutableList<String> = mutableListOf()
-                            for (v2 in 0 until numItems) {
-                                val i = numItems * v + v2
+                            for (v3 in 0 until numItems) {
+                                val i = numItems * v2 + v3
                                 foo += if (piece.count() > i) {
                                     piece[i]
                                 } else {
@@ -246,8 +246,8 @@ object Tools {
 
     //開始状態取得
     fun isStarted(context: Context, pNo: Int): Boolean {
-        val lRec = RoomMain.getLastStateRecord(context, pNo)
-        return lRec?.started ?: false
+        val rec = RoomMain.getLastStateRecord(context, pNo)
+        return rec?.started ?: false
     }
 
     //comp状態取得
@@ -257,9 +257,16 @@ object Tools {
         var count = 0
         if (lRec != null) {
             for (v in lRec.aList) {
-                val bar = v.joinToString("")
-                if (bar != "")
-                    foo += bar
+                //これだと先頭に空文字列があってもcompになるが、まあいいか?
+                //空文字列が間にあってもcompになるので駄目
+                //val bar = v.joinToString("")
+                //if (bar != "")
+                //    foo += bar
+                var bar = ""
+                for (v2 in v) {
+                    bar += if (v2 != "") v2 else " "
+                }
+                foo += bar.trimEnd() //後ろの空白は取る
             }
             for (v in lRec.cList) {
                 for (v2 in foo) {
@@ -284,15 +291,19 @@ object Tools {
                 val foo: MutableList<String> = mutableListOf()
                 for (v in lRec.aList) {
                     val bar = v.joinToString("")
-                    if (bar != "")
-                        foo += bar
+                    foo += bar
                 }
                 for (v in foo) {
+                    var ng = true
                     for (v2 in 0 until qRec.qiList.count()) {
                         if (v == qRec.qiList[v2].name) {
                             ret += qRec.qiList[v2]
+                            ng = false
                             break
                         }
+                    }
+                    if (ng) {
+                        ret += QuestionItemTbl()
                     }
                 }
             }

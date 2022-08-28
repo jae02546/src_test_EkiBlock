@@ -36,7 +36,7 @@ object CompLayout {
         val compList = Tools.getCompList(context, pNo)
         for (v in 0 until mAnswers) {
             if (compList.count() < mAnswers)
-                compList += mutableListOf()
+                compList += QuestionItemTbl()
             else
                 break
         }
@@ -133,7 +133,8 @@ object CompLayout {
             )
         for (v in 0 until mAnswers) {
             val vPara: MutableList<MutableList<MainLayout.ItemPara>> = mutableListOf()
-            for (v2 in 0..3) {
+            //for (v2 in 0..3) {
+            for (v2 in 0..2) {
                 val v2Para: MutableList<MainLayout.ItemPara> = mutableListOf()
                 for (v3 in 0..0) {
                     v2Para += MainLayout.ItemPara(

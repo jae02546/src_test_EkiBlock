@@ -55,12 +55,6 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.pref_maintenance_key),
             getString(R.string.pref_maintenance_defaultValue).toBoolean()
         )
-        //prefからpNo取得
-        val pNo = Tools.getPrefInt(
-            this,
-            getString(R.string.pref_playerNo_key),
-            getString(R.string.pref_playerNo_defaultValue).toInt()
-        )
         //ActionBar設定
         if (!mMode)
             supportActionBar?.setTitle(R.string.app_label)
@@ -150,8 +144,12 @@ class MainActivity : AppCompatActivity() {
 
                 //メインレイアウト表示
                 handler.post(Runnable {
-//                    //Roomよりデータ読込
-//                    Tools.qMap = RoomMain.getQuestionMap(this)
+                    //prefからpNo取得
+                    val pNo = Tools.getPrefInt(
+                        this,
+                        getString(R.string.pref_playerNo_key),
+                        getString(R.string.pref_playerNo_defaultValue).toInt()
+                    )
                     //レイアウト表示
                     MainLayout.showLayout(mLayout, pNo, false)
                 })
@@ -161,8 +159,11 @@ class MainActivity : AppCompatActivity() {
 
                 //既存データでメインレイアウト表示
                 handler.post(Runnable {
-//                    //Roomよりデータ読込
-//                    Tools.qMap = RoomMain.getQuestionMap(this)
+                    val pNo = Tools.getPrefInt(
+                        this,
+                        getString(R.string.pref_playerNo_key),
+                        getString(R.string.pref_playerNo_defaultValue).toInt()
+                    )
                     //レイアウト表示
                     MainLayout.showLayout(mLayout, pNo, false)
                 })
@@ -221,11 +222,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         //question item イベント
-        val qiCountY = MainLayout.qnPara.count()
-        val qiCountX = MainLayout.qnPara[0].count()
+        val qiCountY = MainLayout.qcPara.count()
+        val qiCountX = MainLayout.qcPara[0].count()
         for (v in 0 until qiCountY) {
             for (v2 in 0 until qiCountX) {
-                val tapQi = findViewById<TextView>(MainLayout.qnPara[v][v2].id)
+                val tapQi = findViewById<TextView>(MainLayout.qcPara[v][v2].id)
                 tapQi.setOnClickListener {
                     //Toast.makeText(this, "qi$v$v2", Toast.LENGTH_SHORT).show()
                 }
@@ -241,13 +242,21 @@ class MainActivity : AppCompatActivity() {
                 tapAi.setOnClickListener {
                     //Toast.makeText(this, "ai$v$v2", Toast.LENGTH_SHORT).show()
                     //prefからpNo取得
-                    val foo = Tools.getPrefInt(
+                    val pNo = Tools.getPrefInt(
                         this,
                         getString(R.string.pref_playerNo_key),
                         getString(R.string.pref_playerNo_defaultValue).toInt()
                     )
-                    //タップされた札を選択状態にする
-                    MainLayout.showSelect(mLayout, foo, true, v, v2)
+                    if (Tools.isComp(this, pNo)) {
+                        //compの場合はcomp画面表示
+                        showCompLayout(screenSize, pNo)
+                    } else {
+                        //タップ処理
+                        MainLayout.showSelect(mLayout, pNo, true, v, v2)
+                        //compの場合はcomp画面表示
+                        if (Tools.isComp(this, pNo))
+                            showCompLayout(screenSize, pNo)
+                    }
                 }
             }
         }
@@ -261,13 +270,21 @@ class MainActivity : AppCompatActivity() {
                 tapPi.setOnClickListener {
                     //Toast.makeText(this, "pi$v$v2", Toast.LENGTH_SHORT).show()
                     //prefからpNo取得
-                    val foo = Tools.getPrefInt(
+                    val pNo = Tools.getPrefInt(
                         this,
                         getString(R.string.pref_playerNo_key),
                         getString(R.string.pref_playerNo_defaultValue).toInt()
                     )
-                    //タップされた札を選択状態にする
-                    MainLayout.showSelect(mLayout, foo, false, v, v2)
+                    if (Tools.isComp(this, pNo)) {
+                        //compの場合はcomp画面表示
+                        showCompLayout(screenSize, pNo)
+                    } else {
+                        //タップ処理
+                        MainLayout.showSelect(mLayout, pNo, false, v, v2)
+                        //compの場合はcomp画面表示
+                        if (Tools.isComp(this, pNo))
+                            showCompLayout(screenSize, pNo)
+                    }
                 }
             }
         }
@@ -281,40 +298,42 @@ class MainActivity : AppCompatActivity() {
                 tapN.setOnClickListener {
                     //Toast.makeText(this, "n$v$v2", Toast.LENGTH_SHORT).show()
                     //prefからpNo取得
-                    val foo = Tools.getPrefInt(
+                    val pNo = Tools.getPrefInt(
                         this,
                         getString(R.string.pref_playerNo_key),
                         getString(R.string.pref_playerNo_defaultValue).toInt()
                     )
-
-
-                    //場所がここじゃないよね
-
-                    //compの場合はcomp画面表示
+                    //compの場合は確認
                     if (Tools.isComp(this, pNo)) {
-                        val compLayout = CompLayout.makeLayout(this, screenSize, foo)
                         AlertDialog.Builder(this)
-                            .setTitle("コンプ")
-                            .setView(compLayout)
-                            .setPositiveButton("OK", null)
+                            .setTitle(R.string.app_label)
+                            .setMessage("新しいゲームにしますか?")
+                            .setPositiveButton("OK") { _, _ ->
+                                //新しいゲームを作成して表示
+                                MainLayout.showLayout(mLayout, pNo, true)
+                            }
+                            .setNegativeButton("No") { _, _ ->
+                                //何もしない
+                            }
                             .show()
-
-
                     } else {
                         //game途中の場合は確認
-                        if (Tools.isStarted(this, foo)) {
+                        if (Tools.isStarted(this, pNo)) {
                             AlertDialog.Builder(this)
                                 .setTitle(R.string.app_label)
                                 //.setMessage("ゲーム途中ですが新しいゲームにしますか?\nスコア上は未コンプとなります")
                                 .setMessage("ゲーム途中ですが新しいゲームにしますか?")
                                 .setPositiveButton("OK") { _, _ ->
-                                    //新しいゲームを作成して再表示
-                                    MainLayout.showLayout(mLayout, foo, true)
+                                    //新しいゲームを作成して表示
+                                    MainLayout.showLayout(mLayout, pNo, true)
                                 }
                                 .setNegativeButton("No") { _, _ ->
                                     //何もしない
                                 }
                                 .show()
+                        } else {
+                            //新しいゲームを作成して表示
+                            MainLayout.showLayout(mLayout, pNo, true)
                         }
                     }
                 }
@@ -536,20 +555,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
-    private fun showMainLayout(view: View) {
-
-        val numDigits = 8
-//        val c1Layout = findViewById<ConstraintLayout>(MainLayout.cPara[1][0].id)
-//        val c2Layout = findViewById<ConstraintLayout>(MainLayout.cPara[2][0].id)
-
-//        MainLayout.showLayout(c1Layout, MainLayout.c1Para, Question.question, numDigits, selLine)
-//        MainLayout.showLayout(view as ConstraintLayout, Question.question, numDigits, selLine)
-
-
+    //comp画面表示
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun showCompLayout(screenSize: MutableList<Int>, pNo: Int) {
+        val compLayout = CompLayout.makeLayout(this, screenSize, pNo)
+        AlertDialog.Builder(this)
+            .setTitle("コンプ")
+            .setView(compLayout)
+            .setPositiveButton("OK", null)
+            .show()
     }
 
 
 }
-
 

@@ -44,8 +44,9 @@ object MainLayout {
     var sPara: MutableList<MutableList<ItemPara>> = mutableListOf() //score
     var qPara: MutableList<MutableList<ItemPara>> = mutableListOf() //question
     var qiPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionItem
-    var qhPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionHint
-    var qnPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionName
+    var qlPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionLeft
+    var qcPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionCenter
+    var qrPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionRight
     var aPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answer
     var aiPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answerItem
     var atPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answerTitle
@@ -106,8 +107,9 @@ object MainLayout {
         sPara = mutableListOf()
         qPara = mutableListOf()
         qiPara = mutableListOf()
-        qhPara = mutableListOf()
-        qnPara = mutableListOf()
+        qlPara = mutableListOf()
+        qcPara = mutableListOf()
+        qrPara = mutableListOf()
         aPara = mutableListOf()
         aiPara = mutableListOf()
         atPara = mutableListOf()
@@ -214,7 +216,8 @@ object MainLayout {
                     0, 0, 0, 0,
                     ldScore,
                     EnumViewType.TextView, 0f, 0f, 0, Gravity.CENTER,
-                    v.toString() + v2.toString()
+                    //v.toString() + v2.toString()
+                    ""
                 )
             }
             sPara += foo
@@ -249,7 +252,7 @@ object MainLayout {
         var qLayout = mLayout.getViewById(mPara[1][0].id) as ConstraintLayout
         qLayout = getConstraintLayout(qLayout, qPara)
 
-        //question item
+        //question item [left][center][right]
         for (v in 0..0) {
             val vPara: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0..2) {
@@ -259,7 +262,8 @@ object MainLayout {
                     0, 0, 0, 0,
                     LayerDrawable(arrayOf<Drawable>()),
                     EnumViewType.ConstraintLayout, 0f, 0f, 0, Gravity.CENTER,
-                    v.toString() + v2.toString() //""
+                    //v.toString() + v2.toString()
+                    ""
                 )
             }
             qiPara += vPara
@@ -267,7 +271,64 @@ object MainLayout {
         var qiLayout = qLayout.getViewById(qPara[0][0].id) as ConstraintLayout
         qiLayout = getConstraintLayout(qiLayout, qiPara)
 
-        //question hint
+        //question left [ヒント][解答駅数]
+        val qlWeight: MutableList<Float> = mutableListOf(1.0f, 2.0f)
+        for (v in 0..1) {
+            val vPara: MutableList<ItemPara> = mutableListOf()
+            for (v2 in 0..0) {
+                vPara += ItemPara(
+                    View.generateViewId(),
+                    0, 0,
+                    0, 0, 0, 0,
+                    LayerDrawable(arrayOf<Drawable>()),
+                    EnumViewType.TextView,
+                    qlWeight[v],
+                    10f,
+                    0,
+                    Gravity.CENTER,
+                    //v.toString() + v2.toString()
+                    ""
+                )
+            }
+            qlPara += vPara
+        }
+        var qlLayout = qiLayout.getViewById(qiPara[0][0].id) as ConstraintLayout
+        qlLayout = getConstraintLayout(qlLayout, qlPara)
+
+        //question center [かな][駅名][ローマ字][補足1+2]
+        val qcColor = context.getThemeColor(R.attr.editTextColor)
+        val qcWeight: MutableList<Float> = mutableListOf(1.0f, 1.0f, 1.0f, 1.0f)
+        val qcFontSize: MutableList<Float> = mutableListOf(10f, 0f, 10f, 10f)
+        val qcGravity: MutableList<Int> =
+            mutableListOf(
+                Gravity.CENTER_HORIZONTAL + Gravity.BOTTOM,
+                Gravity.CENTER,
+                Gravity.CENTER_HORIZONTAL + Gravity.TOP,
+                Gravity.CENTER
+            )
+        for (v in 0..3) {
+            val vPara: MutableList<ItemPara> = mutableListOf()
+            for (v2 in 0..0) {
+                vPara += ItemPara(
+                    View.generateViewId(),
+                    0, 0,
+                    0, 0, 0, 0,
+                    LayerDrawable(arrayOf<Drawable>()),
+                    EnumViewType.TextView,
+                    qcWeight[v],
+                    qcFontSize[v],
+                    if (v != 1) 0 else qcColor,
+                    qcGravity[v],
+                    //v.toString() + v2.toString()
+                    ""
+                )
+            }
+            qcPara += vPara
+        }
+        var qcLayout = qiLayout.getViewById(qiPara[0][1].id) as ConstraintLayout
+        qcLayout = getConstraintLayout(qcLayout, qcPara)
+
+        //question right [補足3]
         for (v in 0..0) {
             val vPara: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0..0) {
@@ -281,46 +342,14 @@ object MainLayout {
                     10f,
                     0,
                     Gravity.CENTER,
-                    v.toString() + v2.toString() //""
+                    //v.toString() + v2.toString()
+                    ""
                 )
             }
-            qhPara += vPara
+            qrPara += vPara
         }
-        var qhLayout = qiLayout.getViewById(qiPara[0][0].id) as ConstraintLayout
-        qhLayout = getConstraintLayout(qhLayout, qhPara)
-
-        //question name
-        val qnc = context.getThemeColor(R.attr.editTextColor)
-        val vWeight: MutableList<Float> = mutableListOf(1.0f, 1.0f, 1.0f, 1.0f)
-        val fSize: MutableList<Float> = mutableListOf(10f, 0f, 10f, 10f)
-        val gravity: MutableList<Int> =
-            mutableListOf(
-                Gravity.CENTER_HORIZONTAL + Gravity.BOTTOM,
-                Gravity.CENTER,
-                Gravity.CENTER_HORIZONTAL + Gravity.TOP,
-                Gravity.CENTER
-            )
-        val numName = 4
-        for (v in 0 until numName) {
-            val vPara: MutableList<ItemPara> = mutableListOf()
-            for (v2 in 0..0) {
-                vPara += ItemPara(
-                    View.generateViewId(),
-                    0, 0,
-                    0, 0, 0, 0,
-                    LayerDrawable(arrayOf<Drawable>()),
-                    EnumViewType.TextView,
-                    vWeight[v],
-                    fSize[v],
-                    if (v != 1) 0 else qnc,
-                    gravity[v],
-                    v.toString() + v2.toString() //""
-                )
-            }
-            qnPara += vPara
-        }
-        var qnLayout = qiLayout.getViewById(qiPara[0][1].id) as ConstraintLayout
-        qnLayout = getConstraintLayout(qnLayout, qnPara)
+        var qrLayout = qiLayout.getViewById(qiPara[0][2].id) as ConstraintLayout
+        qrLayout = getConstraintLayout(qrLayout, qrPara)
 
         //answer
         val gdAnswer = GradientDrawable()
@@ -409,7 +438,8 @@ object MainLayout {
                     lMargin, rMargin, tMargin, bMargin,
                     ldAnswerPiece,
                     EnumViewType.TextView, 0f, 0f, apc, Gravity.CENTER,
-                    v.toString() + v2.toString() //""
+                    //v.toString() + v2.toString()
+                    ""
                 )
             }
             apPara += vPara
@@ -504,7 +534,8 @@ object MainLayout {
                     lMargin, rMargin, tMargin, bMargin,
                     ldCardPiece,
                     EnumViewType.TextView, 0f, 0f, cpc, Gravity.CENTER,
-                    v.toString() + v2.toString() //""
+                    //v.toString() + v2.toString()
+                    ""
                 )
             }
             cpPara += vPara
@@ -1000,24 +1031,27 @@ object MainLayout {
         if (lRec != null) {
             val qRec = RoomMain.getQuestionRecord(layout.context, lRec.qNo)
             if (qRec != null) {
-                val hint = layout.findViewById<TextView>(qhPara[0][0].id)
+                val hint = layout.findViewById<TextView>(qlPara[0][0].id)
                 val foo =
                     if (qRec.url != "") "<a href=" + (qRec.url) + ">" + "Hint" + "</a>" else ""
                 hint.text = HtmlCompat.fromHtml(foo, HtmlCompat.FROM_HTML_MODE_COMPACT)
                 hint.movementMethod = LinkMovementMethod.getInstance()
-                val kana = layout.findViewById<TextView>(qnPara[0][0].id)
+                val ans = layout.findViewById<TextView>(qlPara[1][0].id)
+                val bar = "回答駅数\n" + lRec.cList.count() + "駅"
+                ans.text = bar
+                val kana = layout.findViewById<TextView>(qcPara[0][0].id)
                 kana.text = qRec.kana
-                val name = layout.findViewById<TextView>(qnPara[1][0].id)
+                val name = layout.findViewById<TextView>(qcPara[1][0].id)
                 name.text = qRec.name
-                val english = layout.findViewById<TextView>(qnPara[2][0].id)
+                val english = layout.findViewById<TextView>(qcPara[2][0].id)
                 english.text = qRec.english
-                val info = layout.findViewById<TextView>(qnPara[3][0].id)
-                //info.text = qRec.info3
-                val bar = qRec.name + "の駅を" + lRec.cList.count() + "駅答えてください"
-                info.text = bar
+                val info1 = layout.findViewById<TextView>(qcPara[3][0].id)
+                info1.text = qRec.info1
+                val info2 = layout.findViewById<TextView>(qrPara[0][0].id)
+                info2.text = qRec.info2
             } else {
                 //ここにはこないはず
-                for (v in qnPara) {
+                for (v in qcPara) {
                     for (v2 in v) {
                         val foo = layout.findViewById<TextView>(v2.id)
                         foo.text = ""
@@ -1026,7 +1060,7 @@ object MainLayout {
             }
         } else {
             //ここにはこないはず
-            for (v in qnPara) {
+            for (v in qcPara) {
                 for (v2 in v) {
                     val foo = layout.findViewById<TextView>(v2.id)
                     foo.text = ""
@@ -1034,6 +1068,9 @@ object MainLayout {
             }
         }
         //回答表示
+
+        //回答駅数が5駅無い場合はグレー表示にできないか?
+
         if (lRec != null) {
             for (v in 0 until mAnswers) {
                 for (v2 in 0 until mItems) {
@@ -1046,6 +1083,8 @@ object MainLayout {
                 }
             }
         }
+
+
         //持ち札表示
         if (lRec != null) {
             for (v in 0 until mCardRows) {
