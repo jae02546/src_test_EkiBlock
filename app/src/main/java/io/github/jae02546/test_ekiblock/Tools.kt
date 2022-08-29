@@ -2,9 +2,11 @@ package io.github.jae02546.test_ekiblock
 
 import android.content.Context
 import android.graphics.Insets
+import android.graphics.Point
 import android.os.Build
 import android.util.DisplayMetrics
 import android.view.WindowInsets
+import android.view.WindowManager
 import android.view.WindowMetrics
 import androidx.annotation.RequiresApi
 import androidx.preference.PreferenceManager
@@ -328,20 +330,32 @@ object Tools {
             RoomMain.putScoreRecord(context, ScoreTbl(rec.pNo, rec.pCount, rec.cCount + 1))
     }
 
-    @RequiresApi(Build.VERSION_CODES.R)
-    fun getScreenSize(windowMetrics: WindowMetrics): MutableList<Int> {
-        val insets: Insets = windowMetrics.windowInsets
-            .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-        val foo: MutableList<Int> = mutableListOf()
+//    @RequiresApi(Build.VERSION_CODES.R)
+//    fun getScreenSize(windowMetrics: WindowMetrics): MutableList<Int> {
+//        val insets: Insets = windowMetrics.windowInsets
+//            .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
+//        val foo: MutableList<Int> = mutableListOf()
+//
+//        //ScreenWidth
+//        foo += windowMetrics.bounds.width()
+//        //ScreenHeight
+//        foo += windowMetrics.bounds.height()
+//        //StatusBar
+//        foo += insets.top
+//        //NavigationBar
+//        foo += insets.bottom
+//
+//        return foo
+//    }
 
-        //ScreenWidth
-        foo += windowMetrics.bounds.width()
-        //ScreenHeight
-        foo += windowMetrics.bounds.height()
-        //StatusBar
-        foo += insets.top
-        //NavigationBar
-        foo += insets.bottom
+    fun getScreenSize(wm: WindowManager): MutableList<Int> {
+        val disp = wm.defaultDisplay
+        val realSize = Point()
+        disp.getRealSize(realSize)
+
+        val foo: MutableList<Int> = mutableListOf()
+        foo += realSize.x
+        foo += realSize.y
 
         return foo
     }

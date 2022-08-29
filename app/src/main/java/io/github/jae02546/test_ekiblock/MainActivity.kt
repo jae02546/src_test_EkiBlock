@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,7 +15,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -35,14 +33,18 @@ class MainActivity : AppCompatActivity() {
     private var mCnt = 0 //保守モードカウント
     private lateinit var mLayout: ConstraintLayout //メイン画面レイアウト
 
-    @RequiresApi(Build.VERSION_CODES.R)
-    @SuppressLint("CutPasteId", "ResourceType", "SourceLockedOrientationActivity")
+    //@RequiresApi(Build.VERSION_CODES.R)
+    @SuppressLint(
+        "CutPasteId", "ResourceType", "SourceLockedOrientationActivity",
+        "ClickableViewAccessibility"
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_main)
-        val screenSize = Tools.getScreenSize(this.windowManager.currentWindowMetrics)
-//        setContentView(MainLayout.makeLayout(this, screenSize))
-//        val layout = MainLayout.makeLayout(this, screenSize)
+        //API30以降
+        //val screenSize = Tools.getScreenSize(this.windowManager.currentWindowMetrics)
+        //API29以前
+        val screenSize = Tools.getScreenSize(getSystemService(WINDOW_SERVICE) as WindowManager)
         mLayout = MainLayout.makeLayout(this, screenSize)
         setContentView(mLayout)
         supportActionBar?.setTitle(R.string.app_label)
@@ -247,18 +249,53 @@ class MainActivity : AppCompatActivity() {
                         getString(R.string.pref_playerNo_key),
                         getString(R.string.pref_playerNo_defaultValue).toInt()
                     )
+                    //compの場合はcomp画面表示
                     if (Tools.isComp(this, pNo)) {
-                        //compの場合はcomp画面表示
+                        soundVibrator(true) //効果音とバイブ
                         showCompLayout(screenSize, pNo)
                     } else {
                         //タップ処理
                         MainLayout.showSelect(mLayout, pNo, true, v, v2)
                         //compの場合はcomp画面表示
-                        if (Tools.isComp(this, pNo))
+                        if (Tools.isComp(this, pNo)) {
+                            soundVibrator(true) //効果音とバイブ
                             showCompLayout(screenSize, pNo)
+                        } else {
+                            soundVibrator(false) //効果音とバイブ
+                        }
                     }
                 }
             }
+        }
+
+
+        var pieceXi = 0
+        var pieceYi = 0
+        var pieceX = 0f
+        var pieceY = 0f
+        val tapC = findViewById<TextView>(MainLayout.cPara[0][0].id)
+        tapC.setOnTouchListener { _, event ->
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    Log.d("tapC down", event.x.toString() + " " + event.y.toString())
+                    tapDownX = tapC.x
+                    tapDownY = tapC.y
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    Log.d("move", event.x.toString() + " " + event.y.toString())
+                    tapCi.x = saveX + event.x
+                    tapCi.y = saveY + event.y
+
+                    //1080 2220
+
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    Log.d("up cancel", event.x.toString() + " " + event.y.toString())
+                    tapCi.x = saveX
+                    tapCi.y = saveY
+                }
+            }
+            true
         }
 
         //card piece イベント
@@ -266,26 +303,65 @@ class MainActivity : AppCompatActivity() {
         val cpCountX = MainLayout.cpPara[0].count()
         for (v in 0 until cpCountY) {
             for (v2 in 0 until cpCountX) {
-                val tapPi = findViewById<TextView>(MainLayout.cpPara[v][v2].id)
-                tapPi.setOnClickListener {
-                    //Toast.makeText(this, "pi$v$v2", Toast.LENGTH_SHORT).show()
-                    //prefからpNo取得
-                    val pNo = Tools.getPrefInt(
-                        this,
-                        getString(R.string.pref_playerNo_key),
-                        getString(R.string.pref_playerNo_defaultValue).toInt()
-                    )
-                    if (Tools.isComp(this, pNo)) {
-                        //compの場合はcomp画面表示
-                        showCompLayout(screenSize, pNo)
-                    } else {
-                        //タップ処理
-                        MainLayout.showSelect(mLayout, pNo, false, v, v2)
-                        //compの場合はcomp画面表示
-                        if (Tools.isComp(this, pNo))
-                            showCompLayout(screenSize, pNo)
+                val tapCi = findViewById<TextView>(MainLayout.cpPara[v][v2].id)
+//                tapCi.setOnClickListener {
+//                    //Toast.makeText(this, "pi$v$v2", Toast.LENGTH_SHORT).show()
+//                    //prefからpNo取得
+//                    val pNo = Tools.getPrefInt(
+//                        this,
+//                        getString(R.string.pref_playerNo_key),
+//                        getString(R.string.pref_playerNo_defaultValue).toInt()
+//                    )
+//                    //compの場合はcomp画面表示
+//                    if (Tools.isComp(this, pNo)) {
+//                        soundVibrator(true) //効果音とバイブ
+//                        showCompLayout(screenSize, pNo)
+//                    } else {
+//                        //タップ処理
+//                        MainLayout.showSelect(mLayout, pNo, false, v, v2)
+//                        //compの場合はcomp画面表示
+//                        if (Tools.isComp(this, pNo)) {
+//                            soundVibrator(true) //効果音とバイブ
+//                            showCompLayout(screenSize, pNo)
+//                        } else {
+//                            soundVibrator(false) //効果音とバイブ
+//                        }
+//                    }
+//                }
+
+
+
+//                var saveX = 0f
+//                var saveY = 0f
+                tapCi.setOnTouchListener { _, event ->
+                    when (event.actionMasked) {
+                        MotionEvent.ACTION_DOWN -> {
+                            Log.d("piece down", event.x.toString() + " " + event.y.toString())
+                            pieceXi = v
+                            pieceYi = v2
+                            pieceX = tapCi.x
+                            pieceY = tapCi.y
+//                            saveX = tapCi.x
+//                            saveY = tapCi.y
+                        }
+                        MotionEvent.ACTION_MOVE -> {
+                            Log.d("piece move", event.x.toString() + " " + event.y.toString())
+//                            tapCi.x = saveX + event.x
+//                            tapCi.y = saveY + event.y
+
+                            //1080 2220
+
+                        }
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                            Log.d("piece up cancel", event.x.toString() + " " + event.y.toString())
+//                            tapCi.x = saveX
+//                            tapCi.y = saveY
+                        }
                     }
+                    true
                 }
+
+
             }
         }
 
@@ -297,6 +373,7 @@ class MainActivity : AppCompatActivity() {
                 val tapN = findViewById<TextView>(MainLayout.nPara[v][v2].id)
                 tapN.setOnClickListener {
                     //Toast.makeText(this, "n$v$v2", Toast.LENGTH_SHORT).show()
+                    soundVibrator(false) //効果音とバイブ
                     //prefからpNo取得
                     val pNo = Tools.getPrefInt(
                         this,
@@ -556,7 +633,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     //comp画面表示
-    @RequiresApi(Build.VERSION_CODES.R)
+    //@RequiresApi(Build.VERSION_CODES.R)
     private fun showCompLayout(screenSize: MutableList<Int>, pNo: Int) {
         val compLayout = CompLayout.makeLayout(this, screenSize, pNo)
         AlertDialog.Builder(this)
@@ -564,6 +641,31 @@ class MainActivity : AppCompatActivity() {
             .setView(compLayout)
             .setPositiveButton("OK", null)
             .show()
+    }
+
+    //効果音とバイブ
+    private fun soundVibrator(comp: Boolean) {
+        val sNo = Tools.getPrefInt(
+            this,
+            getString(R.string.setting_soundNo_key),
+            getString(R.string.setting_soundNo_defaultValue).toInt()
+        )
+        val vNo = Tools.getPrefInt(
+            this,
+            getString(R.string.setting_vibrationNo_key),
+            getString(R.string.setting_vibrationNo_defaultValue).toInt()
+        )
+        if (comp) {
+            if (sNo <= 1)
+                SoundAndVibrator.playSoundComp()
+            if (vNo <= 1)
+                SoundAndVibrator.runVibratorComp(this)
+        } else {
+            if (sNo <= 0)
+                SoundAndVibrator.playSoundMove()
+            if (vNo <= 0)
+                SoundAndVibrator.runVibratorMove(this)
+        }
     }
 
 

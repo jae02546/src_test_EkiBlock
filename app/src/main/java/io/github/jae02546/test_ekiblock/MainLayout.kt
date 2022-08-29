@@ -1037,7 +1037,7 @@ object MainLayout {
                 hint.text = HtmlCompat.fromHtml(foo, HtmlCompat.FROM_HTML_MODE_COMPACT)
                 hint.movementMethod = LinkMovementMethod.getInstance()
                 val ans = layout.findViewById<TextView>(qlPara[1][0].id)
-                val bar = "回答駅数\n" + lRec.cList.count() + "駅"
+                val bar = "回答数\n" + lRec.cList.count() + "駅"
                 ans.text = bar
                 val kana = layout.findViewById<TextView>(qcPara[0][0].id)
                 kana.text = qRec.kana
@@ -1068,9 +1068,6 @@ object MainLayout {
             }
         }
         //回答表示
-
-        //回答駅数が5駅無い場合はグレー表示にできないか?
-
         if (lRec != null) {
             for (v in 0 until mAnswers) {
                 for (v2 in 0 until mItems) {
@@ -1083,8 +1080,6 @@ object MainLayout {
                 }
             }
         }
-
-
         //持ち札表示
         if (lRec != null) {
             for (v in 0 until mCardRows) {
