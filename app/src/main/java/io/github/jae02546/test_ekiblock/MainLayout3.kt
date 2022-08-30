@@ -18,7 +18,7 @@ import androidx.core.text.HtmlCompat
 import com.google.android.gms.ads.AdSize
 
 
-object MainLayout {
+object MainLayout3 {
     //定数
 
     //横item数
@@ -124,13 +124,8 @@ object MainLayout {
         //item基本幅
         val iWidth = screenSize[0] / mItems
 
-        //main[score][question][answer][card][newGame][adView][piece]
-
-
-        //ここは6で別途非表示でカーソルを作る?
-        val numMains = 7
-
-
+        //main[score][question][answer][piece][newGame][adView]
+        val numMains = 6
         val mMargin = 2
         val mlMargin: MutableList<Int> = mutableListOf(
             mMargin * 2,
@@ -138,7 +133,6 @@ object MainLayout {
             mMargin * 2,
             mMargin * 2,
             mMargin * 2,
-            0,
             0
         )
         val mrMargin: MutableList<Int> = mutableListOf(
@@ -147,7 +141,6 @@ object MainLayout {
             mMargin * 2,
             mMargin * 2,
             mMargin * 2,
-            0,
             0
         )
         val mtMargin: MutableList<Int> = mutableListOf(
@@ -156,7 +149,6 @@ object MainLayout {
             mMargin,
             mMargin,
             mMargin,
-            0,
             0
         )
         val mbMargin: MutableList<Int> = mutableListOf(
@@ -165,18 +157,8 @@ object MainLayout {
             mMargin,
             mMargin,
             mMargin * 2,
-            0,
             0
         )
-        val gdMain = GradientDrawable()
-        gdMain.setStroke(
-            Tools.convertDp2Px(1f, context).toInt(),
-            context.getThemeColor(R.attr.colorButtonNormal)
-        )
-        gdMain.setColor(Color.RED)
-        val ldMain = LayerDrawable(arrayOf<Drawable>(gdMain))
-        ldMain.setLayerInset(0, 0, 0, 0, 0)
-
         for (v in 0 until numMains) {
             val height = when (v) {
                 1 -> { //問題
@@ -191,9 +173,6 @@ object MainLayout {
                 5 -> { //adView
                     Tools.convertDp2Px(mAdViewHeight.toFloat(), context).toInt()
                 }
-                6 -> { //
-                    iWidth
-                }
                 else -> { //score newGame
                     0
                 }
@@ -202,9 +181,9 @@ object MainLayout {
             for (v2 in 0..0) {
                 foo += ItemPara(
                     View.generateViewId(),
-                    if (v != 6) 0 else iWidth, height,
+                    0, height,
                     mlMargin[v], mrMargin[v], mtMargin[v], mbMargin[v],
-                    if (v != 6) LayerDrawable(arrayOf<Drawable>()) else ldMain,
+                    LayerDrawable(arrayOf<Drawable>()),
                     EnumViewType.ConstraintLayout, 0f, 0f, 0, Gravity.CENTER,
                     ""
                 )
