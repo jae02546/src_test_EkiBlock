@@ -18,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.*
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
@@ -236,6 +237,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        var pieceAnswer = false
+        var pieceXi = 0
+        var pieceYi = 0
+        var pieceXe = 0f
+        var pieceYe = 0f
+        var cardXs = 0f
+        var cardYs = 0f
+
         //answer piece イベント
         val apCountY = MainLayout.apPara.count()
         val apCountX = MainLayout.apPara[0].count()
@@ -266,46 +275,36 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-            }
-        }
 
+                tapAi.setOnTouchListener { _, event ->
+                    when (event.actionMasked) {
+                        MotionEvent.ACTION_DOWN -> {
+                            Log.d(
+                                "answer piece down",
+                                event.x.toString() + " " + event.y.toString()
+                            )
+                            Log.d(
+                                "answer piece x y w h",
+                                tapAi.x.toString() + " " + tapAi.y.toString() + " " + tapAi.width.toString() + " " + tapAi.height.toString()
+                            )
+                        }
+                        MotionEvent.ACTION_MOVE -> {
+                            Log.d(
+                                "answer piece move",
+                                event.x.toString() + " " + event.y.toString()
+                            )
+                        }
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                            Log.d(
+                                "answer piece up cancel",
+                                event.x.toString() + " " + event.y.toString()
+                            )
+                        }
+                    }
 
-        var pieceXi = 0
-        var pieceYi = 0
-        var pieceX = 0f
-        var pieceY = 0f
-        var cardXs = 0f
-        var cardYs = 0f
-
-        val tapC = findViewById<ConstraintLayout>(MainLayout.mPara[6][0].id)
-        tapC.setOnTouchListener { _, event ->
-            when (event.actionMasked) {
-                MotionEvent.ACTION_DOWN -> {
-                    Log.d("tapC down", event.x.toString() + " " + event.y.toString())
-                    cardXs = event.x
-                    cardYs = event.y
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    Log.d("tapC move", event.x.toString() + " " + event.y.toString())
-//                    val tapCi = findViewById<TextView>(MainLayout.cpPara[pieceXi][pieceYi].id)
-//                    tapCi.x = pieceX + (event.x - cardXs)
-//                    tapCi.y = pieceY + (event.y - cardYs)
-                    tapC.x = event.x - cardXs
-                    tapC.y = event.y - cardYs
-
-                    //1080 2220
-
-                }
-                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                    Log.d("tapC up cancel", event.x.toString() + " " + event.y.toString())
-//                    val tapCi = findViewById<TextView>(MainLayout.cpPara[pieceXi][pieceYi].id)
-//                    tapCi.x = pieceX
-//                    tapCi.y = pieceY
-                    tapC.x = cardXs
-                    tapC.y = cardYs
+                    true
                 }
             }
-            true
         }
 
         //card piece イベント
@@ -340,32 +339,60 @@ class MainActivity : AppCompatActivity() {
                 }
 
 
+
                 tapCi.setOnTouchListener { _, event ->
+                    val cpOffsetX = findViewById<ConstraintLayout>(MainLayout.mPara[2][0].id).x
+                    var cpOffsetY = findViewById<ConstraintLayout>(MainLayout.mPara[3][0].id).y
+                    cpOffsetY += findViewById<ConstraintLayout>(MainLayout.ciPara[1][0].id).y
+
+                    val mc = findViewById<TextView>(MainLayout.mcPara[0][0].id)
                     when (event.actionMasked) {
                         MotionEvent.ACTION_DOWN -> {
-                            Log.d("piece down", event.x.toString() + " " + event.y.toString())
-                            Log.d("piece down", tapCi.x.toString() + " " + tapCi.y.toString())
+                            Log.d("card piece down", event.x.toString() + " " + event.y.toString())
+                            Log.d(
+                                "card piece x y w h",
+                                tapCi.x.toString() + " " + tapCi.y.toString() + " " + tapCi.width.toString() + " " + tapCi.height.toString()
+                            )
+                            pieceAnswer = false
                             pieceXi = v
                             pieceYi = v2
-                            pieceX = tapCi.x
-                            pieceY = tapCi.y
+                            pieceXe = event.x
+                            pieceYe = event.y
+
+
+
+                            Log.d(
+                                "card piece mc w h",
+                                tapCi.width.toString() + " " + tapCi.height.toString()
+                            )
+                            Log.d(
+                                "card piece mc ms me ",
+                                tapCi.x.toString() + " " + tapCi.y.toString()
+                            )
+                            mc.x = cpOffsetX + tapCi.x
+                            //tapCi.height * 1.5 は指に隠れないために
+                            mc.y = cpOffsetY + tapCi.y - (tapCi.height * 1.5).toInt()
+                            mc.text = tapCi.text
+                            mc.isVisible = true
                         }
                         MotionEvent.ACTION_MOVE -> {
-                            Log.d("piece move", event.x.toString() + " " + event.y.toString())
-                            val tapMove = findViewById<ConstraintLayout>(MainLayout.mPara[6][0].id)
-                            tapMove.x = event.x
-                            tapMove.y = event.y
+                            Log.d("card piece move", event.x.toString() + " " + event.y.toString())
+//                            val tapMove = findViewById<ConstraintLayout>(MainLayout.mPara[6][0].id)
+//                            tapMove.x = event.x
+//                            tapMove.y = event.y
+
+                            mc.x = cpOffsetX + tapCi.x + (event.x - pieceXe)
+                            mc.y =
+                                cpOffsetY + tapCi.y + (event.y - pieceYe) - (tapCi.height * 1.5).toInt()
 
                             //1080 2220
                         }
                         MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                            Log.d("piece up cancel", event.x.toString() + " " + event.y.toString())
-                            val tapMove = findViewById<ConstraintLayout>(MainLayout.mPara[6][0].id)
-
-                            tapMove.x = 0f
-                            tapMove.y = 0f
-
-
+                            Log.d(
+                                "card piece up cancel",
+                                event.x.toString() + " " + event.y.toString()
+                            )
+                            mc.isVisible = false
                         }
                     }
 

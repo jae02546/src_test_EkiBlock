@@ -15,23 +15,29 @@ import androidx.annotation.ColorInt
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.text.HtmlCompat
+import androidx.core.view.isVisible
 import com.google.android.gms.ads.AdSize
 
 
 object MainLayout {
     //定数
+    //メインitem数[score][question][answer][piece][newGame][adView]
+    private const val numMains = 6
 
-    //横item数
-    private const val mItems = 8 //item幅計算時の分割数となる
+    //メインマージン
+    private const val mMainMargin = 2
 
     //問題縦item数（高さに使用）
     private const val mQuestionHeight = 2
 
-    //解答駅数
+    //テーブル行数（最大駅数）
     private const val mAnswers = 5
 
     //持ち札エリア行数
     private const val mCardRows = 3
+
+    //横item数
+    private const val mItems = 8 //item幅計算時の分割数となる
 
     //Viewマージン それぞれのViewがこのマージンを取るので実際の間隔は倍となる
     private const val mViewMargin = 10 //dp
@@ -41,6 +47,7 @@ object MainLayout {
 
     //レイアウトパラメータ
     var mPara: MutableList<MutableList<ItemPara>> = mutableListOf() //main
+    var mcPara: MutableList<MutableList<ItemPara>> = mutableListOf() //main cursor
     var sPara: MutableList<MutableList<ItemPara>> = mutableListOf() //score
     var qPara: MutableList<MutableList<ItemPara>> = mutableListOf() //question
     var qiPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionItem
@@ -104,6 +111,7 @@ object MainLayout {
     fun makeLayout(context: Context, screenSize: MutableList<Int>): ConstraintLayout {
         //パラメータ初期化
         mPara = mutableListOf()
+        mcPara = mutableListOf()
         sPara = mutableListOf()
         qPara = mutableListOf()
         qiPara = mutableListOf()
@@ -124,59 +132,39 @@ object MainLayout {
         //item基本幅
         val iWidth = screenSize[0] / mItems
 
-        //main[score][question][answer][card][newGame][adView][piece]
-
-
-        //ここは6で別途非表示でカーソルを作る?
-        val numMains = 7
-
-
-        val mMargin = 2
+        //main[score][question][answer][piece][newGame][adView]
         val mlMargin: MutableList<Int> = mutableListOf(
-            mMargin * 2,
-            mMargin * 2,
-            mMargin * 2,
-            mMargin * 2,
-            mMargin * 2,
-            0,
+            mMainMargin * 2,
+            mMainMargin * 2,
+            mMainMargin * 2,
+            mMainMargin * 2,
+            mMainMargin * 2,
             0
         )
         val mrMargin: MutableList<Int> = mutableListOf(
-            mMargin * 2,
-            mMargin * 2,
-            mMargin * 2,
-            mMargin * 2,
-            mMargin * 2,
-            0,
+            mMainMargin * 2,
+            mMainMargin * 2,
+            mMainMargin * 2,
+            mMainMargin * 2,
+            mMainMargin * 2,
             0
         )
         val mtMargin: MutableList<Int> = mutableListOf(
-            mMargin * 2,
-            mMargin,
-            mMargin,
-            mMargin,
-            mMargin,
-            0,
+            mMainMargin * 2,
+            mMainMargin,
+            mMainMargin,
+            mMainMargin,
+            mMainMargin,
             0
         )
         val mbMargin: MutableList<Int> = mutableListOf(
-            mMargin,
-            mMargin,
-            mMargin,
-            mMargin,
-            mMargin * 2,
-            0,
+            mMainMargin,
+            mMainMargin,
+            mMainMargin,
+            mMainMargin,
+            mMainMargin * 2,
             0
         )
-        val gdMain = GradientDrawable()
-        gdMain.setStroke(
-            Tools.convertDp2Px(1f, context).toInt(),
-            context.getThemeColor(R.attr.colorButtonNormal)
-        )
-        gdMain.setColor(Color.RED)
-        val ldMain = LayerDrawable(arrayOf<Drawable>(gdMain))
-        ldMain.setLayerInset(0, 0, 0, 0, 0)
-
         for (v in 0 until numMains) {
             val height = when (v) {
                 1 -> { //問題
@@ -191,9 +179,6 @@ object MainLayout {
                 5 -> { //adView
                     Tools.convertDp2Px(mAdViewHeight.toFloat(), context).toInt()
                 }
-                6 -> { //
-                    iWidth
-                }
                 else -> { //score newGame
                     0
                 }
@@ -202,9 +187,9 @@ object MainLayout {
             for (v2 in 0..0) {
                 foo += ItemPara(
                     View.generateViewId(),
-                    if (v != 6) 0 else iWidth, height,
+                    0, height,
                     mlMargin[v], mrMargin[v], mtMargin[v], mbMargin[v],
-                    if (v != 6) LayerDrawable(arrayOf<Drawable>()) else ldMain,
+                    LayerDrawable(arrayOf<Drawable>()),
                     EnumViewType.ConstraintLayout, 0f, 0f, 0, Gravity.CENTER,
                     ""
                 )
@@ -213,6 +198,37 @@ object MainLayout {
         }
         var mLayout = ConstraintLayout(context)
         mLayout = getConstraintLayout(mLayout, mPara)
+        //カーソル用textBox追加
+        val gdCursor = GradientDrawable()
+        gdCursor.setStroke(
+            Tools.convertDp2Px(1f, context).toInt(),
+//            context.getThemeColor(R.attr.colorButtonNormal)
+            Color.RED
+        )
+        val ldCursor = LayerDrawable(arrayOf<Drawable>(gdCursor))
+        ldCursor.setLayerInset(0, 0, 0, 0, 0)
+//        val cCursor = context.getThemeColor(R.attr.editTextColor)
+        val cCursor = Color.RED
+        val wCursor =
+            (screenSize[0] - (mMainMargin * 4) - (mViewMargin * (mItems * 2 + 2))) / mItems
+        for (v in 0..0) {
+            val foo: MutableList<ItemPara> = mutableListOf()
+            for (v2 in 0..0) {
+                foo += ItemPara(
+                    View.generateViewId(),
+                    wCursor, wCursor,
+                    0, 0, 0, 0,
+                    ldCursor,
+                    EnumViewType.TextView, 0f, 0f, cCursor, Gravity.CENTER,
+                    ""
+                )
+            }
+            mcPara += foo
+        }
+        mLayout = getConstraintLayout(mLayout, mcPara)
+        val mc = mLayout.getViewById(mcPara[0][0].id) as TextView
+        mc.isVisible = false //非表示にしておく
+        //MATCH_PARENT
         mLayout.layoutParams = ConstraintLayout.LayoutParams(
             ConstraintLayout.LayoutParams.MATCH_PARENT,
             ConstraintLayout.LayoutParams.MATCH_PARENT
