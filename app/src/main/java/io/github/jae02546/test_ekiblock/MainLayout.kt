@@ -2,6 +2,7 @@ package io.github.jae02546.test_ekiblock
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Point
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
@@ -1160,6 +1161,66 @@ object MainLayout {
                 tv.background = ld
             }
         }
+    }
+
+    fun getUpPiece(
+        layout: ConstraintLayout,
+        answer: Boolean,
+        ix: Int, //ピース位置x
+        iy: Int, //ピース位置y
+        x: Int, //up座標x offset済み
+        y: Int, //up座標y offset済み 指に隠れないように調整済み
+    ): Point {
+        data class PosSize(
+            val x: Int,
+            val y: Int,
+            val w: Int,
+            val h: Int,
+        )
+        //answer offset
+        val aosX = layout.findViewById<ConstraintLayout>(mPara[2][0].id).x
+        var aosY = layout.findViewById<ConstraintLayout>(mPara[2][0].id).y
+        aosY += layout.findViewById<ConstraintLayout>(aiPara[1][0].id).y
+        //card offset
+        val cosX = layout.findViewById<ConstraintLayout>(mPara[3][0].id).x
+        var cosY = layout.findViewById<ConstraintLayout>(mPara[3][0].id).y
+        cosY += layout.findViewById<ConstraintLayout>(ciPara[1][0].id).y
+        //各pieceの相対座標
+        val aPS: MutableList<MutableList<PosSize>> = mutableListOf()
+        for (v in 0 until apPara.count()) {
+            val foo: MutableList<PosSize> = mutableListOf()
+            for (v2 in 0 until apPara[0].count()) {
+                val bar = layout.findViewById<ConstraintLayout>(apPara[v][v2].id)
+                foo += PosSize(
+                    (aosX + bar.x).toInt(),
+                    (aosY + bar.y).toInt(),
+                    (aosY + bar.height).toInt(),
+                    (aosX + bar.width).toInt()
+                )
+            }
+            aPS += foo
+        }
+        val cPS: MutableList<MutableList<PosSize>> = mutableListOf()
+        for (v in 0 until cpPara.count()) {
+            val foo: MutableList<PosSize> = mutableListOf()
+            for (v2 in 0 until cpPara[0].count()) {
+                val bar = layout.findViewById<ConstraintLayout>(cpPara[v][v2].id)
+                foo += PosSize(
+                    (cosX + bar.x).toInt(),
+                    (cosY + bar.y).toInt(),
+                    (cosY + bar.height).toInt(),
+                    (cosX + bar.width).toInt()
+                )
+            }
+            cPS += foo
+        }
+        //座標がマスの中心になるよう調整
+        val x2 = x + (if (answer) aPS[iy][ix].w else cPS[iy][ix].w) / 2
+        val y2 = y + (if (answer) aPS[iy][ix].h else cPS[iy][ix].h) / 2
+        //どのマスの上か検索
+
+
+        return Point(0, 0)
     }
 
     //選択表示
