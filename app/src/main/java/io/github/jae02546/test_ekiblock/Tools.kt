@@ -192,47 +192,53 @@ object Tools {
         return staList
     }
 
-    //持ち札の移動を状態テーブルに書き込む
-    fun swapPieces(
+    //ラスト状態テーブルの文字を交換する
+    fun swapLastStateTblPiece(
         context: Context,
         pNo: Int,
-        fromAnswer: Boolean,
-        fromRow: Int,
-        fromColumn: Int,
-        toAnswer: Boolean,
-        toRow: Int,
-        toColumn: Int
+        downPiece: MainLayout.PiecePara,
+        upPiece: MainLayout.PiecePara
     ) {
+        //downPieceとupPieceが同じなら抜ける
+        if (downPiece == upPiece) return
         //レコードが無い場合は抜ける
         val lRec = RoomMain.getLastStateRecord(context, pNo) ?: return
         //行桁の位置がリスト範囲外なら抜ける
-        if (fromAnswer) {
-            if (lRec.aList.count() < fromRow || lRec.aList[0].count() < fromColumn) return
+        if (downPiece.iy < 0 || downPiece.ix < 0 || upPiece.iy < 0 || upPiece.ix < 0) return
+        if (downPiece.answer) {
+            if (lRec.aList.count() < downPiece.iy || lRec.aList[0].count() < downPiece.ix) return
         } else {
-            if (lRec.pList.count() < fromRow || lRec.pList[0].count() < fromColumn) return
+            if (lRec.pList.count() < downPiece.iy || lRec.pList[0].count() < downPiece.ix) return
         }
-        if (toAnswer) {
-            if (lRec.aList.count() < toRow || lRec.aList[0].count() < toColumn) return
+        if (upPiece.answer) {
+            if (lRec.aList.count() < upPiece.iy || lRec.aList[0].count() < upPiece.ix) return
         } else {
-            if (lRec.pList.count() < toRow || lRec.pList[0].count() < toColumn) return
+            if (lRec.pList.count() < upPiece.iy || lRec.pList[0].count() < upPiece.ix) return
         }
+
+
+
+        //既に文字がある場合は間に挿入
+
+
+
         //移動は交換（移動先が空白でなかった場合は交換しないと消えてしまう）
-        val from = if (fromAnswer)
-            lRec.aList[fromRow][fromColumn]
+        val from = if (downPiece.answer)
+            lRec.aList[downPiece.iy][downPiece.ix]
         else
-            lRec.pList[fromRow][fromColumn]
-        val to = if (toAnswer)
-            lRec.aList[toRow][toColumn]
+            lRec.pList[downPiece.iy][downPiece.ix]
+        val to = if (upPiece.answer)
+            lRec.aList[upPiece.iy][upPiece.ix]
         else
-            lRec.pList[toRow][toColumn]
-        if (fromAnswer)
-            lRec.aList[fromRow][fromColumn] = to
+            lRec.pList[upPiece.iy][upPiece.ix]
+        if (downPiece.answer)
+            lRec.aList[downPiece.iy][downPiece.ix] = to
         else
-            lRec.pList[fromRow][fromColumn] = to
-        if (toAnswer)
-            lRec.aList[toRow][toColumn] = from
+            lRec.pList[downPiece.iy][downPiece.ix] = to
+        if (upPiece.answer)
+            lRec.aList[upPiece.iy][upPiece.ix] = from
         else
-            lRec.pList[toRow][toColumn] = from
+            lRec.pList[upPiece.iy][upPiece.ix] = from
         //書込み
         val rec = LastStateTbl(
             lRec.pNo,

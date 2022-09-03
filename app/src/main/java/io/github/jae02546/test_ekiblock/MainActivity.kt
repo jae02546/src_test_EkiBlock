@@ -237,181 +237,195 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        var pieceAnswer = false
-        var pieceXi = 0
-        var pieceYi = 0
-        var pieceXe = 0f
-        var pieceYe = 0f
+        val cursor = findViewById<TextView>(MainLayout.mcPara[0][0].id)
+        var downX = 0f
+        var downY = 0f
 
         //answer piece イベント
         for (v in 0 until MainLayout.apPara.count()) {
-            for (v2 in 0 until MainLayout.apPara[0].count()) {
+            for (v2 in 0 until MainLayout.apPara[v].count()) {
                 val tapAp = findViewById<TextView>(MainLayout.apPara[v][v2].id)
-
-//                tapAp.setOnClickListener {
-//                    //Toast.makeText(this, "ai$v$v2", Toast.LENGTH_SHORT).show()
-//                    //prefからpNo取得
-//                    val pNo = Tools.getPrefInt(
-//                        this,
-//                        getString(R.string.pref_playerNo_key),
-//                        getString(R.string.pref_playerNo_defaultValue).toInt()
-//                    )
-//                    //compの場合はcomp画面表示
-//                    if (Tools.isComp(this, pNo)) {
-//                        soundVibrator(true) //効果音とバイブ
-//                        showCompLayout(screenSize, pNo)
-//                    } else {
-//                        //タップ処理
-//                        MainLayout.showSelect(mLayout, pNo, true, v, v2)
-//                        //compの場合はcomp画面表示
-//                        if (Tools.isComp(this, pNo)) {
-//                            soundVibrator(true) //効果音とバイブ
-//                            showCompLayout(screenSize, pNo)
-//                        } else {
-//                            soundVibrator(false) //効果音とバイブ
-//                        }
-//                    }
-//                }
+                tapAp.setOnTouchListener { _, event ->
+                    //offset取得
+                    val apOffsetX = findViewById<ConstraintLayout>(MainLayout.mPara[2][0].id).x
+                    var apOffsetY = findViewById<ConstraintLayout>(MainLayout.mPara[2][0].id).y
+                    apOffsetY += findViewById<ConstraintLayout>(MainLayout.aiPara[1][0].id).y
+                    //pNo、comp状態取得
+                    var pNo = 0
+                    var comp = false
+                    //if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                    pNo = Tools.getPrefInt(
+                        this,
+                        getString(R.string.pref_playerNo_key),
+                        getString(R.string.pref_playerNo_defaultValue).toInt()
+                    )
+                    comp = Tools.isComp(this, pNo)
+                    //}
+                    when (event.actionMasked) {
+                        MotionEvent.ACTION_DOWN -> {
+                            if (comp) {
+                                //効果音とバイブ
+                                soundVibrator(true)
+                                //comp画面表示
+                                showCompLayout(screenSize, pNo)
+                            } else {
+                                downX = event.x
+                                downY = event.y
+                                //(tapCi.height * 2.5 - event.y) は指に隠れないためのoffset
+                                cursor.x = apOffsetX + tapAp.x
+                                cursor.y =
+                                    apOffsetY + tapAp.y - (tapAp.height * 2.1 - event.y).toInt()
+                                cursor.text = tapAp.text
+                                cursor.isVisible = true
+                                tapAp.text = ""
+                                //効果音とバイブ
+                                soundVibrator(false)
+                            }
+                        }
+                        MotionEvent.ACTION_MOVE -> {
+                            if (!comp) {
+                                //(tapAp.height * 2.5 - event.y) は指に隠れないためのoffset
+                                cursor.x = apOffsetX + tapAp.x + (event.x - downX)
+                                cursor.y =
+                                    apOffsetY + tapAp.y + (event.y - downY) - (tapAp.height * 2.1 - downY).toInt()
+                            }
+                        }
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                            if (!comp) {
+                                //mc非表示
+                                cursor.isVisible = false
+                                cursor.text = ""
+                                //downピース
+                                val downPiece = MainLayout.PiecePara(true, v2, v)
+                                //upピース取得
+                                val upPiece = MainLayout.getUpPiece(
+                                    mLayout,
+                                    MainLayout.PiecePara(true, v2, v),
+                                    cursor.x.toInt(),
+                                    cursor.y.toInt(),
+                                )
+                                //ピース入替
+                                MainLayout.swapPiece(mLayout, pNo, downPiece, upPiece)
+                                //再表示
+                                MainLayout.showLayout(mLayout, pNo, false)
+                                //comp判断
+                                if (Tools.isComp(this, pNo)) {
+                                    //compの場合はスコア更新してcomp画面表示
+                                    Tools.incCompCount(this, pNo)
+                                    showCompLayout(screenSize, pNo)
+                                    //再表示
+                                    MainLayout.showLayout(mLayout, pNo, false)
+                                    //効果音とバイブ
+                                    soundVibrator(true)
+                                } else {
+                                    //効果音とバイブ
+                                    soundVibrator(false)
+                                }
+                            }
+                        }
+                    }
+                    true
+                    //false //親要素にイベントを渡す
+                }
 
                 //setOnTouchListenerの戻り値がfalseの時
                 //setOnClickListener無いと正常に動作しない?
                 //tapCi.setOnClickListener {
                 //}
-
-                tapAp.setOnTouchListener { _, event ->
-                    val cpOffsetX = findViewById<ConstraintLayout>(MainLayout.mPara[2][0].id).x
-                    var cpOffsetY = findViewById<ConstraintLayout>(MainLayout.mPara[2][0].id).y
-                    cpOffsetY += findViewById<ConstraintLayout>(MainLayout.aiPara[1][0].id).y
-
-                    val mc = findViewById<TextView>(MainLayout.mcPara[0][0].id)
-                    when (event.actionMasked) {
-                        MotionEvent.ACTION_DOWN -> {
-                            pieceAnswer = true
-                            pieceXi = v
-                            pieceYi = v2
-                            pieceXe = event.x
-                            pieceYe = event.y
-
-                            //(tapCi.height * 2.5 - event.y) は指に隠れないためのoffset
-                            mc.x = cpOffsetX + tapAp.x
-                            mc.y = cpOffsetY + tapAp.y - (tapAp.height * 2.5 - event.y).toInt()
-                            mc.text = tapAp.text
-                            mc.isVisible = true
-                            tapAp.text = ""
-                        }
-                        MotionEvent.ACTION_MOVE -> {
-                            //(tapCi.height * 2.5 - event.y) は指に隠れないためのoffset
-                            mc.x = cpOffsetX + tapAp.x + (event.x - pieceXe)
-                            mc.y =
-                                cpOffsetY + tapAp.y + (event.y - pieceYe) - (tapAp.height * 2.5 - pieceYe).toInt()
-                        }
-                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                            //up時のピース位置を取得
-                            val pPoint = MainLayout.getUpPiece(
-                                mLayout,
-                                true,
-                                v2,
-                                v,
-                                mc.x.toInt(),
-                                mc.y.toInt(),
-                            )
-                            Log.d("y-x", pPoint.y.toString() + " " + pPoint.x.toString())
-
-
-                            //タップ処理
-//                            MainLayout.showSelect(mLayout, pNo, true, v, v2)
-
-
-                            //文字を戻してmc非表示
-                            tapAp.text = mc.text
-                            mc.isVisible = false
-                            mc.text = ""
-                        }
-                    }
-
-                    true
-                    //false //親要素にイベントを渡す
-                }
-
-
             }
         }
 
         //card piece イベント
         for (v in 0 until MainLayout.cpPara.count()) {
-            for (v2 in 0 until MainLayout.cpPara[0].count()) {
+            for (v2 in 0 until MainLayout.cpPara[v].count()) {
                 val tapCp = findViewById<TextView>(MainLayout.cpPara[v][v2].id)
-
-//                tapCi.setOnClickListener {
-//                    //Toast.makeText(this, "pi$v$v2", Toast.LENGTH_SHORT).show()
-//                    //prefからpNo取得
-//                    val pNo = Tools.getPrefInt(
-//                        this,
-//                        getString(R.string.pref_playerNo_key),
-//                        getString(R.string.pref_playerNo_defaultValue).toInt()
-//                    )
-//                    //compの場合はcomp画面表示
-//                    if (Tools.isComp(this, pNo)) {
-//                        soundVibrator(true) //効果音とバイブ
-//                        showCompLayout(screenSize, pNo)
-//                    } else {
-//                        //タップ処理
-//                        MainLayout.showSelect(mLayout, pNo, false, v, v2)
-//                        //compの場合はcomp画面表示
-//                        if (Tools.isComp(this, pNo)) {
-//                            soundVibrator(true) //効果音とバイブ
-//                            showCompLayout(screenSize, pNo)
-//                        } else {
-//                            soundVibrator(false) //効果音とバイブ
-//                        }
-//                    }
-//                }
+                tapCp.setOnTouchListener { _, event ->
+                    //offset取得
+                    val cpOffsetX = findViewById<ConstraintLayout>(MainLayout.mPara[3][0].id).x
+                    var cpOffsetY = findViewById<ConstraintLayout>(MainLayout.mPara[3][0].id).y
+                    cpOffsetY += findViewById<ConstraintLayout>(MainLayout.ciPara[1][0].id).y
+                    //pNoとcomp状態取得
+                    var pNo = 0
+                    var comp = false
+                    //if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                    pNo = Tools.getPrefInt(
+                        this,
+                        getString(R.string.pref_playerNo_key),
+                        getString(R.string.pref_playerNo_defaultValue).toInt()
+                    )
+                    comp = Tools.isComp(this, pNo)
+                    //}
+                    when (event.actionMasked) {
+                        MotionEvent.ACTION_DOWN -> {
+                            if (comp) {
+                                //効果音とバイブ
+                                soundVibrator(true)
+                                //comp画面表示
+                                showCompLayout(screenSize, pNo)
+                            } else {
+                                downX = event.x
+                                downY = event.y
+                                //(tapCi.height * 2.5 - event.y) は指に隠れないためのoffset
+                                cursor.x = cpOffsetX + tapCp.x
+                                cursor.y =
+                                    cpOffsetY + tapCp.y - (tapCp.height * 2.1 - event.y).toInt()
+                                cursor.text = tapCp.text
+                                cursor.isVisible = true
+                                tapCp.text = ""
+                                //効果音とバイブ
+                                soundVibrator(false)
+                            }
+                        }
+                        MotionEvent.ACTION_MOVE -> {
+                            if (!comp) {
+                                //(tapCp.height * 2.5 - event.y) は指に隠れないためのoffset
+                                cursor.x = cpOffsetX + tapCp.x + (event.x - downX)
+                                cursor.y =
+                                    cpOffsetY + tapCp.y + (event.y - downY) - (tapCp.height * 2.1 - downY).toInt()
+                            }
+                        }
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                            if (!comp) {
+                                //mc非表示
+                                cursor.isVisible = false
+                                cursor.text = ""
+                                //downピース
+                                val downPiece = MainLayout.PiecePara(false, v2, v)
+                                //upピース取得
+                                val upPiece = MainLayout.getUpPiece(
+                                    mLayout,
+                                    MainLayout.PiecePara(false, v2, v),
+                                    cursor.x.toInt(),
+                                    cursor.y.toInt(),
+                                )
+                                //ピース入替
+                                MainLayout.swapPiece(mLayout, pNo, downPiece, upPiece)
+                                //再表示
+                                MainLayout.showLayout(mLayout, pNo, false)
+                                //comp判断
+                                if (Tools.isComp(this, pNo)) {
+                                    //compの場合はスコア更新してcomp画面表示
+                                    Tools.incCompCount(this, pNo)
+                                    showCompLayout(screenSize, pNo)
+                                    //再表示
+                                    MainLayout.showLayout(mLayout, pNo, false)
+                                    //効果音とバイブ
+                                    soundVibrator(true)
+                                } else {
+                                    //効果音とバイブ
+                                    soundVibrator(false)
+                                }
+                            }
+                        }
+                    }
+                    true
+                    //false //親要素にイベントを渡す
+                }
 
                 //setOnTouchListenerの戻り値がfalseの時
                 //setOnClickListener無いと正常に動作しない?
                 //tapCi.setOnClickListener {
                 //}
-
-                tapCp.setOnTouchListener { _, event ->
-                    val cpOffsetX = findViewById<ConstraintLayout>(MainLayout.mPara[3][0].id).x
-                    var cpOffsetY = findViewById<ConstraintLayout>(MainLayout.mPara[3][0].id).y
-                    cpOffsetY += findViewById<ConstraintLayout>(MainLayout.ciPara[1][0].id).y
-
-                    val mc = findViewById<TextView>(MainLayout.mcPara[0][0].id)
-                    when (event.actionMasked) {
-                        MotionEvent.ACTION_DOWN -> {
-                            pieceAnswer = false
-                            pieceXi = v
-                            pieceYi = v2
-                            pieceXe = event.x
-                            pieceYe = event.y
-
-                            //(tapCi.height * 2.5 - event.y) は指に隠れないためのoffset
-                            mc.x = cpOffsetX + tapCp.x
-                            mc.y = cpOffsetY + tapCp.y - (tapCp.height * 2.5 - event.y).toInt()
-                            mc.text = tapCp.text
-                            mc.isVisible = true
-                            tapCp.text = ""
-                        }
-                        MotionEvent.ACTION_MOVE -> {
-                            //(tapCi.height * 2.5 - event.y) は指に隠れないためのoffset
-                            mc.x = cpOffsetX + tapCp.x + (event.x - pieceXe)
-                            mc.y =
-                                cpOffsetY + tapCp.y + (event.y - pieceYe) - (tapCp.height * 2.5 - pieceYe).toInt()
-                        }
-                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                            //文字を戻してmc非表示
-                            tapCp.text = mc.text
-                            mc.isVisible = false
-                            mc.text = ""
-                        }
-                    }
-
-                    true
-                    //false //親要素にイベントを渡す
-                }
-
-
             }
         }
 

@@ -997,218 +997,218 @@ object MainLayout3 {
         return cs
     }
 
-    //レイアウト表示（各項目の表示）
-    fun showLayout(
-        layout: ConstraintLayout,
-        pNo: Int,
-        newGame: Boolean,
-    ) {
-        //ラスト状態の取得と新ゲーム、スコア更新
-        var lRec = RoomMain.getLastStateRecord(layout.context, pNo)
-        //ラスト状態が無い場合も新ゲーム作成
-        if (lRec == null || newGame) {
-            //初期起動時、一度以上操作があった場合はスコア更新
-            if (lRec == null || Tools.isStarted(layout.context, pNo))
-                Tools.incPlayCount(layout.context, pNo) //プレイ回数インクリメント
-            //新ゲーム作成
-            Tools.newGame(layout.context, pNo, mAnswers, mCardRows, mItems)
-            //再読み込み
-            lRec = RoomMain.getLastStateRecord(layout.context, pNo)
-            //選択解除
-            deselect(layout)
-        }
-        //スコア表示
-        val sRec = RoomMain.getScoreRecord(layout.context, pNo)
-        val stv = layout.findViewById<TextView>(sPara[0][0].id)
-        if (sRec != null) {
-            val foo = "プレイ数:" + sRec.pCount.toString() + "\nコンプ数:" + sRec.cCount.toString()
-            stv.text = foo
-        } else {
-            val foo = "プレイ数:0\nコンプ数:0"
-            stv.text = foo
-        }
-        //問い表示
-        if (lRec != null) {
-            val qRec = RoomMain.getQuestionRecord(layout.context, lRec.qNo)
-            if (qRec != null) {
-                val hint = layout.findViewById<TextView>(qlPara[0][0].id)
-                val foo =
-                    if (qRec.url != "") "<a href=" + (qRec.url) + ">" + "Hint" + "</a>" else ""
-                hint.text = HtmlCompat.fromHtml(foo, HtmlCompat.FROM_HTML_MODE_COMPACT)
-                hint.movementMethod = LinkMovementMethod.getInstance()
-                val ans = layout.findViewById<TextView>(qlPara[1][0].id)
-                val bar = "回答数\n" + lRec.cList.count() + "駅"
-                ans.text = bar
-                val kana = layout.findViewById<TextView>(qcPara[0][0].id)
-                kana.text = qRec.kana
-                val name = layout.findViewById<TextView>(qcPara[1][0].id)
-                name.text = qRec.name
-                val english = layout.findViewById<TextView>(qcPara[2][0].id)
-                english.text = qRec.english
-                val info1 = layout.findViewById<TextView>(qcPara[3][0].id)
-                info1.text = qRec.info1
-                val info2 = layout.findViewById<TextView>(qrPara[0][0].id)
-                info2.text = qRec.info2
-            } else {
-                //ここにはこないはず
-                for (v in qcPara) {
-                    for (v2 in v) {
-                        val foo = layout.findViewById<TextView>(v2.id)
-                        foo.text = ""
-                    }
-                }
-            }
-        } else {
-            //ここにはこないはず
-            for (v in qcPara) {
-                for (v2 in v) {
-                    val foo = layout.findViewById<TextView>(v2.id)
-                    foo.text = ""
-                }
-            }
-        }
-        //回答表示
-        if (lRec != null) {
-            for (v in 0 until mAnswers) {
-                for (v2 in 0 until mItems) {
-                    val atv = layout.findViewById<TextView>(apPara[v][v2].id)
-                    if (lRec.aList.count() > v && lRec.aList[v].count() > v2) {
-                        atv.text = lRec.aList[v][v2]
-                    } else {
-                        atv.text = ""
-                    }
-                }
-            }
-        }
-        //持ち札表示
-        if (lRec != null) {
-            for (v in 0 until mCardRows) {
-                for (v2 in 0 until mItems) {
-                    val ptv = layout.findViewById<TextView>(cpPara[v][v2].id)
-                    if (lRec.pList.count() > v && lRec.pList[v].count() > v2) {
-                        ptv.text = lRec.pList[v][v2]
-                    } else {
-                        ptv.text = ""
-                    }
-                }
-            }
-        }
-    }
+//    //レイアウト表示（各項目の表示）
+//    fun showLayout(
+//        layout: ConstraintLayout,
+//        pNo: Int,
+//        newGame: Boolean,
+//    ) {
+//        //ラスト状態の取得と新ゲーム、スコア更新
+//        var lRec = RoomMain.getLastStateRecord(layout.context, pNo)
+//        //ラスト状態が無い場合も新ゲーム作成
+//        if (lRec == null || newGame) {
+//            //初期起動時、一度以上操作があった場合はスコア更新
+//            if (lRec == null || Tools.isStarted(layout.context, pNo))
+//                Tools.incPlayCount(layout.context, pNo) //プレイ回数インクリメント
+//            //新ゲーム作成
+//            Tools.newGame(layout.context, pNo, mAnswers, mCardRows, mItems)
+//            //再読み込み
+//            lRec = RoomMain.getLastStateRecord(layout.context, pNo)
+//            //選択解除
+//            deselect(layout)
+//        }
+//        //スコア表示
+//        val sRec = RoomMain.getScoreRecord(layout.context, pNo)
+//        val stv = layout.findViewById<TextView>(sPara[0][0].id)
+//        if (sRec != null) {
+//            val foo = "プレイ数:" + sRec.pCount.toString() + "\nコンプ数:" + sRec.cCount.toString()
+//            stv.text = foo
+//        } else {
+//            val foo = "プレイ数:0\nコンプ数:0"
+//            stv.text = foo
+//        }
+//        //問い表示
+//        if (lRec != null) {
+//            val qRec = RoomMain.getQuestionRecord(layout.context, lRec.qNo)
+//            if (qRec != null) {
+//                val hint = layout.findViewById<TextView>(qlPara[0][0].id)
+//                val foo =
+//                    if (qRec.url != "") "<a href=" + (qRec.url) + ">" + "Hint" + "</a>" else ""
+//                hint.text = HtmlCompat.fromHtml(foo, HtmlCompat.FROM_HTML_MODE_COMPACT)
+//                hint.movementMethod = LinkMovementMethod.getInstance()
+//                val ans = layout.findViewById<TextView>(qlPara[1][0].id)
+//                val bar = "回答数\n" + lRec.cList.count() + "駅"
+//                ans.text = bar
+//                val kana = layout.findViewById<TextView>(qcPara[0][0].id)
+//                kana.text = qRec.kana
+//                val name = layout.findViewById<TextView>(qcPara[1][0].id)
+//                name.text = qRec.name
+//                val english = layout.findViewById<TextView>(qcPara[2][0].id)
+//                english.text = qRec.english
+//                val info1 = layout.findViewById<TextView>(qcPara[3][0].id)
+//                info1.text = qRec.info1
+//                val info2 = layout.findViewById<TextView>(qrPara[0][0].id)
+//                info2.text = qRec.info2
+//            } else {
+//                //ここにはこないはず
+//                for (v in qcPara) {
+//                    for (v2 in v) {
+//                        val foo = layout.findViewById<TextView>(v2.id)
+//                        foo.text = ""
+//                    }
+//                }
+//            }
+//        } else {
+//            //ここにはこないはず
+//            for (v in qcPara) {
+//                for (v2 in v) {
+//                    val foo = layout.findViewById<TextView>(v2.id)
+//                    foo.text = ""
+//                }
+//            }
+//        }
+//        //回答表示
+//        if (lRec != null) {
+//            for (v in 0 until mAnswers) {
+//                for (v2 in 0 until mItems) {
+//                    val atv = layout.findViewById<TextView>(apPara[v][v2].id)
+//                    if (lRec.aList.count() > v && lRec.aList[v].count() > v2) {
+//                        atv.text = lRec.aList[v][v2]
+//                    } else {
+//                        atv.text = ""
+//                    }
+//                }
+//            }
+//        }
+//        //持ち札表示
+//        if (lRec != null) {
+//            for (v in 0 until mCardRows) {
+//                for (v2 in 0 until mItems) {
+//                    val ptv = layout.findViewById<TextView>(cpPara[v][v2].id)
+//                    if (lRec.pList.count() > v && lRec.pList[v].count() > v2) {
+//                        ptv.text = lRec.pList[v][v2]
+//                    } else {
+//                        ptv.text = ""
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-    //選択解除
-    private fun deselect(layout: ConstraintLayout) {
-        mSelectIni = true
-        mSelect = false
-        mSelectAnswer = false
-        mSelectRow = 0
-        mSelectColumn = 0
-        val gd = GradientDrawable()
-        gd.setStroke(
-            Tools.convertDp2Px(1f, layout.context).toInt(),
-            layout.context.getThemeColor(R.attr.colorButtonNormal)
-        )
-        val ld = LayerDrawable(arrayOf<Drawable>(gd))
-        ld.setLayerInset(0, 0, 0, 0, 0)
-        //テーブル選択解除
-        for (v in 0 until mAnswers) {
-            for (v2 in 0 until mItems) {
-                val tv = layout.findViewById<TextView>(apPara[v][v2].id)
-                tv.background = ld
-            }
-        }
-        //持ち札選択解除
-        for (v in 0 until mCardRows) {
-            for (v2 in 0 until mItems) {
-                val tv = layout.findViewById<TextView>(cpPara[v][v2].id)
-                tv.background = ld
-            }
-        }
-    }
+//    //選択解除
+//    private fun deselect(layout: ConstraintLayout) {
+//        mSelectIni = true
+//        mSelect = false
+//        mSelectAnswer = false
+//        mSelectRow = 0
+//        mSelectColumn = 0
+//        val gd = GradientDrawable()
+//        gd.setStroke(
+//            Tools.convertDp2Px(1f, layout.context).toInt(),
+//            layout.context.getThemeColor(R.attr.colorButtonNormal)
+//        )
+//        val ld = LayerDrawable(arrayOf<Drawable>(gd))
+//        ld.setLayerInset(0, 0, 0, 0, 0)
+//        //テーブル選択解除
+//        for (v in 0 until mAnswers) {
+//            for (v2 in 0 until mItems) {
+//                val tv = layout.findViewById<TextView>(apPara[v][v2].id)
+//                tv.background = ld
+//            }
+//        }
+//        //持ち札選択解除
+//        for (v in 0 until mCardRows) {
+//            for (v2 in 0 until mItems) {
+//                val tv = layout.findViewById<TextView>(cpPara[v][v2].id)
+//                tv.background = ld
+//            }
+//        }
+//    }
 
-    //選択表示
-    fun showSelect(layout: ConstraintLayout, pNo: Int, answer: Boolean, row: Int, column: Int) {
-        //コンプなら抜ける
-        if (Tools.isComp(layout.context, pNo)) return
-        //行桁の位置がリスト範囲外なら抜ける
-        if (answer) {
-            if (apPara.count() < row || apPara[0].count() < column) return
-        } else {
-            if (cpPara.count() < row || cpPara[0].count() < column) return
-        }
-        //前回が選択で今回違う箇所がタッチされた場合は交換
-        if (mSelect && ((mSelectAnswer != answer) || (mSelectRow != row) || (mSelectColumn != column))) {
-            //ピースを交換してラスト状態更新
-            Tools.swapPieces(
-                layout.context,
-                pNo,
-                mSelectAnswer,
-                mSelectRow,
-                mSelectColumn,
-                answer,
-                row,
-                column
-            )
-            //コンプ判断、スコア更新
-            if (Tools.isComp(layout.context, pNo))
-                Tools.incCompCount(layout.context, pNo)
-            //再表示
-            showLayout(layout, pNo, false)
-
-            mSelect = false
-        } else {
-            if (mSelectIni || (mSelectAnswer != answer) || (mSelectRow != row) || (mSelectColumn != column)) {
-                //初回、前回と場所が違う場合は選択
-                mSelect = true
-            } else {
-                //前回と同じ場合はトグル
-                mSelect = !mSelect
-            }
-        }
-
-        //前回値保存
-        mSelectIni = false
-        mSelectAnswer = answer
-        mSelectRow = row
-        mSelectColumn = column
-
-        //選択ピース以外は通常表示
-        //Layer normal
-        val gd = GradientDrawable()
-        gd.setStroke(
-            Tools.convertDp2Px(1f, layout.context).toInt(),
-            layout.context.getThemeColor(R.attr.colorButtonNormal)
-        )
-        val ld = LayerDrawable(arrayOf<Drawable>(gd))
-        ld.setLayerInset(0, 0, 0, 0, 0)
-        //Layer select
-        val gdSel = GradientDrawable()
-        gdSel.setStroke(
-            Tools.convertDp2Px(1f, layout.context).toInt(),
-            Color.RED
-        )
-        val ldSel = LayerDrawable(arrayOf<Drawable>(gdSel))
-        ldSel.setLayerInset(0, 0, 0, 0, 0)
-        //回答表示
-        for (v in 0 until mAnswers) {
-            for (v2 in 0 until mItems) {
-                val tv = layout.findViewById<TextView>(apPara[v][v2].id)
-                if (mSelect && answer && v == row && v2 == column)
-                    tv.background = ldSel
-                else
-                    tv.background = ld
-            }
-        }
-        //持ち札表示
-        for (v in 0 until mCardRows) {
-            for (v2 in 0 until mItems) {
-                val tv = layout.findViewById<TextView>(cpPara[v][v2].id)
-                if (mSelect && !answer && v == row && v2 == column)
-                    tv.background = ldSel
-                else
-                    tv.background = ld
-            }
-        }
-    }
+//    //選択表示
+//    fun showSelect(layout: ConstraintLayout, pNo: Int, answer: Boolean, row: Int, column: Int) {
+//        //コンプなら抜ける
+//        if (Tools.isComp(layout.context, pNo)) return
+//        //行桁の位置がリスト範囲外なら抜ける
+//        if (answer) {
+//            if (apPara.count() < row || apPara[0].count() < column) return
+//        } else {
+//            if (cpPara.count() < row || cpPara[0].count() < column) return
+//        }
+//        //前回が選択で今回違う箇所がタッチされた場合は交換
+//        if (mSelect && ((mSelectAnswer != answer) || (mSelectRow != row) || (mSelectColumn != column))) {
+//            //ピースを交換してラスト状態更新
+//            Tools.swapLastStateTblPiece(
+//                layout.context,
+//                pNo,
+//                mSelectAnswer,
+//                mSelectRow,
+//                mSelectColumn,
+//                answer,
+//                row,
+//                column
+//            )
+//            //コンプ判断、スコア更新
+//            if (Tools.isComp(layout.context, pNo))
+//                Tools.incCompCount(layout.context, pNo)
+//            //再表示
+//            showLayout(layout, pNo, false)
+//
+//            mSelect = false
+//        } else {
+//            if (mSelectIni || (mSelectAnswer != answer) || (mSelectRow != row) || (mSelectColumn != column)) {
+//                //初回、前回と場所が違う場合は選択
+//                mSelect = true
+//            } else {
+//                //前回と同じ場合はトグル
+//                mSelect = !mSelect
+//            }
+//        }
+//
+//        //前回値保存
+//        mSelectIni = false
+//        mSelectAnswer = answer
+//        mSelectRow = row
+//        mSelectColumn = column
+//
+//        //選択ピース以外は通常表示
+//        //Layer normal
+//        val gd = GradientDrawable()
+//        gd.setStroke(
+//            Tools.convertDp2Px(1f, layout.context).toInt(),
+//            layout.context.getThemeColor(R.attr.colorButtonNormal)
+//        )
+//        val ld = LayerDrawable(arrayOf<Drawable>(gd))
+//        ld.setLayerInset(0, 0, 0, 0, 0)
+//        //Layer select
+//        val gdSel = GradientDrawable()
+//        gdSel.setStroke(
+//            Tools.convertDp2Px(1f, layout.context).toInt(),
+//            Color.RED
+//        )
+//        val ldSel = LayerDrawable(arrayOf<Drawable>(gdSel))
+//        ldSel.setLayerInset(0, 0, 0, 0, 0)
+//        //回答表示
+//        for (v in 0 until mAnswers) {
+//            for (v2 in 0 until mItems) {
+//                val tv = layout.findViewById<TextView>(apPara[v][v2].id)
+//                if (mSelect && answer && v == row && v2 == column)
+//                    tv.background = ldSel
+//                else
+//                    tv.background = ld
+//            }
+//        }
+//        //持ち札表示
+//        for (v in 0 until mCardRows) {
+//            for (v2 in 0 until mItems) {
+//                val tv = layout.findViewById<TextView>(cpPara[v][v2].id)
+//                if (mSelect && !answer && v == row && v2 == column)
+//                    tv.background = ldSel
+//                else
+//                    tv.background = ld
+//            }
+//        }
+//    }
 
 
 }
