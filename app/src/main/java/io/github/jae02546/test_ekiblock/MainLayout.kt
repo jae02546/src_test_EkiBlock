@@ -218,7 +218,7 @@ object MainLayout {
                     View.generateViewId(),
                     wCursor, wCursor,
                     0, 0, 0, 0,
-                    ldCursor,
+                    LayerDrawable(arrayOf<Drawable>()),
                     EnumViewType.TextView, 0f, 0f, cCursor, Gravity.CENTER,
                     ""
                 )
@@ -1132,35 +1132,6 @@ object MainLayout {
         }
     }
 
-    //選択解除
-//    private fun deselect(layout: ConstraintLayout) {
-//        mSelectIni = true
-//        mSelect = false
-//        mSelectAnswer = false
-//        mSelectRow = 0
-//        mSelectColumn = 0
-//        val gd = GradientDrawable()
-//        gd.setStroke(
-//            Tools.convertDp2Px(1f, layout.context).toInt(),
-//            layout.context.getThemeColor(R.attr.colorButtonNormal)
-//        )
-//        val ld = LayerDrawable(arrayOf<Drawable>(gd))
-//        ld.setLayerInset(0, 0, 0, 0, 0)
-//        //テーブル選択解除
-//        for (v in 0 until mAnswers) {
-//            for (v2 in 0 until mItems) {
-//                val tv = layout.findViewById<TextView>(apPara[v][v2].id)
-//                tv.background = ld
-//            }
-//        }
-//        //持ち札選択解除
-//        for (v in 0 until mCardRows) {
-//            for (v2 in 0 until mItems) {
-//                val tv = layout.findViewById<TextView>(cpPara[v][v2].id)
-//                tv.background = ld
-//            }
-//        }
-//    }
 
     data class PiecePara(
         var answer: Boolean,
@@ -1254,77 +1225,105 @@ object MainLayout {
         return ret
     }
 
-    //ピースを入替えて再表示
-    fun swapPiece(
-        layout: ConstraintLayout,
-        pNo: Int,
-        downPiece: PiecePara,
-        upPiece: PiecePara
-    ) {
-        //コンプなら抜ける
-        if (Tools.isComp(layout.context, pNo)) return
-        //行桁の位置がリスト範囲外なら抜ける
-        if (downPiece.iy < 0 || downPiece.ix < 0 || upPiece.iy < 0 || upPiece.ix < 0) return
-        if (downPiece.answer) {
-            if (apPara.count() < downPiece.iy || apPara[downPiece.iy].count() < downPiece.ix) return
-        } else {
-            if (cpPara.count() < downPiece.iy || cpPara[downPiece.iy].count() < downPiece.ix) return
-        }
-        if (upPiece.answer) {
-            if (apPara.count() < upPiece.iy || apPara[upPiece.iy].count() < upPiece.ix) return
-        } else {
-            if (cpPara.count() < upPiece.iy || cpPara[upPiece.iy].count() < upPiece.ix) return
-        }
-        //ラスト状態テーブルのピース交換
-        Tools.swapLastStateTblPiece(
-            layout.context,
-            pNo,
-            downPiece,
-            upPiece
-        )
-        //コンプ判断、スコア更新
-        if (Tools.isComp(layout.context, pNo))
-            Tools.incCompCount(layout.context, pNo)
-        //再表示
-        showLayout(layout, pNo, false)
+//    //ピースを入替えて再表示
+//    fun swapPiece(
+//        layout: ConstraintLayout,
+//        pNo: Int,
+//        downPiece: PiecePara,
+//        upPiece: PiecePara
+//    ) {
+//        //コンプなら抜ける
+//        if (Tools.isComp(layout.context, pNo)) return
+//        //行桁の位置がリスト範囲外なら抜ける
+//        if (downPiece.iy < 0 || downPiece.ix < 0 || upPiece.iy < 0 || upPiece.ix < 0) return
+//        if (downPiece.answer) {
+//            if (apPara.count() < downPiece.iy || apPara[downPiece.iy].count() < downPiece.ix) return
+//        } else {
+//            if (cpPara.count() < downPiece.iy || cpPara[downPiece.iy].count() < downPiece.ix) return
+//        }
+//        if (upPiece.answer) {
+//            if (apPara.count() < upPiece.iy || apPara[upPiece.iy].count() < upPiece.ix) return
+//        } else {
+//            if (cpPara.count() < upPiece.iy || cpPara[upPiece.iy].count() < upPiece.ix) return
+//        }
+//        //ラスト状態テーブルのピース交換
+//        Tools.swapLastStateTblPiece(
+//            layout.context,
+//            pNo,
+//            downPiece,
+//            upPiece
+//        )
+//        //コンプ判断、スコア更新
+//        if (Tools.isComp(layout.context, pNo))
+//            Tools.incCompCount(layout.context, pNo)
+//        //再表示
+//        showLayout(layout, pNo, false)
+//    }
 
-//        //選択ピース以外は通常表示
-//        //Layer normal
-//        val gd = GradientDrawable()
-//        gd.setStroke(
-//            Tools.convertDp2Px(1f, layout.context).toInt(),
-//            layout.context.getThemeColor(R.attr.colorButtonNormal)
-//        )
-//        val ld = LayerDrawable(arrayOf<Drawable>(gd))
-//        ld.setLayerInset(0, 0, 0, 0, 0)
-//        //Layer select
-//        val gdSel = GradientDrawable()
-//        gdSel.setStroke(
-//            Tools.convertDp2Px(1f, layout.context).toInt(),
-//            Color.RED
-//        )
-//        val ldSel = LayerDrawable(arrayOf<Drawable>(gdSel))
-//        ldSel.setLayerInset(0, 0, 0, 0, 0)
-//        //回答表示
-//        for (v in 0 until mAnswers) {
-//            for (v2 in 0 until mItems) {
-//                val tv = layout.findViewById<TextView>(apPara[v][v2].id)
-//                if (mSelect && answer && v == iy && v2 == ix)
-//                    tv.background = ldSel
-//                else
-//                    tv.background = ld
-//            }
-//        }
-//        //持ち札表示
-//        for (v in 0 until mCardRows) {
-//            for (v2 in 0 until mItems) {
-//                val tv = layout.findViewById<TextView>(cpPara[v][v2].id)
-//                if (mSelect && !answer && v == iy && v2 == ix)
-//                    tv.background = ldSel
-//                else
-//                    tv.background = ld
-//            }
-//        }
+    //ピース選択
+    fun selectPiece(layout: ConstraintLayout, selPiece: PiecePara) {
+        //選択ピース以外は通常表示
+        //Layer normal
+        val gd = GradientDrawable()
+        gd.setStroke(
+            Tools.convertDp2Px(1f, layout.context).toInt(),
+            layout.context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        val ld = LayerDrawable(arrayOf<Drawable>(gd))
+        ld.setLayerInset(0, 0, 0, 0, 0)
+        //Layer select
+        val gdSel = GradientDrawable()
+        gdSel.setStroke(
+            Tools.convertDp2Px(1f, layout.context).toInt(),
+            Color.RED
+        )
+        val ldSel = LayerDrawable(arrayOf<Drawable>(gdSel))
+        ldSel.setLayerInset(0, 0, 0, 0, 0)
+        //テーブル
+        for (v in 0 until mAnswers) {
+            for (v2 in 0 until mItems) {
+                val tv = layout.findViewById<TextView>(apPara[v][v2].id)
+                if (selPiece.answer && v == selPiece.iy && v2 == selPiece.ix)
+                    tv.background = ldSel
+                else
+                    tv.background = ld
+            }
+        }
+        //持ち札
+        for (v in 0 until mCardRows) {
+            for (v2 in 0 until mItems) {
+                val tv = layout.findViewById<TextView>(cpPara[v][v2].id)
+                if (!selPiece.answer && v == selPiece.iy && v2 == selPiece.ix)
+                    tv.background = ldSel
+                else
+                    tv.background = ld
+            }
+        }
+    }
+
+    //ピース選択解除
+    fun deselectPiece(layout: ConstraintLayout) {
+        val gd = GradientDrawable()
+        gd.setStroke(
+            Tools.convertDp2Px(1f, layout.context).toInt(),
+            layout.context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        val ld = LayerDrawable(arrayOf<Drawable>(gd))
+        ld.setLayerInset(0, 0, 0, 0, 0)
+        //テーブル
+        for (v in 0 until mAnswers) {
+            for (v2 in 0 until mItems) {
+                val tv = layout.findViewById<TextView>(apPara[v][v2].id)
+                tv.background = ld
+            }
+        }
+        //持ち札
+        for (v in 0 until mCardRows) {
+            for (v2 in 0 until mItems) {
+                val tv = layout.findViewById<TextView>(cpPara[v][v2].id)
+                tv.background = ld
+            }
+        }
     }
 
 

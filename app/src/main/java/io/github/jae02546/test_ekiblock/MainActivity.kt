@@ -240,6 +240,8 @@ class MainActivity : AppCompatActivity() {
         val cursor = findViewById<TextView>(MainLayout.mcPara[0][0].id)
         var downX = 0f
         var downY = 0f
+        var empty = false
+        val fOffset = 1.5f
 
         //answer piece イベント
         for (v in 0 until MainLayout.apPara.count()) {
@@ -253,14 +255,12 @@ class MainActivity : AppCompatActivity() {
                     //pNo、comp状態取得
                     var pNo = 0
                     var comp = false
-                    //if (event.actionMasked == MotionEvent.ACTION_DOWN) {
                     pNo = Tools.getPrefInt(
                         this,
                         getString(R.string.pref_playerNo_key),
                         getString(R.string.pref_playerNo_defaultValue).toInt()
                     )
                     comp = Tools.isComp(this, pNo)
-                    //}
                     when (event.actionMasked) {
                         MotionEvent.ACTION_DOWN -> {
                             if (comp) {
@@ -269,29 +269,44 @@ class MainActivity : AppCompatActivity() {
                                 //comp画面表示
                                 showCompLayout(screenSize, pNo)
                             } else {
-                                downX = event.x
-                                downY = event.y
-                                //(tapCi.height * 2.5 - event.y) は指に隠れないためのoffset
-                                cursor.x = apOffsetX + tapAp.x
-                                cursor.y =
-                                    apOffsetY + tapAp.y - (tapAp.height * 2.1 - event.y).toInt()
-                                cursor.text = tapAp.text
-                                cursor.isVisible = true
-                                tapAp.text = ""
-                                //効果音とバイブ
-                                soundVibrator(false)
+                                empty = tapAp.text == ""
+                                //空文字列は無視
+                                if (!empty) {
+                                    downX = event.x
+                                    downY = event.y
+                                    //(tapCi.height * 2.5 - event.y) は指に隠れないためのoffset
+                                    cursor.x = apOffsetX + tapAp.x
+                                    cursor.y =
+                                        apOffsetY + tapAp.y - (tapAp.height * fOffset - event.y).toInt()
+                                    cursor.text = tapAp.text
+                                    cursor.isVisible = true
+                                    tapAp.text = ""
+                                    //効果音とバイブ
+                                    soundVibrator(false)
+                                }
                             }
                         }
                         MotionEvent.ACTION_MOVE -> {
-                            if (!comp) {
+                            if (!comp && !empty) {
                                 //(tapAp.height * 2.5 - event.y) は指に隠れないためのoffset
                                 cursor.x = apOffsetX + tapAp.x + (event.x - downX)
                                 cursor.y =
-                                    apOffsetY + tapAp.y + (event.y - downY) - (tapAp.height * 2.1 - downY).toInt()
+                                    apOffsetY + tapAp.y + (event.y - downY) - (tapAp.height * fOffset - downY).toInt()
+                                //カーソル位置のピース取得
+                                val movePiece = MainLayout.getUpPiece(
+                                    mLayout,
+                                    MainLayout.PiecePara(true, v2, v),
+                                    cursor.x.toInt(),
+                                    cursor.y.toInt(),
+                                )
+                                //カーソル位置のピースを選択状態にする
+                                MainLayout.selectPiece(mLayout, movePiece)
                             }
                         }
                         MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                            if (!comp) {
+                            if (!comp && !empty) {
+                                //選択解除
+                                MainLayout.deselectPiece(mLayout)
                                 //mc非表示
                                 cursor.isVisible = false
                                 cursor.text = ""
@@ -305,7 +320,8 @@ class MainActivity : AppCompatActivity() {
                                     cursor.y.toInt(),
                                 )
                                 //ピース入替
-                                MainLayout.swapPiece(mLayout, pNo, downPiece, upPiece)
+                                //MainLayout.swapPiece(mLayout, pNo, downPiece, upPiece)
+                                Tools.swapLastStateTblPiece(this, pNo, downPiece, upPiece)
                                 //再表示
                                 MainLayout.showLayout(mLayout, pNo, false)
                                 //comp判断
@@ -347,14 +363,12 @@ class MainActivity : AppCompatActivity() {
                     //pNoとcomp状態取得
                     var pNo = 0
                     var comp = false
-                    //if (event.actionMasked == MotionEvent.ACTION_DOWN) {
                     pNo = Tools.getPrefInt(
                         this,
                         getString(R.string.pref_playerNo_key),
                         getString(R.string.pref_playerNo_defaultValue).toInt()
                     )
                     comp = Tools.isComp(this, pNo)
-                    //}
                     when (event.actionMasked) {
                         MotionEvent.ACTION_DOWN -> {
                             if (comp) {
@@ -363,29 +377,44 @@ class MainActivity : AppCompatActivity() {
                                 //comp画面表示
                                 showCompLayout(screenSize, pNo)
                             } else {
-                                downX = event.x
-                                downY = event.y
-                                //(tapCi.height * 2.5 - event.y) は指に隠れないためのoffset
-                                cursor.x = cpOffsetX + tapCp.x
-                                cursor.y =
-                                    cpOffsetY + tapCp.y - (tapCp.height * 2.1 - event.y).toInt()
-                                cursor.text = tapCp.text
-                                cursor.isVisible = true
-                                tapCp.text = ""
-                                //効果音とバイブ
-                                soundVibrator(false)
+                                empty = tapCp.text == ""
+                                //空文字列は無視
+                                if (!empty) {
+                                    downX = event.x
+                                    downY = event.y
+                                    //(tapCi.height * 2.5 - event.y) は指に隠れないためのoffset
+                                    cursor.x = cpOffsetX + tapCp.x
+                                    cursor.y =
+                                        cpOffsetY + tapCp.y - (tapCp.height * fOffset - event.y).toInt()
+                                    cursor.text = tapCp.text
+                                    cursor.isVisible = true
+                                    tapCp.text = ""
+                                    //効果音とバイブ
+                                    soundVibrator(false)
+                                }
                             }
                         }
                         MotionEvent.ACTION_MOVE -> {
-                            if (!comp) {
+                            if (!comp && !empty) {
                                 //(tapCp.height * 2.5 - event.y) は指に隠れないためのoffset
                                 cursor.x = cpOffsetX + tapCp.x + (event.x - downX)
                                 cursor.y =
-                                    cpOffsetY + tapCp.y + (event.y - downY) - (tapCp.height * 2.1 - downY).toInt()
+                                    cpOffsetY + tapCp.y + (event.y - downY) - (tapCp.height * fOffset - downY).toInt()
+                                //カーソル位置のピース取得
+                                val movePiece = MainLayout.getUpPiece(
+                                    mLayout,
+                                    MainLayout.PiecePara(false, v2, v),
+                                    cursor.x.toInt(),
+                                    cursor.y.toInt(),
+                                )
+                                //カーソル位置のピースを選択状態にする
+                                MainLayout.selectPiece(mLayout, movePiece)
                             }
                         }
                         MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                            if (!comp) {
+                            if (!comp && !empty) {
+                                //選択解除
+                                MainLayout.deselectPiece(mLayout)
                                 //mc非表示
                                 cursor.isVisible = false
                                 cursor.text = ""
@@ -399,7 +428,8 @@ class MainActivity : AppCompatActivity() {
                                     cursor.y.toInt(),
                                 )
                                 //ピース入替
-                                MainLayout.swapPiece(mLayout, pNo, downPiece, upPiece)
+                                //MainLayout.swapPiece(mLayout, pNo, downPiece, upPiece)
+                                Tools.swapLastStateTblPiece(this, pNo, downPiece, upPiece)
                                 //再表示
                                 MainLayout.showLayout(mLayout, pNo, false)
                                 //comp判断

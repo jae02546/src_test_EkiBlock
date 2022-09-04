@@ -216,29 +216,58 @@ object Tools {
             if (lRec.pList.count() < upPiece.iy || lRec.pList[0].count() < upPiece.ix) return
         }
 
+//        //移動は交換（移動先が空白でなかった場合は交換しないと消えてしまう）
+//        val from = if (downPiece.answer)
+//            lRec.aList[downPiece.iy][downPiece.ix]
+//        else
+//            lRec.pList[downPiece.iy][downPiece.ix]
+//        val to = if (upPiece.answer)
+//            lRec.aList[upPiece.iy][upPiece.ix]
+//        else
+//            lRec.pList[upPiece.iy][upPiece.ix]
+//        if (downPiece.answer)
+//            lRec.aList[downPiece.iy][downPiece.ix] = to
+//        else
+//            lRec.pList[downPiece.iy][downPiece.ix] = to
+//        if (upPiece.answer)
+//            lRec.aList[upPiece.iy][upPiece.ix] = from
+//        else
+//            lRec.pList[upPiece.iy][upPiece.ix] = from
+
+        //移動先に既に文字がある場合は間に挿入
+        //ただし移動先に空きが無い場合は何もしない
+        if (downPiece.answer && upPiece.answer) {
+            if (lRec.aList[upPiece.iy][upPiece.ix] == "") {
+                //移動先が空きの場合は移動して移動元を空きに
+                lRec.aList[upPiece.iy][upPiece.ix] = lRec.aList[downPiece.iy][downPiece.ix]
+                lRec.aList[downPiece.iy][downPiece.ix] = ""
+            } else {
+                //移動先が空きで無い場合は挿入して移動元を空きに
+                val items = lRec.aList[upPiece.iy].count()
+                lRec.aList[upPiece.iy].add(upPiece.ix, lRec.aList[downPiece.iy][downPiece.ix])
+                lRec.aList[downPiece.iy][downPiece.ix] = ""
 
 
-        //既に文字がある場合は間に挿入
+                //挿入位置から右方向、その後左方向に空きを探す
+
+                //移動先を後ろから検索し空きがあったら削除
+                for (v in (lRec.aList[upPiece.iy].count() - 1)..0) {
+                    if (lRec.aList[upPiece.iy][v] == "")
+                        lRec.aList[upPiece.iy].removeAt(v)
+                }
 
 
+                //空きがなかった場合は最後の文字を移動元にコピーして削除
+                if (lRec.aList[upPiece.iy].count() > items) {
+                    lRec.aList[downPiece.iy][downPiece.ix] = lRec.aList[upPiece.iy][items]
+                    lRec.aList[upPiece.iy].removeAt(items)
+                }
+            }
 
-        //移動は交換（移動先が空白でなかった場合は交換しないと消えてしまう）
-        val from = if (downPiece.answer)
-            lRec.aList[downPiece.iy][downPiece.ix]
-        else
-            lRec.pList[downPiece.iy][downPiece.ix]
-        val to = if (upPiece.answer)
-            lRec.aList[upPiece.iy][upPiece.ix]
-        else
-            lRec.pList[upPiece.iy][upPiece.ix]
-        if (downPiece.answer)
-            lRec.aList[downPiece.iy][downPiece.ix] = to
-        else
-            lRec.pList[downPiece.iy][downPiece.ix] = to
-        if (upPiece.answer)
-            lRec.aList[upPiece.iy][upPiece.ix] = from
-        else
-            lRec.pList[upPiece.iy][upPiece.ix] = from
+
+        }
+
+
         //書込み
         val rec = LastStateTbl(
             lRec.pNo,
