@@ -241,7 +241,7 @@ class MainActivity : AppCompatActivity() {
         var downX = 0f
         var downY = 0f
         var empty = false
-        val fOffset = 1.5f
+        val fOffset = 2f
 
         //answer piece イベント
         for (v in 0 until MainLayout.apPara.count()) {

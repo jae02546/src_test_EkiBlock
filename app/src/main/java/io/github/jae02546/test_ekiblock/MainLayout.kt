@@ -1074,7 +1074,7 @@ object MainLayout {
                 hint.text = HtmlCompat.fromHtml(foo, HtmlCompat.FROM_HTML_MODE_COMPACT)
                 hint.movementMethod = LinkMovementMethod.getInstance()
                 val ans = layout.findViewById<TextView>(qlPara[1][0].id)
-                val bar = "回答数\n" + lRec.cList.count() + "駅"
+                val bar = "回答数\n" + lRec.aList.count() + "駅"
                 ans.text = bar
                 val kana = layout.findViewById<TextView>(qcPara[0][0].id)
                 kana.text = qRec.kana
@@ -1109,8 +1109,8 @@ object MainLayout {
             for (v in 0 until mAnswers) {
                 for (v2 in 0 until mItems) {
                     val atv = layout.findViewById<TextView>(apPara[v][v2].id)
-                    if (lRec.aList.count() > v && lRec.aList[v].count() > v2) {
-                        atv.text = lRec.aList[v][v2]
+                    if (lRec.tList.count() > v && lRec.tList[v].count() > v2) {
+                        atv.text = lRec.tList[v][v2]
                     } else {
                         atv.text = ""
                     }
@@ -1122,8 +1122,8 @@ object MainLayout {
             for (v in 0 until mCardRows) {
                 for (v2 in 0 until mItems) {
                     val ptv = layout.findViewById<TextView>(cpPara[v][v2].id)
-                    if (lRec.pList.count() > v && lRec.pList[v].count() > v2) {
-                        ptv.text = lRec.pList[v][v2]
+                    if (lRec.cList.count() > v && lRec.cList[v].count() > v2) {
+                        ptv.text = lRec.cList[v][v2]
                     } else {
                         ptv.text = ""
                     }
@@ -1134,7 +1134,7 @@ object MainLayout {
 
 
     data class PiecePara(
-        var answer: Boolean,
+        var table: Boolean,
         var ix: Int,
         var iy: Int,
     )
@@ -1196,15 +1196,15 @@ object MainLayout {
         }
         //座標がマスの中心になるよう調整
         val x2 =
-            x + (if (downPiece.answer) aPS[downPiece.iy][downPiece.ix].w else cPS[downPiece.iy][downPiece.ix].w) / 2
+            x + (if (downPiece.table) aPS[downPiece.iy][downPiece.ix].w else cPS[downPiece.iy][downPiece.ix].w) / 2
         val y2 =
-            y + (if (downPiece.answer) aPS[downPiece.iy][downPiece.ix].h else cPS[downPiece.iy][downPiece.ix].h) / 2
+            y + (if (downPiece.table) aPS[downPiece.iy][downPiece.ix].h else cPS[downPiece.iy][downPiece.ix].h) / 2
         //どのマスの上か検索
         val ret = PiecePara(false, -1, -1)
         for (v in 0 until aPS.count())
             for (v2 in 0 until aPS[v].count()) {
                 if (x2 >= aPS[v][v2].xs && x2 <= aPS[v][v2].xe && y2 >= aPS[v][v2].ys && y2 <= aPS[v][v2].ye) {
-                    ret.answer = true
+                    ret.table = true
                     ret.ix = v2
                     ret.iy = v
                     break
@@ -1215,7 +1215,7 @@ object MainLayout {
         for (v in 0 until cPS.count())
             for (v2 in 0 until cPS[v].count()) {
                 if (x2 >= cPS[v][v2].xs && x2 <= cPS[v][v2].xe && y2 >= cPS[v][v2].ys && y2 <= cPS[v][v2].ye) {
-                    ret.answer = false
+                    ret.table = false
                     ret.ix = v2
                     ret.iy = v
                     break
@@ -1283,7 +1283,7 @@ object MainLayout {
         for (v in 0 until mAnswers) {
             for (v2 in 0 until mItems) {
                 val tv = layout.findViewById<TextView>(apPara[v][v2].id)
-                if (selPiece.answer && v == selPiece.iy && v2 == selPiece.ix)
+                if (selPiece.table && v == selPiece.iy && v2 == selPiece.ix)
                     tv.background = ldSel
                 else
                     tv.background = ld
@@ -1293,7 +1293,7 @@ object MainLayout {
         for (v in 0 until mCardRows) {
             for (v2 in 0 until mItems) {
                 val tv = layout.findViewById<TextView>(cpPara[v][v2].id)
-                if (!selPiece.answer && v == selPiece.iy && v2 == selPiece.ix)
+                if (!selPiece.table && v == selPiece.iy && v2 == selPiece.ix)
                     tv.background = ldSel
                 else
                     tv.background = ld

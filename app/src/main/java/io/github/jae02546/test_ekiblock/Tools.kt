@@ -1,14 +1,9 @@
 package io.github.jae02546.test_ekiblock
 
 import android.content.Context
-import android.graphics.Insets
 import android.graphics.Point
-import android.os.Build
 import android.util.DisplayMetrics
-import android.view.WindowInsets
 import android.view.WindowManager
-import android.view.WindowMetrics
-import androidx.annotation.RequiresApi
 import androidx.preference.PreferenceManager
 import java.time.LocalDateTime
 
@@ -205,77 +200,79 @@ object Tools {
         val lRec = RoomMain.getLastStateRecord(context, pNo) ?: return
         //行桁の位置がリスト範囲外なら抜ける
         if (downPiece.iy < 0 || downPiece.ix < 0 || upPiece.iy < 0 || upPiece.ix < 0) return
-        if (downPiece.answer) {
-            if (lRec.aList.count() < downPiece.iy || lRec.aList[0].count() < downPiece.ix) return
+        if (downPiece.table) {
+            if (lRec.tList.count() < downPiece.iy || lRec.tList[0].count() < downPiece.ix) return
         } else {
-            if (lRec.pList.count() < downPiece.iy || lRec.pList[0].count() < downPiece.ix) return
+            if (lRec.cList.count() < downPiece.iy || lRec.cList[0].count() < downPiece.ix) return
         }
-        if (upPiece.answer) {
-            if (lRec.aList.count() < upPiece.iy || lRec.aList[0].count() < upPiece.ix) return
+        if (upPiece.table) {
+            if (lRec.tList.count() < upPiece.iy || lRec.tList[0].count() < upPiece.ix) return
         } else {
-            if (lRec.pList.count() < upPiece.iy || lRec.pList[0].count() < upPiece.ix) return
+            if (lRec.cList.count() < upPiece.iy || lRec.cList[0].count() < upPiece.ix) return
         }
-
-//        //移動は交換（移動先が空白でなかった場合は交換しないと消えてしまう）
-//        val from = if (downPiece.answer)
-//            lRec.aList[downPiece.iy][downPiece.ix]
-//        else
-//            lRec.pList[downPiece.iy][downPiece.ix]
-//        val to = if (upPiece.answer)
-//            lRec.aList[upPiece.iy][upPiece.ix]
-//        else
-//            lRec.pList[upPiece.iy][upPiece.ix]
-//        if (downPiece.answer)
-//            lRec.aList[downPiece.iy][downPiece.ix] = to
-//        else
-//            lRec.pList[downPiece.iy][downPiece.ix] = to
-//        if (upPiece.answer)
-//            lRec.aList[upPiece.iy][upPiece.ix] = from
-//        else
-//            lRec.pList[upPiece.iy][upPiece.ix] = from
 
         //移動先に既に文字がある場合は間に挿入
         //ただし移動先に空きが無い場合は何もしない
-        if (downPiece.answer && upPiece.answer) {
-            if (lRec.aList[upPiece.iy][upPiece.ix] == "") {
-                //移動先が空きの場合は移動して移動元を空きに
-                lRec.aList[upPiece.iy][upPiece.ix] = lRec.aList[downPiece.iy][downPiece.ix]
-                lRec.aList[downPiece.iy][downPiece.ix] = ""
-            } else {
-                //移動先が空きで無い場合は挿入して移動元を空きに
-                val items = lRec.aList[upPiece.iy].count()
-                lRec.aList[upPiece.iy].add(upPiece.ix, lRec.aList[downPiece.iy][downPiece.ix])
-                lRec.aList[downPiece.iy][downPiece.ix] = ""
+        var fromList: MutableList<MutableList<String>> = mutableListOf()
+        var toList: MutableList<MutableList<String>> = mutableListOf()
 
-
-                //挿入位置から右方向、その後左方向に空きを探す
-
-                //移動先を後ろから検索し空きがあったら削除
-                for (v in (lRec.aList[upPiece.iy].count() - 1)..0) {
-                    if (lRec.aList[upPiece.iy][v] == "")
-                        lRec.aList[upPiece.iy].removeAt(v)
-                }
-
-
-                //空きがなかった場合は最後の文字を移動元にコピーして削除
-                if (lRec.aList[upPiece.iy].count() > items) {
-                    lRec.aList[downPiece.iy][downPiece.ix] = lRec.aList[upPiece.iy][items]
-                    lRec.aList[upPiece.iy].removeAt(items)
-                }
-            }
-
-
+        if (downPiece.table && upPiece.table) {
+            fromList = lRec.tList
+            toList = lRec.tList
+        } else if (!downPiece.table && upPiece.table) {
+            fromList = lRec.cList
+            toList = lRec.tList
+        } else if (downPiece.table && !upPiece.table) {
+            fromList = lRec.tList
+            toList = lRec.cList
+        } else if (!downPiece.table && !upPiece.table) {
+            fromList = lRec.cList
+            toList = lRec.cList
         }
 
+        if (toList[upPiece.iy][upPiece.ix] == "") {
+            //移動先が空きの場合はコピーして移動元を空きに
+            toList[upPiece.iy][upPiece.ix] = fromList[downPiece.iy][downPiece.ix]
+            fromList[downPiece.iy][downPiece.ix] = ""
+        } else {
+            //移動先が空きで無い場合は挿入して移動元を空きに
+            val insStr = fromList[downPiece.iy][downPiece.ix]
+            fromList[downPiece.iy][downPiece.ix] = ""
+            //挿入位置から右方向に空きを探す
+            var ins = false
+            for (v in upPiece.ix until toList[upPiece.iy].count()) {
+                if (toList[upPiece.iy][v] == "") {
+                    toList[upPiece.iy].removeAt(v)
+                    ins = true
+                    break
+                }
+            }
+            //右方向に空きが無ければ左方向に空きを探す
+            if (!ins) {
+                for (v in 0..upPiece.ix) {
+                    if (toList[upPiece.iy][upPiece.ix - v] == "") {
+                        toList[upPiece.iy].removeAt(upPiece.ix - v)
+                        ins = true
+                        break
+                    }
+                }
+            }
+            //移動先に挿入、空きが無い場合は文字を戻し何も無かったことに
+            if (ins) {
+                toList[upPiece.iy].add(upPiece.ix, insStr)
+            } else {
+                fromList[downPiece.iy][downPiece.ix] = insStr
+            }
+        }
 
         //書込み
         val rec = LastStateTbl(
             lRec.pNo,
             lRec.qNo,
-            lRec.cNoList,
-            lRec.cList,
+            lRec.aNoList,
             lRec.aList,
-            lRec.pList,
+            lRec.tList,
+            lRec.cList,
             true,
         )
         RoomMain.putLastStateRecord(context, rec)
@@ -293,7 +290,7 @@ object Tools {
         val foo: MutableList<String> = mutableListOf()
         var count = 0
         if (lRec != null) {
-            for (v in lRec.aList) {
+            for (v in lRec.tList) {
                 //これだと先頭に空文字列があってもcompになるが、まあいいか?
                 //空文字列が間にあってもcompになるので駄目
                 //val bar = v.joinToString("")
@@ -305,7 +302,7 @@ object Tools {
                 }
                 foo += bar.trimEnd() //後ろの空白は取る
             }
-            for (v in lRec.cList) {
+            for (v in lRec.aList) {
                 for (v2 in foo) {
                     if (v == v2) {
                         count++
@@ -315,7 +312,7 @@ object Tools {
             }
         }
 
-        return count == lRec?.cList?.count() ?: false
+        return count == lRec?.aList?.count() ?: false
     }
 
     //comp状態リスト取得
@@ -326,7 +323,7 @@ object Tools {
             val qRec = RoomMain.getQuestionRecord(context, lRec.qNo)
             if (qRec != null) {
                 val foo: MutableList<String> = mutableListOf()
-                for (v in lRec.aList) {
+                for (v in lRec.tList) {
                     val bar = v.joinToString("")
                     foo += bar
                 }
