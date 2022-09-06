@@ -40,7 +40,8 @@ object MainLayout {
     private const val mItems = 8 //item幅計算時の分割数となる
 
     //Viewマージン それぞれのViewがこのマージンを取るので実際の間隔は倍となる
-    private const val mViewMargin = 10 //dp
+    //private const val mViewMargin = 10 //dp
+    private const val mViewMargin = 2 //dp
 
     //adView高さ
     private const val mAdViewHeight = 50 //dp
@@ -54,10 +55,10 @@ object MainLayout {
     var qlPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionLeft
     var qcPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionCenter
     var qrPara: MutableList<MutableList<ItemPara>> = mutableListOf() //questionRight
-    var aPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answer
-    var aiPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answerItem
-    var atPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answerTitle
-    var apPara: MutableList<MutableList<ItemPara>> = mutableListOf() //answerPiece
+    var tPara: MutableList<MutableList<ItemPara>> = mutableListOf() //table
+    var tiPara: MutableList<MutableList<ItemPara>> = mutableListOf() //tableItem
+    var ttPara: MutableList<MutableList<ItemPara>> = mutableListOf() //tableTitle
+    var tpPara: MutableList<MutableList<ItemPara>> = mutableListOf() //tablePiece
     var cPara: MutableList<MutableList<ItemPara>> = mutableListOf() //card
     var ciPara: MutableList<MutableList<ItemPara>> = mutableListOf() //cardItem
     var ctPara: MutableList<MutableList<ItemPara>> = mutableListOf() //cardTitle
@@ -65,13 +66,9 @@ object MainLayout {
     var nPara: MutableList<MutableList<ItemPara>> = mutableListOf() //new game
     var adViewPara: MutableList<MutableList<ItemPara>> = mutableListOf() //adView
 
-//    //選択状態
-//    private var mSelectIni = false; //true:初期状態
-//    private var mSelect = false //true:選択中
-//    private var mSelectAnswer = false //true:テーブル選択 false:持ち札選択
-//    private var mSelectRow = 0 //最終選択行
-//    private var mSelectColumn = 0 //最終選択桁
-
+    //テーブル奇数行カラー、偶数行カラー
+    private val oddColor = Color.argb(0x10, 0xff, 0xff, 0x00)
+    private val evenColor = Color.argb(0x10, 0x00, 0xff, 0x00)
 
     enum class EnumViewType {
         ConstraintLayout,
@@ -118,10 +115,10 @@ object MainLayout {
         qlPara = mutableListOf()
         qcPara = mutableListOf()
         qrPara = mutableListOf()
-        aPara = mutableListOf()
-        aiPara = mutableListOf()
-        atPara = mutableListOf()
-        apPara = mutableListOf()
+        tPara = mutableListOf()
+        tiPara = mutableListOf()
+        ttPara = mutableListOf()
+        tpPara = mutableListOf()
         cPara = mutableListOf()
         ciPara = mutableListOf()
         ctPara = mutableListOf()
@@ -218,8 +215,11 @@ object MainLayout {
                     View.generateViewId(),
                     wCursor, wCursor,
                     0, 0, 0, 0,
+                    //ldCursor,
                     LayerDrawable(arrayOf<Drawable>()),
                     EnumViewType.TextView, 0f, 0f, cCursor, Gravity.CENTER,
+                    //EnumViewType.TextView, 0f, 0f, cCursor, Gravity.START + Gravity.TOP,
+                    //EnumViewType.TextView, 0f, 0f, cCursor, Gravity.CENTER_HORIZONTAL + Gravity.TOP,
                     ""
                 )
             }
@@ -388,7 +388,7 @@ object MainLayout {
         var qrLayout = qiLayout.getViewById(qiPara[0][2].id) as ConstraintLayout
         qrLayout = getConstraintLayout(qrLayout, qrPara)
 
-        //answer
+        //tle
         val gdAnswer = GradientDrawable()
         gdAnswer.setStroke(
             Tools.convertDp2Px(1f, context).toInt(),
@@ -410,12 +410,12 @@ object MainLayout {
                     ""
                 )
             }
-            aPara += foo
+            tPara += foo
         }
-        var aLayout = mLayout.getViewById(mPara[2][0].id) as ConstraintLayout
-        aLayout = getConstraintLayout(aLayout, aPara)
+        var tLayout = mLayout.getViewById(mPara[2][0].id) as ConstraintLayout
+        tLayout = getConstraintLayout(tLayout, tPara)
 
-        //answer item
+        //table item
         for (v in 0..1) {
             val foo: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0..0) {
@@ -428,12 +428,12 @@ object MainLayout {
                     ""
                 )
             }
-            aiPara += foo
+            tiPara += foo
         }
-        var aiLayout = aLayout.getViewById(aPara[0][0].id) as ConstraintLayout
-        aiLayout = getConstraintLayout(aiLayout, aiPara)
+        var tiLayout = tLayout.getViewById(tPara[0][0].id) as ConstraintLayout
+        tiLayout = getConstraintLayout(tiLayout, tiPara)
 
-        //answer title
+        //table title
         for (v in 0..0) {
             val foo: MutableList<ItemPara> = mutableListOf()
             for (v2 in 0..0) {
@@ -442,25 +442,39 @@ object MainLayout {
                     0, 0,
                     0, 0, 0, 0,
                     LayerDrawable(arrayOf<Drawable>()),
-                    EnumViewType.TextView, 0f, 10f, 0, Gravity.CENTER_HORIZONTAL + Gravity.BOTTOM,
+//                    EnumViewType.TextView, 0f, 10f, 0, Gravity.CENTER_HORIZONTAL + Gravity.BOTTOM,
+                    EnumViewType.TextView, 0f, 10f, 0, Gravity.CENTER,
                     "テーブル"
                 )
             }
-            atPara += foo
+            ttPara += foo
         }
-        var atLayout = aiLayout.getViewById(aiPara[0][0].id) as ConstraintLayout
-        atLayout = getConstraintLayout(atLayout, atPara)
+        var ttLayout = tiLayout.getViewById(tiPara[0][0].id) as ConstraintLayout
+        ttLayout = getConstraintLayout(ttLayout, ttPara)
 
-        //answer piece
+        //table piece
         val gdAnswerPiece = GradientDrawable()
         gdAnswerPiece.setStroke(
             Tools.convertDp2Px(1f, context).toInt(),
             context.getThemeColor(R.attr.colorButtonNormal)
         )
         //塗りつぶしはコメントを外す
-        gdAnswerPiece.setColor(context.getThemeColor(R.attr.colorOnPrimary)) //これだ
+        //gdAnswerPiece.setColor(context.getThemeColor(R.attr.colorOnPrimary)) //これだ
+        gdAnswerPiece.setColor(oddColor)
         val ldAnswerPiece = LayerDrawable(arrayOf<Drawable>(gdAnswerPiece))
         ldAnswerPiece.setLayerInset(0, 0, 0, 0, 0)
+
+        val gdAnswerPiece2 = GradientDrawable()
+        gdAnswerPiece2.setStroke(
+            Tools.convertDp2Px(1f, context).toInt(),
+            context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        //塗りつぶしはコメントを外す
+        //gdAnswerPiece.setColor(context.getThemeColor(R.attr.colorOnPrimary)) //これだ
+        gdAnswerPiece2.setColor(evenColor)
+        val ldAnswerPiece2 = LayerDrawable(arrayOf<Drawable>(gdAnswerPiece2))
+        ldAnswerPiece2.setLayerInset(0, 0, 0, 0, 0)
+
         val apc = context.getThemeColor(R.attr.editTextColor)
         for (v in 0 until mAnswers) {
             val vPara: MutableList<ItemPara> = mutableListOf()
@@ -473,16 +487,16 @@ object MainLayout {
                     View.generateViewId(),
                     0, 0,
                     lMargin, rMargin, tMargin, bMargin,
-                    ldAnswerPiece,
+                    if (v % 2 == 1) ldAnswerPiece else ldAnswerPiece2,
                     EnumViewType.TextView, 0f, 0f, apc, Gravity.CENTER,
                     //v.toString() + v2.toString()
                     ""
                 )
             }
-            apPara += vPara
+            tpPara += vPara
         }
-        var apLayout = aiLayout.getViewById(aiPara[1][0].id) as ConstraintLayout
-        apLayout = getConstraintLayout(apLayout, apPara)
+        var tpLayout = tiLayout.getViewById(tiPara[1][0].id) as ConstraintLayout
+        tpLayout = getConstraintLayout(tpLayout, tpPara)
 
         //card
         val gdCard = GradientDrawable()
@@ -538,7 +552,8 @@ object MainLayout {
                     0, 0,
                     0, 0, 0, 0,
                     LayerDrawable(arrayOf<Drawable>()),
-                    EnumViewType.TextView, 0f, 10f, 0, Gravity.CENTER_HORIZONTAL + Gravity.BOTTOM,
+//                    EnumViewType.TextView, 0f, 10f, 0, Gravity.CENTER_HORIZONTAL + Gravity.BOTTOM,
+                    EnumViewType.TextView, 0f, 10f, 0, Gravity.CENTER,
                     "持ち札"
                 )
             }
@@ -599,7 +614,7 @@ object MainLayout {
                     0, 0, 0, 0,
                     ldNewGame,
                     EnumViewType.TextView, 0f, 0f, 0, Gravity.CENTER,
-                    "new game"
+                    "新しいゲーム" //"new game"
                 )
             }
             nPara += foo
@@ -1108,7 +1123,7 @@ object MainLayout {
         if (lRec != null) {
             for (v in 0 until mAnswers) {
                 for (v2 in 0 until mItems) {
-                    val atv = layout.findViewById<TextView>(apPara[v][v2].id)
+                    val atv = layout.findViewById<TextView>(tpPara[v][v2].id)
                     if (lRec.tList.count() > v && lRec.tList[v].count() > v2) {
                         atv.text = lRec.tList[v][v2]
                     } else {
@@ -1156,17 +1171,17 @@ object MainLayout {
         //answer offset
         val aosX = layout.findViewById<ConstraintLayout>(mPara[2][0].id).x
         var aosY = layout.findViewById<ConstraintLayout>(mPara[2][0].id).y
-        aosY += layout.findViewById<ConstraintLayout>(aiPara[1][0].id).y
+        aosY += layout.findViewById<ConstraintLayout>(tiPara[1][0].id).y
         //card offset
         val cosX = layout.findViewById<ConstraintLayout>(mPara[3][0].id).x
         var cosY = layout.findViewById<ConstraintLayout>(mPara[3][0].id).y
         cosY += layout.findViewById<ConstraintLayout>(ciPara[1][0].id).y
         //各pieceの相対座標
         val aPS: MutableList<MutableList<PosSize>> = mutableListOf()
-        for (v in 0 until apPara.count()) {
+        for (v in 0 until tpPara.count()) {
             val foo: MutableList<PosSize> = mutableListOf()
-            for (v2 in 0 until apPara[v].count()) {
-                val bar = layout.findViewById<TextView>(apPara[v][v2].id)
+            for (v2 in 0 until tpPara[v].count()) {
+                val bar = layout.findViewById<TextView>(tpPara[v][v2].id)
                 foo += PosSize(
                     (aosX + bar.x).toInt(),
                     (aosY + bar.y).toInt(),
@@ -1271,22 +1286,43 @@ object MainLayout {
         )
         val ld = LayerDrawable(arrayOf<Drawable>(gd))
         ld.setLayerInset(0, 0, 0, 0, 0)
+        //Layer odd
+        val gdOdd = GradientDrawable()
+        gdOdd.setStroke(
+            Tools.convertDp2Px(1f, layout.context).toInt(),
+            layout.context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        gdOdd.setColor(oddColor)
+        val ldOdd = LayerDrawable(arrayOf<Drawable>(gdOdd))
+        ldOdd.setLayerInset(0, 0, 0, 0, 0)
+        //Layer even
+        val gdEven = GradientDrawable()
+        gdEven.setStroke(
+            Tools.convertDp2Px(1f, layout.context).toInt(),
+            layout.context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        gdEven.setColor(evenColor)
+        val ldEven = LayerDrawable(arrayOf<Drawable>(gdEven))
+        ldEven.setLayerInset(0, 0, 0, 0, 0)
         //Layer select
         val gdSel = GradientDrawable()
         gdSel.setStroke(
             Tools.convertDp2Px(1f, layout.context).toInt(),
-            Color.RED
+            //Color.RED
+            //Color.BLUE
+            layout.context.getThemeColor(R.attr.colorButtonNormal)
         )
+        gdSel.setColor(layout.context.getThemeColor(R.attr.colorButtonNormal))
         val ldSel = LayerDrawable(arrayOf<Drawable>(gdSel))
         ldSel.setLayerInset(0, 0, 0, 0, 0)
         //テーブル
         for (v in 0 until mAnswers) {
             for (v2 in 0 until mItems) {
-                val tv = layout.findViewById<TextView>(apPara[v][v2].id)
+                val tv = layout.findViewById<TextView>(tpPara[v][v2].id)
                 if (selPiece.table && v == selPiece.iy && v2 == selPiece.ix)
                     tv.background = ldSel
                 else
-                    tv.background = ld
+                    tv.background = if (v % 2 == 1) ldOdd else ldEven
             }
         }
         //持ち札
@@ -1303,6 +1339,7 @@ object MainLayout {
 
     //ピース選択解除
     fun deselectPiece(layout: ConstraintLayout) {
+        //Layer normal
         val gd = GradientDrawable()
         gd.setStroke(
             Tools.convertDp2Px(1f, layout.context).toInt(),
@@ -1310,11 +1347,29 @@ object MainLayout {
         )
         val ld = LayerDrawable(arrayOf<Drawable>(gd))
         ld.setLayerInset(0, 0, 0, 0, 0)
+        //Layer odd
+        val gdOdd = GradientDrawable()
+        gdOdd.setStroke(
+            Tools.convertDp2Px(1f, layout.context).toInt(),
+            layout.context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        gdOdd.setColor(oddColor)
+        val ldOdd = LayerDrawable(arrayOf<Drawable>(gdOdd))
+        ldOdd.setLayerInset(0, 0, 0, 0, 0)
+        //Layer even
+        val gdEven = GradientDrawable()
+        gdEven.setStroke(
+            Tools.convertDp2Px(1f, layout.context).toInt(),
+            layout.context.getThemeColor(R.attr.colorButtonNormal)
+        )
+        gdEven.setColor(evenColor)
+        val ldEven = LayerDrawable(arrayOf<Drawable>(gdEven))
+        ldEven.setLayerInset(0, 0, 0, 0, 0)
         //テーブル
         for (v in 0 until mAnswers) {
             for (v2 in 0 until mItems) {
-                val tv = layout.findViewById<TextView>(apPara[v][v2].id)
-                tv.background = ld
+                val tv = layout.findViewById<TextView>(tpPara[v][v2].id)
+                tv.background = if (v % 2 == 1) ldOdd else ldEven
             }
         }
         //持ち札

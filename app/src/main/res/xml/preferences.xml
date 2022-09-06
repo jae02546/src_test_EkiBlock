@@ -48,6 +48,14 @@
             app:iconSpaceReserved="false"
             app:key="@string/setting_vibrationNo_key"
             app:title="@string/setting_vibration_title" />
+        <ListPreference
+            app:defaultValue="@string/setting_charPosNo_defaultValue"
+            app:dialogTitle="@string/setting_charPos_title"
+            app:entries="@array/setting_charPos_entries"
+            app:entryValues="@array/setting_charPosNo_entryValues"
+            app:iconSpaceReserved="false"
+            app:key="@string/setting_charPosNo_key"
+            app:title="@string/setting_charPos_title" />
     </PreferenceCategory>
     <PreferenceCategory app:iconSpaceReserved="false">
         <Preference

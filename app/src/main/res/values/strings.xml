@@ -56,7 +56,7 @@
 
     <!--設定 バイブレーション-->
     <string name="setting_vibrationNo_key">setting_vibration</string>
-    <string name="setting_vibrationNo_defaultValue">1</string>
+    <string name="setting_vibrationNo_defaultValue">0</string>
     <string name="setting_vibration_title">バイブレーション</string>
     <string name="setting_vibration_entries_comp_drag">タップとコンプ</string>
     <string name="setting_vibration_entries_comp">コンプのみ</string>
@@ -70,6 +70,27 @@
         <item>"0"</item>
         <item>"1"</item>
         <item>"2"</item>
+    </array>
+
+    <!--設定 タップ時文字位置-->
+    <string name="setting_charPosNo_key">setting_charPos</string>
+    <string name="setting_charPosNo_defaultValue">0</string>
+    <string name="setting_charPos_title">タップ時文字位置</string>
+    <string name="setting_charPos_entries_left">左上</string>
+    <string name="setting_charPos_entries_center">上</string>
+    <string name="setting_charPos_entries_right">右上</string>
+    <string name="setting_charPos_entries_none">調整無し</string>
+    <array name="setting_charPos_entries">
+        <item>@string/setting_charPos_entries_left</item>
+        <item>@string/setting_charPos_entries_center</item>
+        <item>@string/setting_charPos_entries_right</item>
+        <item>@string/setting_charPos_entries_none</item>
+    </array>
+    <array name="setting_charPosNo_entryValues">
+        <item>"0"</item>
+        <item>"1"</item>
+        <item>"2"</item>
+        <item>"3"</item>
     </array>
 
     <!--設定 プライバシーポリシー-->

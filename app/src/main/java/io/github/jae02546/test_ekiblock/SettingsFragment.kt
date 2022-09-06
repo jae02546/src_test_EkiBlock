@@ -40,6 +40,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
         else
             vb?.summary = vbe[0]
 
+        //タップ時文字位置summaryにタップ時文字位置名設定
+        val cpe = resources.getStringArray(R.array.setting_charPos_entries)
+        val cp: ListPreference? =
+            preferenceScreen.findPreference(getString(R.string.setting_charPosNo_key))
+        val charPosNo = cp?.value?.toInt() ?: R.string.setting_charPosNo_defaultValue
+        if (cpe.size > charPosNo)
+            cp?.summary = cpe[charPosNo]
+        else
+            cp?.summary = cpe[0]
+
         //このアプリについてsummaryにアプリ名とバージョン名設定
         val about: Preference? = findPreference(getString(R.string.setting_about_key))
         about!!.summary = getString(R.string.app_label) + " ver." + BuildConfig.VERSION_NAME
@@ -104,6 +114,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         vb?.summary = vbe[vibrationNo]
                     else
                         vb?.summary = vbe[0]
+                }
+                getString(R.string.setting_charPosNo_key) -> {
+                    val cpe = resources.getStringArray(R.array.setting_charPos_entries)
+                    val cp: ListPreference? =
+                        preferenceScreen.findPreference(getString(R.string.setting_charPosNo_key))
+                    val charPosNo =
+                        cp?.value?.toInt() ?: R.string.setting_charPosNo_defaultValue
+                    if (cpe.size > charPosNo)
+                        cp?.summary = cpe[charPosNo]
+                    else
+                        cp?.summary = cpe[0]
                 }
                 else -> {
                 }

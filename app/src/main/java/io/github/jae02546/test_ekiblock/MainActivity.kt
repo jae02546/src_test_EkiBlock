@@ -238,20 +238,22 @@ class MainActivity : AppCompatActivity() {
         }
 
         val cursor = findViewById<TextView>(MainLayout.mcPara[0][0].id)
+        var drag = false //true ドラッグ中
         var downX = 0f
         var downY = 0f
         var empty = false
-        val fOffset = 2f
+        val fosX = .0f //指に隠れないためのoffset
+        val fosY = .4f //指に隠れないためのoffset
 
-        //answer piece イベント
-        for (v in 0 until MainLayout.apPara.count()) {
-            for (v2 in 0 until MainLayout.apPara[v].count()) {
-                val tapAp = findViewById<TextView>(MainLayout.apPara[v][v2].id)
-                tapAp.setOnTouchListener { _, event ->
+        //table piece イベント
+        for (v in 0 until MainLayout.tpPara.count()) {
+            for (v2 in 0 until MainLayout.tpPara[v].count()) {
+                val tapTp = findViewById<TextView>(MainLayout.tpPara[v][v2].id)
+                tapTp.setOnTouchListener { _, event ->
                     //offset取得
                     val apOffsetX = findViewById<ConstraintLayout>(MainLayout.mPara[2][0].id).x
                     var apOffsetY = findViewById<ConstraintLayout>(MainLayout.mPara[2][0].id).y
-                    apOffsetY += findViewById<ConstraintLayout>(MainLayout.aiPara[1][0].id).y
+                    apOffsetY += findViewById<ConstraintLayout>(MainLayout.tiPara[1][0].id).y
                     //pNo、comp状態取得
                     var pNo = 0
                     var comp = false
@@ -261,26 +263,59 @@ class MainActivity : AppCompatActivity() {
                         getString(R.string.pref_playerNo_defaultValue).toInt()
                     )
                     comp = Tools.isComp(this, pNo)
+                    //タップ時文字位置設定
+                    val charPosNo = Tools.getPrefInt(
+                        this,
+                        getString(R.string.setting_charPosNo_key),
+                        getString(R.string.setting_charPosNo_defaultValue).toInt()
+                    )
+                    cursor.gravity =
+                        when (charPosNo) {
+                            0 -> {
+                                Gravity.START + Gravity.TOP
+                            }
+                            1 -> {
+                                Gravity.CENTER_HORIZONTAL + Gravity.TOP
+                            }
+                            2 -> {
+                                Gravity.END + Gravity.TOP
+                            }
+                            else -> {
+                                Gravity.CENTER
+                            }
+                        }
+
                     when (event.actionMasked) {
                         MotionEvent.ACTION_DOWN -> {
+                            drag = true
                             if (comp) {
                                 //効果音とバイブ
                                 soundVibrator(true)
                                 //comp画面表示
                                 showCompLayout(screenSize, pNo)
                             } else {
-                                empty = tapAp.text == ""
+                                empty = tapTp.text == ""
                                 //空文字列は無視
                                 if (!empty) {
                                     downX = event.x
                                     downY = event.y
-                                    //(tapCi.height * 2.5 - event.y) は指に隠れないためのoffset
-                                    cursor.x = apOffsetX + tapAp.x
-                                    cursor.y =
-                                        apOffsetY + tapAp.y - (tapAp.height * fOffset - event.y).toInt()
-                                    cursor.text = tapAp.text
+                                    when (charPosNo) {
+                                        0, 1, 2 -> {
+                                            cursor.x =
+                                                apOffsetX + tapTp.x - (tapTp.width * fosX).toInt() //- (tapTp.width - downX)
+                                            cursor.y =
+                                                apOffsetY + tapTp.y - (tapTp.height * fosY).toInt() - (tapTp.height - downY)
+                                        }
+                                        else -> {
+                                            cursor.x =
+                                                apOffsetX + tapTp.x //- (tapTp.width * fosX).toInt()
+                                            cursor.y =
+                                                apOffsetY + tapTp.y //- (tapTp.height * fosY).toInt()
+                                        }
+                                    }
+                                    cursor.text = tapTp.text
                                     cursor.isVisible = true
-                                    tapAp.text = ""
+                                    tapTp.text = ""
                                     //効果音とバイブ
                                     soundVibrator(false)
                                 }
@@ -288,10 +323,20 @@ class MainActivity : AppCompatActivity() {
                         }
                         MotionEvent.ACTION_MOVE -> {
                             if (!comp && !empty) {
-                                //(tapAp.height * 2.5 - event.y) は指に隠れないためのoffset
-                                cursor.x = apOffsetX + tapAp.x + (event.x - downX)
-                                cursor.y =
-                                    apOffsetY + tapAp.y + (event.y - downY) - (tapAp.height * fOffset - downY).toInt()
+                                when (charPosNo) {
+                                    0, 1, 2 -> {
+                                        cursor.x =
+                                            apOffsetX + tapTp.x + (event.x - downX) - (tapTp.width * fosX).toInt() //- (tapTp.width - downX)
+                                        cursor.y =
+                                            apOffsetY + tapTp.y + (event.y - downY) - (tapTp.height * fosY).toInt() - (tapTp.height - downY)
+                                    }
+                                    else -> {
+                                        cursor.x =
+                                            apOffsetX + tapTp.x + (event.x - downX) //- (tapTp.width * fosX).toInt()
+                                        cursor.y =
+                                            apOffsetY + tapTp.y + (event.y - downY) //- (tapTp.height * fosY).toInt()
+                                    }
+                                }
                                 //カーソル位置のピース取得
                                 val movePiece = MainLayout.getUpPiece(
                                     mLayout,
@@ -303,7 +348,7 @@ class MainActivity : AppCompatActivity() {
                                 MainLayout.selectPiece(mLayout, movePiece)
                             }
                         }
-                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_OUTSIDE -> {
                             if (!comp && !empty) {
                                 //選択解除
                                 MainLayout.deselectPiece(mLayout)
@@ -338,6 +383,7 @@ class MainActivity : AppCompatActivity() {
                                     soundVibrator(false)
                                 }
                             }
+                            drag = false
                         }
                     }
                     true
@@ -369,23 +415,68 @@ class MainActivity : AppCompatActivity() {
                         getString(R.string.pref_playerNo_defaultValue).toInt()
                     )
                     comp = Tools.isComp(this, pNo)
+                    //タップ時文字位置設定
+                    val charPosNo = Tools.getPrefInt(
+                        this,
+                        getString(R.string.setting_charPosNo_key),
+                        getString(R.string.setting_charPosNo_defaultValue).toInt()
+                    )
+                    cursor.gravity =
+                        when (charPosNo) {
+                            0 -> {
+                                Gravity.START + Gravity.TOP
+                            }
+                            1 -> {
+                                Gravity.CENTER_HORIZONTAL + Gravity.TOP
+                            }
+                            2 -> {
+                                Gravity.END + Gravity.TOP
+                            }
+                            else -> {
+                                Gravity.CENTER
+                            }
+                        }
+
                     when (event.actionMasked) {
                         MotionEvent.ACTION_DOWN -> {
+                            drag = true
                             if (comp) {
-                                //効果音とバイブ
-                                soundVibrator(true)
-                                //comp画面表示
-                                showCompLayout(screenSize, pNo)
+                                ////効果音とバイブ
+                                //soundVibrator(true)
+                                ////comp画面表示
+                                //showCompLayout(screenSize, pNo)
+                                //新しいゲーム
+                                AlertDialog.Builder(this)
+                                    .setTitle(R.string.app_label)
+                                    .setMessage("新しいゲームにしますか?")
+                                    .setPositiveButton("OK") { _, _ ->
+                                        //新しいゲームを作成して表示
+                                        MainLayout.showLayout(mLayout, pNo, true)
+                                    }
+                                    .setNegativeButton("No") { _, _ ->
+                                        //何もしない
+                                    }
+                                    .show()
                             } else {
                                 empty = tapCp.text == ""
                                 //空文字列は無視
                                 if (!empty) {
                                     downX = event.x
                                     downY = event.y
-                                    //(tapCi.height * 2.5 - event.y) は指に隠れないためのoffset
-                                    cursor.x = cpOffsetX + tapCp.x
-                                    cursor.y =
-                                        cpOffsetY + tapCp.y - (tapCp.height * fOffset - event.y).toInt()
+                                    when (charPosNo) {
+                                        0, 1, 2 -> {
+                                            cursor.x =
+                                                cpOffsetX + tapCp.x - (tapCp.width * fosX).toInt() //- (tapCp.width - downX)
+                                            cursor.y =
+                                                cpOffsetY + tapCp.y - (tapCp.height * fosY).toInt() - (tapCp.height - downY)
+                                        }
+                                        else -> {
+                                            cursor.x =
+                                                cpOffsetX + tapCp.x //- (tapCp.width * fosX).toInt()
+                                            cursor.y =
+                                                cpOffsetY + tapCp.y //- (tapCp.height * fosY).toInt()
+                                        }
+                                    }
                                     cursor.text = tapCp.text
                                     cursor.isVisible = true
                                     tapCp.text = ""
@@ -396,10 +487,20 @@ class MainActivity : AppCompatActivity() {
                         }
                         MotionEvent.ACTION_MOVE -> {
                             if (!comp && !empty) {
-                                //(tapCp.height * 2.5 - event.y) は指に隠れないためのoffset
-                                cursor.x = cpOffsetX + tapCp.x + (event.x - downX)
-                                cursor.y =
-                                    cpOffsetY + tapCp.y + (event.y - downY) - (tapCp.height * fOffset - downY).toInt()
+                                when (charPosNo) {
+                                    0, 1, 2 -> {
+                                        cursor.x =
+                                            cpOffsetX + tapCp.x + (event.x - downX) - (tapCp.width * fosX).toInt() //- (tapCp.width - downX)
+                                        cursor.y =
+                                            cpOffsetY + tapCp.y + (event.y - downY) - (tapCp.height * fosY).toInt() - (tapCp.height - downY)
+                                    }
+                                    else -> {
+                                        cursor.x =
+                                            cpOffsetX + tapCp.x + (event.x - downX) //- (tapCp.width * fosX).toInt()
+                                        cursor.y =
+                                            cpOffsetY + tapCp.y + (event.y - downY) //- (tapCp.height * fosY).toInt()
+                                    }
+                                }
                                 //カーソル位置のピース取得
                                 val movePiece = MainLayout.getUpPiece(
                                     mLayout,
@@ -411,7 +512,7 @@ class MainActivity : AppCompatActivity() {
                                 MainLayout.selectPiece(mLayout, movePiece)
                             }
                         }
-                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_OUTSIDE -> {
                             if (!comp && !empty) {
                                 //選択解除
                                 MainLayout.deselectPiece(mLayout)
@@ -446,6 +547,7 @@ class MainActivity : AppCompatActivity() {
                                     soundVibrator(false)
                                 }
                             }
+                            drag = false
                         }
                     }
                     true
@@ -467,33 +569,19 @@ class MainActivity : AppCompatActivity() {
                 val tapN = findViewById<TextView>(MainLayout.nPara[v][v2].id)
                 tapN.setOnClickListener {
                     //Toast.makeText(this, "n$v$v2", Toast.LENGTH_SHORT).show()
-                    soundVibrator(false) //効果音とバイブ
-                    //prefからpNo取得
-                    val pNo = Tools.getPrefInt(
-                        this,
-                        getString(R.string.pref_playerNo_key),
-                        getString(R.string.pref_playerNo_defaultValue).toInt()
-                    )
-                    //compの場合は確認
-                    if (Tools.isComp(this, pNo)) {
-                        AlertDialog.Builder(this)
-                            .setTitle(R.string.app_label)
-                            .setMessage("新しいゲームにしますか?")
-                            .setPositiveButton("OK") { _, _ ->
-                                //新しいゲームを作成して表示
-                                MainLayout.showLayout(mLayout, pNo, true)
-                            }
-                            .setNegativeButton("No") { _, _ ->
-                                //何もしない
-                            }
-                            .show()
-                    } else {
-                        //game途中の場合は確認
-                        if (Tools.isStarted(this, pNo)) {
+                    if (!drag) {
+                        soundVibrator(false) //効果音とバイブ
+                        //prefからpNo取得
+                        val pNo = Tools.getPrefInt(
+                            this,
+                            getString(R.string.pref_playerNo_key),
+                            getString(R.string.pref_playerNo_defaultValue).toInt()
+                        )
+                        //compの場合は確認
+                        if (Tools.isComp(this, pNo)) {
                             AlertDialog.Builder(this)
                                 .setTitle(R.string.app_label)
-                                //.setMessage("ゲーム途中ですが新しいゲームにしますか?\nスコア上は未コンプとなります")
-                                .setMessage("ゲーム途中ですが新しいゲームにしますか?")
+                                .setMessage("新しいゲームにしますか?")
                                 .setPositiveButton("OK") { _, _ ->
                                     //新しいゲームを作成して表示
                                     MainLayout.showLayout(mLayout, pNo, true)
@@ -503,8 +591,24 @@ class MainActivity : AppCompatActivity() {
                                 }
                                 .show()
                         } else {
-                            //新しいゲームを作成して表示
-                            MainLayout.showLayout(mLayout, pNo, true)
+                            //game途中の場合は確認
+                            if (Tools.isStarted(this, pNo)) {
+                                AlertDialog.Builder(this)
+                                    .setTitle(R.string.app_label)
+                                    //.setMessage("ゲーム途中ですが新しいゲームにしますか?\nスコア上は未コンプとなります")
+                                    .setMessage("ゲーム途中ですが新しいゲームにしますか?")
+                                    .setPositiveButton("OK") { _, _ ->
+                                        //新しいゲームを作成して表示
+                                        MainLayout.showLayout(mLayout, pNo, true)
+                                    }
+                                    .setNegativeButton("No") { _, _ ->
+                                        //何もしない
+                                    }
+                                    .show()
+                            } else {
+                                //新しいゲームを作成して表示
+                                MainLayout.showLayout(mLayout, pNo, true)
+                            }
                         }
                     }
                 }
