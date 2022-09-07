@@ -6,6 +6,7 @@ import android.util.DisplayMetrics
 import android.view.WindowManager
 import androidx.preference.PreferenceManager
 import java.time.LocalDateTime
+import java.util.*
 
 object Tools {
     //preferences読込String
@@ -87,7 +88,7 @@ object Tools {
         val qNoList = RoomMain.getQuestionNoList(context)
         if (qNoList.count() > 0) {
             //qListをシャッフルして問題を作成
-            qNoList.shuffle()
+            qNoList.shuffle(Random())
             //問題として妥当性のある路線があるまで繰り返す
             for (v in qNoList) {
                 var cNoList: MutableList<Int> = mutableListOf()
@@ -128,7 +129,7 @@ object Tools {
                                 }
                             }
                         }
-                        piece.shuffle()
+                        piece.shuffle(Random())
                         for (v2 in 0 until numCards) {
                             val foo: MutableList<String> = mutableListOf()
                             for (v3 in 0 until numItems) {

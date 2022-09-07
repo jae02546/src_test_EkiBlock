@@ -445,6 +445,8 @@ class MainActivity : AppCompatActivity() {
                                 //soundVibrator(true)
                                 ////comp画面表示
                                 //showCompLayout(screenSize, pNo)
+                                //効果音とバイブ
+                                soundVibrator(false)
                                 //新しいゲーム
                                 AlertDialog.Builder(this)
                                     .setTitle(R.string.app_label)

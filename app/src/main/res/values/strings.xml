@@ -96,12 +96,12 @@
     <!--設定 プライバシーポリシー-->
     <string name="setting_privacy_policy_key">setting_privacy_policy</string>
     <string name="setting_privacy_policy_title">プライバシーポリシー</string>
-    <string name="setting_privacy_policy_url">https://jae02546.github.io/narabe/manual/privacy-policy.html</string>
+    <string name="setting_privacy_policy_url">https://jae02546.github.io/ekiword/manual/privacy-policy.html</string>
 
     <!--設定 このアプリについて-->
     <string name="setting_about_key">setting_about</string>
     <string name="setting_about_title">このアプリについて</string>
-    <string name="setting_about_url">https://jae02546.github.io/narabe/</string>
+    <string name="setting_about_url">https://jae02546.github.io/ekiword/</string>
 
     <!--pref-->
     <!--保守モード-->
